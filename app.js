@@ -63,9 +63,9 @@ app.get(
     }
 );
 
-app.listen(httpPort, () => {
-    console.log(httpPort, '포트로 서버가 켜졌어요!');
-});
+// app.listen(httpPort, () => {
+//     console.log(httpPort, '포트로 서버가 켜졌어요!');
+// });
 
 app.listen(httpPort, () => {
     console.log('local서버가 켜졌어요!');

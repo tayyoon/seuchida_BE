@@ -70,20 +70,24 @@ router.get('/myPage/myReview', authMiddleware, async (req, res) => {
 });
 
 // 프로필 수정
-router.post( '/hostUpdate/:postId', authMiddleware, async (req, res) => {
-    const { user } = res.locals.user;
+router.post( '/myPage/update', authMiddleware, upload.single('newUserImg'), async (req, res, next) => {
+    const { user } = res.locals;
+    const userId = user.userId;
+    let newUserImg = req.files?.location
+    const { nickName, userAge, gender, address, userInterest, userContent } = req.body;
 
-    const { nickName, address, userContent } = req.body;
-
-
+    if (!newUserImg){
+        newUserImg = user.userImg
+    }
     try {
         await User.updateOne(
+            {userId},
             { $set: {
               nickName,
               userAge,
               gender, 
               userContent, 
-              userImg, 
+              userImg: newUserImg, 
               userInterest, 
               address
             }

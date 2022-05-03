@@ -2,22 +2,22 @@ const express = require('express');
 const connect = require('./schemas');
 const cors = require('cors');
 const passportConfig = require('./passport');
-const fs = require('fs');
-const http = require('http');
-const https = require('https');
+// const fs = require('fs');
+// const http = require('http');
+// const https = require('https');
 
-const privateKey = fs.readFileSync(__dirname + '/private.key', 'utf8');
-const certificate = fs.readFileSync(__dirname + '/certificate.crt', 'utf8');
-const ca = fs.readFileSync(__dirname + '/ca_bundle.crt', 'utf8');
-const credentials = {
-    key: privateKey,
-    cert: certificate,
-    ca: ca,
-};
+// const privateKey = fs.readFileSync(__dirname + '/private.key', 'utf8');
+// const certificate = fs.readFileSync(__dirname + '/certificate.crt', 'utf8');
+// const ca = fs.readFileSync(__dirname + '/ca_bundle.crt', 'utf8');
+// const credentials = {
+//     key: privateKey,
+//     cert: certificate,
+//     ca: ca,
+// };
 const app_low = express();
 const app = express();
 const httpPort = 3000;
-const httpsPort = 443;
+// const httpsPort = 443;
 
 app_low.use((req, res, next) => {
     if (req.secure) {
@@ -53,15 +53,15 @@ app.use('/api', express.urlencoded({ extended: false }), mypageRouter);
 app.get('/', (req, res) => {
     res.send('hi');
 });
-app.get(
-    '/.well-known/pki-validation/291A520230E5055AFBD7823BE3CD41CE.txt',
-    (req, res) => {
-        res.sendFile(
-            __dirname +
-                '/well-known/pki-validation/291A520230E5055AFBD7823BE3CD41CE.txt'
-        );
-    }
-);
+// app.get(
+//     '/.well-known/pki-validation/6448FFC6223A036C982B8E3F95226766.txt',
+//     (req, res) => {
+//         res.sendFile(
+//             __dirname +
+//                 '/well-known/pki-validation/6448FFC6223A036C982B8E3F95226766.txt'
+//         );
+//     }
+// );
 
 // app.listen(httpPort, () => {
 //     console.log(httpPort, '포트로 서버가 켜졌어요!');
@@ -74,9 +74,9 @@ app.listen(httpPort, () => {
 //     console.log('http서버가 켜졌어요!');
 // });
 
-https.createServer(credentials, app).listen(httpsPort, () => {
-    console.log('https서버가 켜졌어요!');
-});
+// https.createServer(credentials, app).listen(httpsPort, () => {
+//     console.log('https서버가 켜졌어요!');
+// });
 
 // const express = require('express');
 // const connect = require('./schemas');

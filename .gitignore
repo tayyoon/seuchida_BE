@@ -1,3 +1,6 @@
 key.txt
 s3config.json
 node_modules
+ca_bundle.crt
+certificate.crt
+private.key

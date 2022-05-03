@@ -135,7 +135,7 @@ router.get('/nearPostList', authMiddleware, async (req, res) => {
 // 상세페이지 조회
 router.get('/postDetail/:postId', authMiddleware, async (req, res) => {
     const { postId } = req.params;
-    const post = await Post.findOne({ postId });
+    const post = await Post.findOne({ _id: postId });
     // console.log('post는 이거야', post);
     const { nowMember } = post;
 

@@ -53,15 +53,15 @@ app.use('/api', express.urlencoded({ extended: false }), mypageRouter);
 app.get('/', (req, res) => {
     res.send('hi');
 });
-// app.get(
-//     '/.well-known/pki-validation/6448FFC6223A036C982B8E3F95226766.txt',
-//     (req, res) => {
-//         res.sendFile(
-//             __dirname +
-//                 '/well-known/pki-validation/6448FFC6223A036C982B8E3F95226766.txt'
-//         );
-//     }
-// );
+app.get(
+    '/.well-known/pki-validation/6448FFC6223A036C982B8E3F95226766.txt',
+    (req, res) => {
+        res.sendFile(
+            __dirname +
+                '/well-known/pki-validation/6448FFC6223A036C982B8E3F95226766.txt'
+        );
+    }
+);
 
 // app.listen(httpPort, () => {
 //     console.log(httpPort, '포트로 서버가 켜졌어요!');

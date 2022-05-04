@@ -74,9 +74,9 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
             }
         }
 
-        const filterRe = filterReview.sort(
-            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
+        const filterRe = filterReview
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .slice(0, 8);
 
         // 유저의 주소중 본인의 시,구 를 기준으로 카테고리상관없이 전체목록 최신순으로 넘겨주기
         const nearByPosts = await Post.find(
@@ -99,9 +99,9 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
             .slice(0, 3);
 
         console.log('carpost', caPost);
-        console.log('allRevies', allReviews);
+        console.log('필터링리뷰', filterRe);
         console.log('nearPost', nearPost);
-        res.status(200).json({ caPost, allReviews, nearPost, filterRe });
+        res.status(200).json({ caPost, nearPost, filterRe });
     } catch (err) {
         console.log(err);
         res.status(400).send(' 메인 뽑아서 넘기기 포스트 오류');

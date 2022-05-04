@@ -54,6 +54,7 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
 
         // 리뷰 넘기기
         // 작성된 전체 리뷰 최신순으로 넘기기
+        const filterReview = [];
         const allReviews = await Review.find(
             {},
             {
@@ -63,10 +64,19 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
                 reviewImg: 1,
                 spot: 1,
                 postCategory: 1,
+                createdAt: 1,
             }
         ).sort({ $natural: -1 });
+        for (let i = 0; i < allReviews.length; i++) {
+            if (allReviews[i].reviewImg) {
+                filterReview.push(allReviews[i]);
+                console.log('kkkkkk', allReviews[i]);
+            }
+        }
 
-        // console.log(allReviews);
+        const filterRe = filterReview.sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
 
         // 유저의 주소중 본인의 시,구 를 기준으로 카테고리상관없이 전체목록 최신순으로 넘겨주기
         const nearByPosts = await Post.find(
@@ -91,7 +101,7 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
         console.log('carpost', caPost);
         console.log('allRevies', allReviews);
         console.log('nearPost', nearPost);
-        res.status(200).json({ caPost, allReviews, nearPost });
+        res.status(200).json({ caPost, allReviews, nearPost, filterRe });
     } catch (err) {
         console.log(err);
         res.status(400).send(' 메인 뽑아서 넘기기 포스트 오류');

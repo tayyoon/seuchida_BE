@@ -46,6 +46,27 @@ router.post(
         }
     }
 );
+// 전체리뷰 조회
+router.get('/review', authMiddleware, async (req, res) => {
+    try {
+        const allReviews = await Review.find(
+            {},
+            {
+                userImg: 1,
+                content: 1,
+                nickName: 1,
+                reviewImg: 1,
+                spot: 1,
+                postCategory: 1,
+                createdAt: 1,
+            }
+        ).sort({ $natural: -1 });
+        res.status(201).send(allReviews);
+    } catch (error) {
+        console.error(error);
+        res.status(401).send('리뷰 전체조회 실패');
+    }
+});
 
 // 리뷰 조회
 router.get('/review/:postId', authMiddleware, async (req, res) => {

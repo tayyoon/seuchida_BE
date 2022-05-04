@@ -49,7 +49,7 @@ router.post(
 // 전체리뷰 조회
 router.get('/review', authMiddleware, async (req, res) => {
     try {
-        const allReviews = await Review.find(
+        let allReviews = await Review.find(
             {},
             {
                 userImg: 1,
@@ -61,6 +61,9 @@ router.get('/review', authMiddleware, async (req, res) => {
                 createdAt: 1,
             }
         ).sort({ $natural: -1 });
+        console.log('11111', allReviews);
+        const reivew = [allreviews];
+        console.log(review);
         res.status(201).send(allReviews);
     } catch (error) {
         console.error(error);

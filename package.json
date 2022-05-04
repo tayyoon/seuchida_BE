@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "aws-sdk": "^2.1122.0",
+    "aws-sdk": "^2.1127.0",
     "cors": "^2.8.5",
     "crypto-js": "^4.1.1",
     "cryptojs": "^2.5.3",
@@ -35,6 +35,5 @@
     "url": "https://github.com/seuchida/seuchida_BE/issues"
   },
   "homepage": "https://github.com/seuchida/seuchida_BE#readme",
-  "devDependencies": {},
   "description": ""
 }

@@ -79,7 +79,7 @@ router.post(
                 },
             }
         );
-        await Evalue.create({});
+        await Evalue.create({userId});
         res.status(201).send({
             message: '가입완료',
         });

@@ -7,6 +7,7 @@
     "dotenv": "^16.0.0",
     "express": "^4.18.0",
     "fs": "^0.0.1-security",
+    "joi": "^17.6.0",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.3",
     "moment-timezone": "^0.5.34",
@@ -35,6 +36,5 @@
     "url": "https://github.com/seuchida/seuchida_BE/issues"
   },
   "homepage": "https://github.com/seuchida/seuchida_BE#readme",
-  "devDependencies": {},
   "description": ""
 }

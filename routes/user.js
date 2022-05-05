@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require('express');
 const Post = require('../schemas/post');
 const User = require('../schemas/user');
@@ -5,12 +6,9 @@ const Evalue = require('../schemas/evalue');
 const router = express.Router();
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
-const fs = require('fs');
 const authMiddleware = require('../middlewares/auth-middleware');
-const path = require('path');
-const mykey = fs.readFileSync(path.resolve(__dirname, '../key.txt')).toString();
 const upload = require('../S3/s3');
-const evalue = require('../schemas/evalue');
+const Joi = require('joi');
 
 router.get('/kakao', passport.authenticate('kakao'));
 
@@ -23,7 +21,7 @@ const kakaoCallback = (req, res, next) => {
             console.log('콜백~~~');
             const userInfo = user;
             const { userId } = user;
-            const token = jwt.sign({ userId }, mykey);
+            const token = jwt.sign({ userId }, process.env.MY_KEY);
 
             result = {
                 token,
@@ -37,48 +35,99 @@ const kakaoCallback = (req, res, next) => {
 
 router.get('/callback/kakao', kakaoCallback);
 
+const postUsersSchema = Joi.object({
+    nickName: Joi.string().required()
+        .pattern(new RegExp('^[a-zA-Z0-9ㄱ-ㅎ가-힣]{2,12}$')),
+    userAge: Joi.string().required(),
+    userGender: Joi.string().required(),
+    userInterest: Joi.string().required(),
+    userContent: Joi.string().required()
+        .pattern(new RegExp('')),
+    address: Joi.string().required()
+})
+//회원가입
 router.post(
     '/signUp',
     upload.single('userImg'),
     authMiddleware,
     async (req, res) => {
-        const {
-            nickName,
-            userAge,
-            userGender,
-            userContent,
-            userInterest,
-            address,
-        } = req.body;
+        try {
+            const {
+                nickName,
+                userAge,
+                userGender,
+                userContent,
+                userInterest,
+                address,
+            } = await postUsersSchema.validateAsync(req.body);
+            const { user } = res.locals;
+            let userId = user.userId;
+            let userImg = req.file?.location;
+            //유저이미지를 안줫을때 디폴트 이미지를 넣어줌
+            if (!userImg) {
+                userImg = process.env.DEFAULT_IMG;
+                    
+            }
+            //userId가 db에 존재하지않을 때 회원가입실패 메시지 송출
+            const existUsers = await User.find({
+                $or: [{ userId }],
+            });
+            if (!existUsers) {
+                res.status(401).send('회원가입실패');
+            }
+            await User.updateOne(
+                { userId: userId },
+                {
+                    $set: {
+                        userAge,
+                        nickName,
+                        userImg,
+                        userGender,
+                        userContent,
+                        userInterest,
+                        address,
+                    },
+                }
+            );
+            await Evalue.create({userId});
+            res.status(201).send({
+                message: '가입완료',
+            });
+        } catch(err) {
+            console.log(err)
+            res.status(400).send({
+                errorMessage: "요청한 데이터 형식이 올바르지 않습니다.",
+            });
+        }
+        
+    }
+);
+
+//회원탈퇴
+router.delete(
+    '/signDown',
+    authMiddleware,
+    async (req, res) => {
         const { user } = res.locals;
-
-        let userImg = req.file?.location;
-        if (!userImg) {
-            userImg =
-                'https://practice2082.s3.ap-northeast-2.amazonaws.com/%EA%B8%B0%EC%98%81%EC%9D%B4.jpg';
-        }
-
         let userId = user.userId;
-        const existUsers = await User.find({
-            $or: [{ userId }],
-        });
-        if (!existUsers) {
-            res.status(401).send('회원가입실패');
-        }
-        await User.updateOne(
-            { userId: userId },
+        const userInfo = await User.find({ userId: userId });
+        const deleteImgURL = userInfo.userImg;
+        //db에 있는 userImgURL에서 s3버킷의 파일명으로 분리
+        const deleteImg = deleteImgURL.split('/')[3];
+        await User.deleteOne({ userId: userId });
+        await Evalue.deleteOne({ userId: userId });
+        s3.deleteObject(
             {
-                $set: {
-                    userAge,
-                    nickName,
-                    userImg,
-                    userGender,
-                    userContent,
-                    userInterest,
-                    address,
-                },
+                Bucket: process.env.BUCKET_NAME,
+                Key: deleteImg,
+            },
+            (err, data) => {
+                if (err) {
+                    throw err;
+                }
             }
         );
+
         await Evalue.create({
             userId,
             userEvalue: [
@@ -90,8 +139,9 @@ router.post(
                 { bad3: 0 },
             ],
         });
+
         res.status(201).send({
-            message: '가입완료',
+            message: '탈퇴완료',
         });
     }
 );

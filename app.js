@@ -1,9 +1,9 @@
+require("dotenv").config();
 const express = require('express');
 const connect = require('./schemas');
 const cors = require('cors');
 const passportConfig = require('./passport');
 const fs = require('fs');
-const http = require('http');
 const https = require('https');
 
 const privateKey = fs.readFileSync(__dirname + '/private.key', 'utf8');
@@ -16,8 +16,8 @@ const credentials = {
 };
 const app_low = express();
 const app = express();
-const httpPort = 3000;
-const httpsPort = 443;
+const httpPort = process.env.HTTP_PORT;
+const httpsPort = process.env.HTTPS_PORT;
 
 app_low.use((req, res, next) => {
     if (req.secure) {
@@ -30,6 +30,7 @@ app_low.use((req, res, next) => {
 
 connect();
 passportConfig();
+//마지막에 cors 수정해야함
 app.use(cors());
 
 const postsRouter = require('./routes/post');
@@ -65,16 +66,9 @@ app.get(
     }
 );
 
-// app.listen(httpPort, () => {
-//     console.log(httpPort, '포트로 서버가 켜졌어요!');
-// });
-
 app.listen(httpPort, () => {
     console.log('local서버가 켜졌어요!');
 });
-// http.createServer(app_low).listen(httpPort, () => {
-//     console.log('http서버가 켜졌어요!');
-// });
 
 https.createServer(credentials, app).listen(httpsPort, () => {
     console.log('https서버가 켜졌어요!');

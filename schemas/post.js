@@ -47,8 +47,6 @@ const PostSchema = new mongoose.Schema({
                 memberId: { type: String },
                 memberImg: {
                     type: String,
-                    default:
-                        'https://w1.pngwing.com/pngs/713/474/png-transparent-circle-silhouette-user-profile-black-black-and-white-line-symbol-logo-smile.png',
                 },
                 memberNickname: {
                     type: String,

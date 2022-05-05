@@ -1,4 +1,4 @@
-require("dotenv").config();
+require('dotenv').config();
 const express = require('express');
 const Post = require('../schemas/post');
 const User = require('../schemas/user');
@@ -36,15 +36,15 @@ const kakaoCallback = (req, res, next) => {
 router.get('/callback/kakao', kakaoCallback);
 
 const postUsersSchema = Joi.object({
-    nickName: Joi.string().required()
+    nickName: Joi.string()
+        .required()
         .pattern(new RegExp('^[a-zA-Z0-9ㄱ-ㅎ가-힣]{2,12}$')),
     userAge: Joi.string().required(),
     userGender: Joi.string().required(),
     userInterest: Joi.string().required(),
-    userContent: Joi.string().required()
-        .pattern(new RegExp('')),
-    address: Joi.string().required()
-})
+    userContent: Joi.string().required().pattern(new RegExp('')),
+    address: Joi.string().required(),
+});
 //회원가입
 router.post(
     '/signUp',
@@ -66,7 +66,6 @@ router.post(
             //유저이미지를 안줫을때 디폴트 이미지를 넣어줌
             if (!userImg) {
                 userImg = process.env.DEFAULT_IMG;
-                    
             }
             //userId가 db에 존재하지않을 때 회원가입실패 메시지 송출
             const existUsers = await User.find({
@@ -89,61 +88,54 @@ router.post(
                     },
                 }
             );
-            await Evalue.create({userId});
+            await Evalue.create({
+                userId,
+                userEvalue: [
+                    { good1: 0 },
+                    { good2: 0 },
+                    { good3: 0 },
+                    { bad1: 0 },
+                    { bad2: 0 },
+                    { bad3: 0 },
+                ],
+            });
             res.status(201).send({
                 message: '가입완료',
             });
-        } catch(err) {
-            console.log(err)
+        } catch (err) {
+            console.log(err);
             res.status(400).send({
-                errorMessage: "요청한 데이터 형식이 올바르지 않습니다.",
+                errorMessage: '요청한 데이터 형식이 올바르지 않습니다.',
             });
         }
-        
     }
 );
 
 //회원탈퇴
-router.delete(
-    '/signDown',
-    authMiddleware,
-    async (req, res) => {
-        const { user } = res.locals;
-        let userId = user.userId;
-        const userInfo = await User.find({ userId: userId });
-        const deleteImgURL = userInfo.userImg;
-        //db에 있는 userImgURL에서 s3버킷의 파일명으로 분리
-        const deleteImg = deleteImgURL.split('/')[3];
-        await User.deleteOne({ userId: userId });
-        await Evalue.deleteOne({ userId: userId });
-        s3.deleteObject(
-            {
-                Bucket: process.env.BUCKET_NAME,
-                Key: deleteImg,
-            },
-            (err, data) => {
-                if (err) {
-                    throw err;
-                }
+router.delete('/signDown', authMiddleware, async (req, res) => {
+    const { user } = res.locals;
+    let userId = user.userId;
+    const userInfo = await User.find({ userId: userId });
+    const deleteImgURL = userInfo.userImg;
+    //db에 있는 userImgURL에서 s3버킷의 파일명으로 분리
+    const deleteImg = deleteImgURL.split('/')[3];
+    await User.deleteOne({ userId: userId });
+    await Evalue.deleteOne({ userId: userId });
+    s3.deleteObject(
+        {
+            Bucket: process.env.BUCKET_NAME,
+            Key: deleteImg,
+        },
+        (err, data) => {
+            if (err) {
+                throw err;
             }
-        );
+        }
+    );
 
-        await Evalue.create({
-            userId,
-            userEvalue: [
-                { good1: 0 },
-                { good2: 0 },
-                { good3: 0 },
-                { bad1: 0 },
-                { bad2: 0 },
-                { bad3: 0 },
-            ],
-        });
-
-        res.status(201).send({
-            message: '탈퇴완료',
-        });
-    }
-);
+    res.status(201).send({
+        message: '탈퇴완료',
+    });
+});
 
 module.exports = router;

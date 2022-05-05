@@ -1,6 +1,5 @@
 const express = require('express');
 const Post = require('../schemas/post');
-const User = require('../schemas/user');
 const Review = require('../schemas/review');
 const router = express.Router();
 const moment = require('moment');
@@ -46,6 +45,7 @@ router.post(
         }
     }
 );
+
 // 전체리뷰 조회
 router.get('/review', authMiddleware, async (req, res) => {
     try {
@@ -61,9 +61,9 @@ router.get('/review', authMiddleware, async (req, res) => {
                 createdAt: 1,
             }
         ).sort({ $natural: -1 });
-        console.log('11111', allReviews);
-        // const reivew = [allreviews];
-        // console.log(review);
+        // 전체 리뷰를 조회하되 프론트에서 필요한 정보만을 주기위해 key:1(true) 를 설정해줌
+        // sort()함수에 $natural:-1 을 시켜 저장된 반대로 , 최신순으로 정렬시킴
+
         res.status(201).send(allReviews);
     } catch (error) {
         console.error(error);
@@ -86,9 +86,9 @@ router.get('/review/:postId', authMiddleware, async (req, res) => {
 // 리뷰 삭제
 router.delete('/review/:reviewId', authMiddleware, async (req, res) => {
     const { reviewId } = req.params;
-    const reviewImg = await Review.find({ _id: postId }); // 현재 URL에 전달된 id값을 받아서 db찾음
-    //console.log(postId)
-    const url = reviewImg[0].image.split('/'); // video에 저장된 fileUrl을 가져옴
+    const reviewImg = await Review.find({ _id: postId });
+
+    const url = reviewImg[0].image.split('/');
     const delFileName = url[url.length - 1];
     try {
         await Post.deleteOne({ _id: reviewId });

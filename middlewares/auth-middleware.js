@@ -1,8 +1,6 @@
+require("dotenv").config();
 const jwt = require('jsonwebtoken');
 const User = require('../schemas/user');
-const fs = require('fs');
-const path = require('path');
-const mykey = fs.readFileSync(path.resolve(__dirname, '../key.txt')).toString();
 
 module.exports = (req, res, next) => {
     const { authorization } = req.headers;
@@ -23,7 +21,7 @@ module.exports = (req, res, next) => {
 
     //jwt검증//
     try {
-        const { userId } = jwt.verify(tokenValue, mykey);
+        const { userId } = jwt.verify(tokenValue, process.env.MY_KEY);
         //검증 성공시 locals에 인증 정보 넣어주기//
         console.log('userId',userId);
         User.findOne({ userId }) //mongodb면 findOne을 사용 exec() 추가해야함

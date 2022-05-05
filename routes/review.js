@@ -62,8 +62,8 @@ router.get('/review', authMiddleware, async (req, res) => {
             }
         ).sort({ $natural: -1 });
         console.log('11111', allReviews);
-        const reivew = [allreviews];
-        console.log(review);
+        // const reivew = [allreviews];
+        // console.log(review);
         res.status(201).send(allReviews);
     } catch (error) {
         console.error(error);

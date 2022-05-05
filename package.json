@@ -36,5 +36,6 @@
     "url": "https://github.com/seuchida/seuchida_BE/issues"
   },
   "homepage": "https://github.com/seuchida/seuchida_BE#readme",
+  "devDependencies": {},
   "description": ""
 }

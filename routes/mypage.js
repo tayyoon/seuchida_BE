@@ -76,13 +76,21 @@ router.post( '/myPage/update', authMiddleware, upload.single('newUserImg'), asyn
     const { user } = res.locals;
     const userId = user.userId;
     let newUserImg = req.file?.location
-    const { nickName, userAge, gender, address, userInterest, userContent } = req.body;
+    const { nickName, userAge, userGender, address, userInterest, userContent } = req.body;
 
+    //특수문자 제한 정규식
+    const regexr = /^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]*$/
+
+    // 기존 프로필 이미지와 새로운 프로필 이미지가 잘 들어가는지 확인
     console.log(user.userImg)
     console.log(newUserImg)
 
     if (!newUserImg){
         newUserImg = user.userImg
+    } 
+    if (!regexr.test(nickName, userContent)) {
+        return res.status(403)
+        .send('특수문자를 사용할 수 없습니다')
     } 
     try { 
     const myInfo = await User.find({ userId }); 
@@ -110,7 +118,7 @@ router.post( '/myPage/update', authMiddleware, upload.single('newUserImg'), asyn
                         { $set: {
                             nickName,
                             userAge,
-                            gender, 
+                            userGender, 
                             userContent,  
                             userImg: newUserImg,
                             userInterest, 
@@ -127,7 +135,7 @@ router.post( '/myPage/update', authMiddleware, upload.single('newUserImg'), asyn
                     { $set: {
                         nickName,
                         userAge,
-                        gender, 
+                        userGender, 
                         userContent,  
                         userImg: keepImage,
                         userInterest, 

@@ -1,3 +1,4 @@
+require("dotenv").config();
 const passport = require('passport');
 const KakaoStrategy = require('passport-kakao').Strategy;
 const User = require('../schemas/user');
@@ -7,10 +8,9 @@ module.exports = () => {
 
         new KakaoStrategy(
             {
-                clientID: '5498cafd5af35c66b35808e2b9e12971', // 카카오 로그인에서 발급받은 REST API 키
-                callbackURL: 'http://localhost:3000/oauth/callback/kakao', // 카카오 로그인 Redirect URI 경로
+                clientID: process.env.KAKAO_CLIENT_ID, // 카카오 로그인에서 발급받은 REST API 키
+                callbackURL: process.env.CALL_BACK_URL, // 카카오 로그인 Redirect URI 경로
             },
-            //https://carrot31.shop/oauth/callback/kakao
 
             // clientID에 카카오 앱 아이디 추가
             // callbackURL: 카카오 로그인 후 카카오가 결과를 전송해줄 URL
@@ -30,6 +30,12 @@ module.exports = () => {
                         // 가입되지 않는 유저면 회원가입 시키고 로그인을 시킨다
                         const newUser = await User.create({
                             userId: profile.id,
+                            nickName: "1",
+                            userAge: "1",
+                            userGender: "1",
+                            userContent: "1",
+                            userImg: "1",
+                            address: "1"
                         });
                         done(null, newUser); // 회원가입하고 로그인 인증 완료
                     }

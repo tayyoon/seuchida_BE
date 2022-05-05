@@ -1,9 +1,9 @@
+require("dotenv").config();
 const express = require('express');
 const connect = require('./schemas');
 const cors = require('cors');
 const passportConfig = require('./passport');
 const fs = require('fs');
-const http = require('http');
 const https = require('https');
 
 const privateKey = fs.readFileSync(__dirname + '/private.key', 'utf8');
@@ -16,8 +16,8 @@ const credentials = {
 };
 const app_low = express();
 const app = express();
-const httpPort = 3000;
-const httpsPort = 443;
+const httpPort = process.env.HTTP_PORT;
+const httpsPort = process.env.HTTPS_PORT;
 
 app_low.use((req, res, next) => {
     if (req.secure) {
@@ -30,6 +30,7 @@ app_low.use((req, res, next) => {
 
 connect();
 passportConfig();
+//마지막에 cors 수정해야함
 app.use(cors());
 
 const postsRouter = require('./routes/post');
@@ -65,49 +66,10 @@ app.get(
     }
 );
 
-// app.listen(httpPort, () => {
-//     console.log(httpPort, '포트로 서버가 켜졌어요!');
-// });
-
 app.listen(httpPort, () => {
     console.log('local서버가 켜졌어요!');
 });
-// http.createServer(app_low).listen(httpPort, () => {
-//     console.log('http서버가 켜졌어요!');
-// });
 
 https.createServer(credentials, app).listen(httpsPort, () => {
     console.log('https서버가 켜졌어요!');
 });
-
-// const express = require('express');
-// const connect = require('./schemas');
-// const cors = require('cors');
-// const app = express();
-// const port = 3000;
-// const passportConfig = require('./passport');
-// connect();
-// passportConfig();
-// app.use(cors());
-
-// const postsRouter = require('./routes/post');
-// const usersRouter = require('./routes/user');
-// const reviewsRouter = require('./routes/review');
-
-// const requestMiddleware = (req, res, next) => {
-//     console.log('Request URL:', req.originalUrl, ' - ', new Date());
-//     next();
-// };
-// //프론트에서 오는 데이터들을 body에 넣어주는 역할
-// app.use(express.json());
-// app.use(requestMiddleware);
-
-// //form 형식으로 데이터를 받아오고 싶을 때(false->true)
-// app.use('/api', express.urlencoded({ extended: false }), postsRouter);
-// app.use('/oauth', express.urlencoded({ extended: false }), usersRouter);
-// app.use('/api', express.urlencoded({ extended: false }), reviewsRouter);
-
-// app.listen(port, () => {
-//     console.log(port, '포트로 서버가 켜졌어요!');
-// });
-// });

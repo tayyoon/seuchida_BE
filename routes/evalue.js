@@ -6,10 +6,10 @@ const Evalue = require('../schemas/evalue');
 
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
-const fs = require('fs');
+
 const authMiddleware = require('../middlewares/auth-middleware');
-const path = require('path');
-const mykey = fs.readFileSync(path.resolve(__dirname, '../key.txt')).toString();
+
+
 const upload = require('../S3/s3');
 
 router.post('/evalue', authMiddleware, async (req, res) => {

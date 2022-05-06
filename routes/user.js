@@ -63,7 +63,8 @@ router.post(
                 userContent,
                 userInterest,
                 address,
-            } = await postUsersSchema.validateAsync(req.body);
+            } = req.body
+            // await postUsersSchema.validateAsync(req.body);
             // const regexr = /^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣\s]*$/;
             // if (!regexr.test(userContent)) {
             //     return res.status(403).send('특수문자를 사용할 수 없습니다');

@@ -105,7 +105,7 @@ router.post( '/myPage/update', authMiddleware, upload.single('newUserImg'), asyn
         
         s3.deleteObject(
             {
-            Bucket: "practice2082",
+            Bucket: process.env.BUCKET_NAME,
             Key: delFileName,
             }, (err, data) => {
                     if (err) { throw err;

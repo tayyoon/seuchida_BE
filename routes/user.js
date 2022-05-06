@@ -9,6 +9,8 @@ const jwt = require('jsonwebtoken');
 const authMiddleware = require('../middlewares/auth-middleware');
 const upload = require('../S3/s3');
 const Joi = require('joi');
+const AWS = require('aws-sdk');
+const s3 = new AWS.S3();
 
 router.get('/kakao', passport.authenticate('kakao'));
 
@@ -38,11 +40,13 @@ router.get('/callback/kakao', kakaoCallback);
 const postUsersSchema = Joi.object({
     nickName: Joi.string()
         .required()
-        .pattern(new RegExp('^[a-zA-Z0-9ㄱ-ㅎ가-힣]{2,12}$')),
+        .min(2)
+        .max(12)
+        .pattern(new RegExp('^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]*$')),
     userAge: Joi.string().required(),
     userGender: Joi.string().required(),
     userInterest: Joi.string().required(),
-    userContent: Joi.string().required().pattern(new RegExp('')),
+    userContent: Joi.string().required(),
     address: Joi.string().required(),
 });
 //회원가입
@@ -60,6 +64,10 @@ router.post(
                 userInterest,
                 address,
             } = await postUsersSchema.validateAsync(req.body);
+            const regexr = /^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣\s]*$/;
+            if (!regexr.test(userContent)) {
+                return res.status(403).send('특수문자를 사용할 수 없습니다');
+            }
             const { user } = res.locals;
             let userId = user.userId;
             let userImg = req.file?.location;

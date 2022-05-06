@@ -7,30 +7,23 @@ const UserSchema = new mongoose.Schema({
     },
     nickName: {
         type: String,
-        required: true,
     },
     userAge: {
         type: String,
-        required: true,
     },
     userGender: {
         type: String,
-        required: true,
     },
     userContent: {
         type: String,
-        required: true,
     },
     userImg: {
         type: String,
-        required: true,
     },
     userInterest: {
-        type: Array,
     },
     address: {
         type: String,
-        required: true,
     },
     reviewCnt: {
         type: Number,

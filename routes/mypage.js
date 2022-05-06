@@ -89,59 +89,80 @@ router.post(
 
         //특수문자 제한 정규식
         const regexr = /^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]*$/;
-
-        // 기존 프로필 이미지와 새로운 프로필 이미지가 잘 들어가는지 확인
-
-        if (!newUserImg) {
-            newUserImg = user.userImg;
-        }
         if (!regexr.test(nickName, userContent)) {
             return res.status(403).send('특수문자를 사용할 수 없습니다');
         }
-        try {
-            const myInfo = await User.find({ userId });
-
-            // 현재 URL에 전달된 id값을 받아서 db찾음
-            const url = myInfo[0].userImg.split('/');
-
-            // video에 저장된 fileUrl을 가져옴
-            const delFileName = url[url.length - 1];
-
-            s3.deleteObject(
-                {
-                    Bucket: process.env.BUCKET_NAME,
-                    Key: delFileName,
-                },
-                (err, data) => {
-                    if (err) {
-                        throw err;
-                    }
-                }
-            );
-
-            await User.updateOne(
-                { userId },
-                {
-                    $set: {
-                        nickName,
-                        userAge,
-                        userGender,
-                        userContent,
-                        userImg: newUserImg,
-                        userInterest,
-                        address,
+        // 기존 프로필 이미지와 새로운 프로필 이미지가 잘 들어가는지 확인
+        
+        if (newUserImg) {
+            try {
+                const myInfo = await User.find({ userId });
+    
+                // 현재 URL에 전달된 id값을 받아서 db찾음
+                const url = myInfo[0].userImg.split('/');
+    
+                // video에 저장된 fileUrl을 가져옴
+                const delFileName = url[url.length - 1];
+    
+                s3.deleteObject(
+                    {
+                        Bucket: process.env.BUCKET_NAME,
+                        Key: delFileName,
                     },
-                }
-            );
-
-            res.status(200).send({
-                message: '수정 완료',
-            });
-        } catch (err) {
-            console.error(err);
-            res.status(400).send({
-                message: '수정 실패',
-            });
+                    (err, data) => {
+                        if (err) {
+                            throw err;
+                        }
+                    }
+                );
+    
+                await User.updateOne(
+                    { userId },
+                    {
+                        $set: {
+                            nickName,
+                            userAge,
+                            userGender,
+                            userContent,
+                            userImg: newUserImg,
+                            userInterest,
+                            address,
+                        },
+                    }
+                );
+    
+                res.status(200).send({
+                    message: '수정 완료',
+                });
+            } catch (err) {
+                console.error(err);
+                res.status(400).send({
+                    message: '수정 실패',
+                });
+            }
+        } else {
+            try {
+                newUserImg = user.userImg;
+                await User.updateOne(
+                    { userId },
+                    {
+                        $set: {
+                            nickName,
+                            userAge,
+                            userGender,
+                            userContent,
+                            userImg: newUserImg,
+                            userInterest,
+                            address,
+                        },
+                    }
+                );
+            } catch (err) {
+                console.error(err);
+                res.status(400).send({
+                    message: '수정 실패',
+                });
+            }
         }
     }
 );

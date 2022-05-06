@@ -21,6 +21,7 @@ module.exports = (req, res, next) => {
 
     //jwt검증//
     try {
+        console.log('tokenValue',tokenValue)
         const { userId } = jwt.verify(tokenValue, process.env.MY_KEY);
         //검증 성공시 locals에 인증 정보 넣어주기//
         console.log('userId',userId);

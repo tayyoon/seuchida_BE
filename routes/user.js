@@ -97,17 +97,17 @@ router.post(
                     },
                 }
             );
-            await Evalue.create({
-                userId,
-                userEvalue: [
-                    { good1: 0 },
-                    { good2: 0 },
-                    { good3: 0 },
-                    { bad1: 0 },
-                    { bad2: 0 },
-                    { bad3: 0 },
-                ],
-            });
+            // await Evalue.create({
+            //     userId,
+            //     userEvalue: [
+            //         { good1: 0 },
+            //         { good2: 0 },
+            //         { good3: 0 },
+            //         { bad1: 0 },
+            //         { bad2: 0 },
+            //         { bad3: 0 },
+            //     ],
+            // });
             res.status(201).send({
                 message: '가입완료',
             });

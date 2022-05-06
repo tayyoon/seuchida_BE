@@ -66,6 +66,29 @@ app.get(
     }
 );
 
+// const io = socket(server, {
+//     cors: {
+//         origin: 'http://localhost:3000',
+//         credentials: true,
+//     },
+// });
+
+// io.on('connection', (socket) => {
+//     console.log('연결 connect: ', socket.id);
+//     socket.on('disconnect', () => {
+//         console.log('디스커넥트 disconnect: ', socket.id);
+//     });
+//     socket.on('join room', (data) => {
+//         socket.join(data);
+//         console.log('join room 방들어감: ', data);
+//         console.log(socket.rooms);
+//     });
+//     socket.on('send_message', (data) => {
+//         console.log('send: ', data);
+//         socket.to(data.roomName).emit('receive_message', data);
+//     });
+// });
+
 app.listen(httpPort, () => {
     console.log('local서버가 켜졌어요!');
 });

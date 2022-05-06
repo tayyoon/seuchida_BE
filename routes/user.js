@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const Post = require('../schemas/post');
 const User = require('../schemas/user');
-const Evalue = require('../schemas/evalue');
+// const Evalue = require('../schemas/evalue');
 const router = express.Router();
 const passport = require('passport');
 const jwt = require('jsonwebtoken');

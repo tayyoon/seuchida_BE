@@ -86,12 +86,13 @@ router.get('/review/:postId', authMiddleware, async (req, res) => {
 // 리뷰 삭제
 router.delete('/review/:reviewId', authMiddleware, async (req, res) => {
     const { reviewId } = req.params;
-    const reviewImg = await Review.find({ _id: postId });
+    const review = await Review.find({ _id: postId });
 
-    const url = reviewImg[0].image.split('/');
+    const url = review[0].reviewImg.split('/');
     const delFileName = url[url.length - 1];
     try {
-        await Post.deleteOne({ _id: reviewId });
+        await Review.deleteOne({ _id: reviewId });
+
         s3.deleteObject(
             {
                 Bucket: 'practice2082',

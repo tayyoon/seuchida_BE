@@ -151,6 +151,45 @@ router.get('/postDetail/:postId', authMiddleware, async (req, res) => {
     res.status(200).json({ post });
 });
 
+// 참여버튼
+router.post('/postPush/:postId', authMiddleware, async (req, res) => {
+    const { postId } = req.params;
+    const { user } = res.locals;
+    const {
+        userId,
+        userImg,
+        nickName,
+        userGender,
+        userAge,
+        userInterest,
+        userContent,
+    } = user;
+    const userInfo = {
+        memberId: userId,
+        memberImg: userImg,
+        memberNickname: nickName,
+        memberGen: userGender,
+        memberAgee: userAge,
+        memberCategory: userInterest,
+        memberDesc: userContent,
+    };
+    console.log('유저인포', userInfo);
+    try {
+        const NMember = await Post.updateOne(
+            {
+                postId,
+            },
+            { $push: { nowMember: [userInfo] } }
+        );
+        const newPostInfo = await Post.findOne({ postId });
+        // console.log('asdfasdfasdfasdf', pp);
+        res.status(200).send('성공', newPostInfo);
+    } catch (error) {
+        console.error(error);
+        res.status(404).send('실패!');
+    }
+});
+
 //게시글 작성
 router.post('/postWrite', authMiddleware, async (req, res) => {
     //작성한 정보 가져옴

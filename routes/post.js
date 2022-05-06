@@ -91,9 +91,9 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
             .slice(0, 3);
 
-        console.log('carpost', caPost);
-        console.log('필터링리뷰', filterRe);
-        console.log('nearPost', nearPost);
+        // console.log('carpost', caPost);
+        // console.log('필터링리뷰', filterRe);
+        // console.log('nearPost', nearPost);
         res.status(200).json({ caPost, nearPost, filterRe });
     } catch (err) {
         console.log(err);

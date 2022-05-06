@@ -37,18 +37,18 @@ const kakaoCallback = (req, res, next) => {
 
 router.get('/callback/kakao', kakaoCallback);
 
-const postUsersSchema = Joi.object({
-    nickName: Joi.string()
-        .required()
-        .min(2)
-        .max(12)
-        .pattern(new RegExp('^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]*$')),
-    userAge: Joi.string().required(),
-    userGender: Joi.string().required(),
-    userInterest: Joi.string().required(),
-    userContent: Joi.string().required(),
-    address: Joi.string().required(),
-});
+// const postUsersSchema = Joi.object({
+//     nickName: Joi.string()
+//         .required()
+//         .min(2)
+//         .max(12)
+//         .pattern(new RegExp('^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]*$')),
+//     userAge: Joi.string().required(),
+//     userGender: Joi.string().required(),
+//     userInterest: Joi.string().required(),
+//     userContent: Joi.string().required(),
+//     address: Joi.string().required(),
+// });
 //회원가입
 router.post(
     '/signUp',
@@ -64,10 +64,10 @@ router.post(
                 userInterest,
                 address,
             } = await postUsersSchema.validateAsync(req.body);
-            const regexr = /^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣\s]*$/;
-            if (!regexr.test(userContent)) {
-                return res.status(403).send('특수문자를 사용할 수 없습니다');
-            }
+            // const regexr = /^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣\s]*$/;
+            // if (!regexr.test(userContent)) {
+            //     return res.status(403).send('특수문자를 사용할 수 없습니다');
+            // }
             const { user } = res.locals;
             let userId = user.userId;
             let userImg = req.file?.location;

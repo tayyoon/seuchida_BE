@@ -55,7 +55,7 @@ router.post(
     upload.single('userImg'),
     authMiddleware,
     async (req, res) => {
-        try {
+        // try {
             const {
                 nickName,
                 userAge,
@@ -111,12 +111,12 @@ router.post(
             res.status(201).send({
                 message: '가입완료',
             });
-        } catch (err) {
-            console.log(err);
-            res.status(400).send({
-                errorMessage: '요청한 데이터 형식이 올바르지 않습니다.',
-            });
-        }
+        // } catch (err) {
+        //     console.log(err);
+        //     res.status(400).send({
+        //         errorMessage: '요청한 데이터 형식이 올바르지 않습니다.',
+        //     });
+        // }
     }
 );
 

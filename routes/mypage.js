@@ -30,12 +30,14 @@ router.get('/myPage', authMiddleware, async (req, res) => {
 router.get('/myPage/myExercise', authMiddleware, async (req, res) => {
     const { user } = res.locals;
     const { userId } = user;
+    console.log(userId)
 
     try {
-        const myExcersie = await nowMember.find({ userId });
-        res.status(200).json({ myExcersie });
+        const myExercise = await Post.find({ userId });
+        res.status(200).json({ myExercise });
     } catch (err) {
-        res.status(400).json({ msg: 'myExcersie error' });
+        res.status(400).json({ msg: 'myExercise error' });
+        console.error(err)
         next(err);
     }
 });
@@ -88,9 +90,15 @@ router.post(
         } = req.body;
 
         //특수문자 제한 정규식
-        const regexr = /^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]*$/;
-        if (!regexr.test(nickName, userContent)) {
-            return res.status(403).send('특수문자를 사용할 수 없습니다');
+        const regexr = /^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣\s]*$/
+        const regexr1 = /^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]*$/;
+        if (!regexr1.test(nickName)) {
+            return res.status(403)
+            .send('특수문자를 사용할 수 없습니다');
+        }
+        if (!regexr.test(userContent)) {
+            return res.status(403)
+            .send('특수문자를 사용할 수 없습니다'); 
         }
         // 기존 프로필 이미지와 새로운 프로필 이미지가 잘 들어가는지 확인
         

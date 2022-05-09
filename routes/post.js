@@ -177,13 +177,13 @@ router.post('/postPush/:postId', authMiddleware, async (req, res) => {
     try {
         const NMember = await Post.updateOne(
             {
-                postId,
+                _id: postId,
             },
-            { $push: { nowMember: [userInfo] } }
+            { $push: { nowMember: userInfo } }
         );
-        const newPostInfo = await Post.findOne({ postId });
-        // console.log('asdfasdfasdfasdf', pp);
-        res.status(200).send('성공', newPostInfo);
+        const newPostInfo = await Post.findOne({ _id: postId });
+        console.log('asdfasdfasdfasdf', newPostInfo);
+        res.status(200).send({ newPostInfo });
     } catch (error) {
         console.error('에러가 무엇이던가!!1', error);
         res.status(404).send('실패!');

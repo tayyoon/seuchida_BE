@@ -173,33 +173,31 @@ router.post('/postPush/:postId', authMiddleware, async (req, res) => {
         memberCategory: userInterest,
         memberDesc: userContent,
     };
-    console.log('유저인포', userInfo);
-    try {
-        const alreadymem = await Post.findOne({ _id: postId });
-        console.log('여기서 추려야하느니라', alreadymem.nowMember);
 
-        for (let i = 0; i < alreadymem.nowMember.length; i++) {
-            console.log('함 찍어보자', alreadymem.nowMember[i].memberId);
-            console.log('유저아이디', userId);
-            console.log('mememem ID', alreadymem.nowMember[i].memberId);
-            if (userId != alreadymem.nowMember[i].memberId) {
-                const NMember = await Post.updateOne(
-                    {
-                        _id: postId,
-                    },
-                    { $push: { nowMember: userInfo } }
-                );
-                const newPostInfo = await Post.findOne({ _id: postId });
-                console.log('asdfasdfasdfasdf', newPostInfo);
-                res.status(200).json({ newPostInfo });
-            } else {
-                console.error('에러가 무엇이던가!!1', error);
-                return res.status(401).json({
-                    errormessage: '참여에 실패하였습니다.',
-                });
-            }
+    const alreadymem = await Post.findOne({ _id: postId });
+    let a = 0;
+    let b = 0;
+
+    for (let i = 0; i < alreadymem.nowMember.length; i++) {
+        if (userId === alreadymem.nowMember[i].memberId) {
+            a = a + 1;
+        } else {
+            b = b + 1;
         }
-    } catch (error) {}
+    }
+    if (a >= 1) {
+        res.status(401).json({
+            errormessage: '참여에 실패하였습니다.',
+        });
+    } else if (b >= 1) {
+        const NMember = await Post.updateOne(
+            { _id: postId },
+            { $push: { nowMember: userInfo } }
+        );
+
+        const newPostInfo = await Post.findOne({ _id: postId });
+        res.status(200).json({ newPostInfo });
+    }
 });
 
 //게시글 작성

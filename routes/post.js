@@ -14,7 +14,7 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
 
     // 카테고리 등록한것중에서 최신순 6개 (카테고리 구분없이 전체로)
     try {
-        const totalList = await Post.find();
+        const totalList = await Post.find({ address });
         const likeThing = await User.find({ userId }, { userInterest: 1 });
 
         for (let i = 0; i < likeThing[0].userInterest.length; i++) {
@@ -175,19 +175,31 @@ router.post('/postPush/:postId', authMiddleware, async (req, res) => {
     };
     console.log('유저인포', userInfo);
     try {
-        const NMember = await Post.updateOne(
-            {
-                _id: postId,
-            },
-            { $push: { nowMember: userInfo } }
-        );
-        const newPostInfo = await Post.findOne({ _id: postId });
-        console.log('asdfasdfasdfasdf', newPostInfo);
-        res.status(200).send({ newPostInfo });
-    } catch (error) {
-        console.error('에러가 무엇이던가!!1', error);
-        res.status(404).send('실패!');
-    }
+        const alreadymem = await Post.findOne({ _id: postId });
+        console.log('여기서 추려야하느니라', alreadymem.nowMember);
+
+        for (let i = 0; i < alreadymem.nowMember.length; i++) {
+            console.log('함 찍어보자', alreadymem.nowMember[i].memberId);
+            console.log('유저아이디', userId);
+            console.log('mememem ID', alreadymem.nowMember[i].memberId);
+            if (userId != alreadymem.nowMember[i].memberId) {
+                const NMember = await Post.updateOne(
+                    {
+                        _id: postId,
+                    },
+                    { $push: { nowMember: userInfo } }
+                );
+                const newPostInfo = await Post.findOne({ _id: postId });
+                console.log('asdfasdfasdfasdf', newPostInfo);
+                res.status(200).json({ newPostInfo });
+            } else {
+                console.error('에러가 무엇이던가!!1', error);
+                return res.status(401).json({
+                    errormessage: '참여에 실패하였습니다.',
+                });
+            }
+        }
+    } catch (error) {}
 });
 
 //게시글 작성

@@ -256,7 +256,7 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
 
         res.send({ result: 'success', postList });
     } catch (error) {
-        console.log(error);
+        console.log('에러가 무엇인가', error);
 
         res.status(400).send({ msg: '게시글이 작성되지 않았습니다.' });
     }

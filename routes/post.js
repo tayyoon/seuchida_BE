@@ -273,7 +273,8 @@ router.delete('/postDelete/:postId', authMiddleware, async (req, res) => {
         await Review.delete({ postId });
 
         res.send(200).json({ result: 'success' });
-    } catch {
+    } catch (error) {
+        console.error(error);
         res.status(400).send({ msg: '게시글이 삭제되지 않았습니다.' });
     }
 });

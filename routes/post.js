@@ -270,7 +270,7 @@ router.delete('/postDelete/:postId', authMiddleware, async (req, res) => {
 
     try {
         await Post.deleteOne({ _id: postId });
-        await Review.delete({ postId });
+        await Review.deleteMany({ postId });
 
         res.send(200).json({ result: 'success' });
     } catch (error) {

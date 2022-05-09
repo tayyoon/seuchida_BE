@@ -185,7 +185,7 @@ router.post('/postPush/:postId', authMiddleware, async (req, res) => {
         // console.log('asdfasdfasdfasdf', pp);
         res.status(200).send('성공', newPostInfo);
     } catch (error) {
-        console.error(error);
+        console.error('에러가 무엇이던가!!1', error);
         res.status(404).send('실패!');
     }
 });
@@ -256,7 +256,7 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
 
         res.send({ result: 'success', postList });
     } catch (error) {
-        console.log('에러가 무엇인가', error);
+        console.log(error);
 
         res.status(400).send({ msg: '게시글이 작성되지 않았습니다.' });
     }

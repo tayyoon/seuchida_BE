@@ -5,6 +5,7 @@ const router = express.Router();
 const moment = require('moment');
 const authMiddleware = require('../middlewares/auth-middleware');
 const Review = require('../schemas/review');
+const Room = require('../schemas/room');
 
 // 전체(메인)게시글 조회
 router.get('/postList', authMiddleware, async (req, res, next) => {
@@ -253,6 +254,12 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
             memberAge,
             status,
         });
+        await Room.create({
+            postTitle,
+            maxMember,
+            owner: usersId,
+            createdAt
+        })
 
         res.send({ result: 'success', postList });
     } catch (error) {
@@ -271,7 +278,7 @@ router.delete('/postDelete/:postId', authMiddleware, async (req, res) => {
     try {
         await Post.deleteOne({ _id: postId });
         await Review.delete({ postId });
-
+        await Room.deleteOne({postId})
         res.send(200).json({ result: 'success' });
     } catch {
         res.status(400).send({ msg: '게시글이 삭제되지 않았습니다.' });

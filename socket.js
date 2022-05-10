@@ -103,7 +103,7 @@ module.exports = (server) => {
 
         socket.on('leave', function (data) {
             console.log(data.nickname + '님이 퇴장하셨습니다.');
-            socket.leave(data._id);
+            socket.leave(data.room);
 
             // Room.updateOne(
             //     { _id: data._id },
@@ -123,7 +123,7 @@ module.exports = (server) => {
             // );
 
             var msg = {
-                room: data._id,
+                room: data.room,
                 name: 'System',
                 msg: data.nickname + '님이 퇴장하셨습니다.',
                 createdAt: moment().format('YYYY-MM-DD HH:mm:ss'),
@@ -131,7 +131,7 @@ module.exports = (server) => {
 
             //DB 채팅 내용 저장
             var chat = new Chat();
-            chat.room = data._id;
+            chat.room = data.room;
             chat.name = 'System';
             chat.msg = data.nickname + '님이 퇴장하셨습니다.';
             chat.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
@@ -143,7 +143,7 @@ module.exports = (server) => {
                 }
             });
 
-            io.sockets.in(data._id).emit('broadcast', msg);
+            io.sockets.in(data.room).emit('broadcast', msg);
         });
     });
 };

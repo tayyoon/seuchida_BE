@@ -26,7 +26,7 @@ module.exports = (server) => {
                         console.log(err);
                     }
                     console.log(output);
-                    if (!output.n) {
+                    if (!output) {
                         return;
                     }
                     Room.findOne({ _id: data.room }, function (err, room) {
@@ -113,7 +113,7 @@ module.exports = (server) => {
             //             console.log(err);
             //         }
             //         console.log(output);
-            //         if (!output.n) {
+            //         if (!output) {
             //             return;
             //         }
             //         Room.findOne({ _id: data._id }, function (err, room) {

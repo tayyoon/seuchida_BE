@@ -15,7 +15,7 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
 
     // 카테고리 등록한것중에서 최신순 6개 (카테고리 구분없이 전체로)
     try {
-        const totalList = await Post.find();
+        const totalList = await Post.find({ address });
         const likeThing = await User.find({ userId }, { userInterest: 1 });
 
         for (let i = 0; i < likeThing[0].userInterest.length; i++) {
@@ -174,20 +174,30 @@ router.post('/postPush/:postId', authMiddleware, async (req, res) => {
         memberCategory: userInterest,
         memberDesc: userContent,
     };
-    console.log('유저인포', userInfo);
-    try {
+
+    const alreadymem = await Post.findOne({ _id: postId });
+    let a = 0;
+    let b = 0;
+
+    for (let i = 0; i < alreadymem.nowMember.length; i++) {
+        if (userId === alreadymem.nowMember[i].memberId) {
+            a = a + 1;
+        } else {
+            b = b + 1;
+        }
+    }
+    if (a >= 1) {
+        res.status(401).json({
+            errormessage: '참여에 실패하였습니다.',
+        });
+    } else if (b >= 1) {
         const NMember = await Post.updateOne(
-            {
-                postId,
-            },
-            { $push: { nowMember: [userInfo] } }
+            { _id: postId },
+            { $push: { nowMember: userInfo } }
         );
-        const newPostInfo = await Post.findOne({ postId });
-        // console.log('asdfasdfasdfasdf', pp);
-        res.status(200).send('성공', newPostInfo);
-    } catch (error) {
-        console.error(error);
-        res.status(404).send('실패!');
+
+        const newPostInfo = await Post.findOne({ _id: postId });
+        res.status(200).json({ newPostInfo });
     }
 });
 
@@ -277,10 +287,12 @@ router.delete('/postDelete/:postId', authMiddleware, async (req, res) => {
 
     try {
         await Post.deleteOne({ _id: postId });
-        await Review.delete({ postId });
         await Room.deleteOne({postId})
+        await Review.deleteMany({ postId });
+
         res.send(200).json({ result: 'success' });
-    } catch {
+    } catch (error) {
+        console.error(error);
         res.status(400).send({ msg: '게시글이 삭제되지 않았습니다.' });
     }
 });

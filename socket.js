@@ -18,22 +18,22 @@ module.exports = (server) => {
             console.log(data.nickname + '님이 입장하셨습니다.');
             socket.join(data.room);
             console.log('확인용')
-            // Room.updateOne(
-            //     { _id: data._id },
-            //     { $addToSet: { userList: data.userId } },
-            //     function (err, output) {
-            //         if (err) {
-            //             console.log(err);
-            //         }
-            //         console.log(output);
-            //         if (!output.n) {
-            //             return;
-            //         }
-            //         Room.findOne({ _id: data._id }, function (err, room) {
-            //             io.sockets.in(data._id).emit('userlist', room.userList); //자신포함 룸안의 전체유저한테 보내기
-            //         });
-            //     }
-            // );
+            Room.updateOne(
+                { _id: data.room },
+                { $addToSet: { userList: data.userId } },
+                function (err, output) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    console.log(output);
+                    if (!output.n) {
+                        return;
+                    }
+                    Room.findOne({ _id: data.room }, function (err, room) {
+                        io.sockets.in(data.room).emit('userlist', room.userList); //자신포함 룸안의 전체유저한테 보내기
+                    });
+                }
+            );
 
             Chat.find({ room: data.room }, function (err, chats) {
                 if (err) {

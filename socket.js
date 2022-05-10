@@ -14,6 +14,7 @@ module.exports = (server) => {
 
     io.on('connection', function (socket) {
         socket.on('join', function (data) {
+            console.log(data)
             console.log(data.nickname + '님이 입장하셨습니다.');
             socket.join(data._id);
 

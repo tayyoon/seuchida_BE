@@ -87,7 +87,7 @@ module.exports = (server) => {
             chat.msg = data.msg;
             chat.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
 
-            Chat.save(function (err) {
+            chat.save(function (err) {
                 if (err) {
                     console.error(err);
                     return;

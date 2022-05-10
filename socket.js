@@ -105,22 +105,22 @@ module.exports = (server) => {
             console.log(data.nickname + '님이 퇴장하셨습니다.');
             socket.leave(data.room);
 
-            // Room.updateOne(
-            //     { _id: data._id },
-            //     { $pullAll: { userList: [data.userId] } },
-            //     function (err, output) {
-            //         if (err) {
-            //             console.log(err);
-            //         }
-            //         console.log(output);
-            //         if (!output) {
-            //             return;
-            //         }
-            //         Room.findOne({ _id: data._id }, function (err, room) {
-            //             io.sockets.in(data._id).emit('userlist', room.userList);
-            //         });
-            //     }
-            // );
+            Room.updateOne(
+                { _id: data.room },
+                { $pullAll: { userList: [data.userId] } },
+                function (err, output) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    console.log(output);
+                    if (!output) {
+                        return;
+                    }
+                    Room.findOne({ _id: data.room }, function (err, room) {
+                        io.sockets.in(data.room).emit('userlist', room.userList);
+                    });
+                }
+            );
 
             var msg = {
                 room: data.room,

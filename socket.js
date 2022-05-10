@@ -13,7 +13,9 @@ module.exports = (server) => {
     console.log('소켓IO 서버 오픈');
 
     io.on('connection', function (socket) {
+        console.log(socket)
         socket.on('join', function (data) {
+            console.log(data)
             console.log(data.nickname + '님이 입장하셨습니다.');
             socket.join(data._id);
 

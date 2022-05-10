@@ -4,7 +4,12 @@ const Chat = require('./schemas/chating');
 const Room = require('./schemas/room');
 
 module.exports = (server) => {
-    const io = SocketIO(server);
+    const io = SocketIO(server, {
+        path: '/socket.io',
+        cors: { 
+            origins: '*:*'
+        }
+    });
     console.log('소켓IO 서버 오픈');
 
     io.on('connection', function (socket) {

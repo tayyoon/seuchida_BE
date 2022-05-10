@@ -16,7 +16,7 @@ module.exports = (server) => {
         socket.on('join', function (data) {
             console.log(data)
             console.log(data.nickname + '님이 입장하셨습니다.');
-            socket.join(data);
+            socket.join(data.room);
             console.log('확인용')
             // Room.updateOne(
             //     { _id: data._id },
@@ -87,7 +87,7 @@ module.exports = (server) => {
             chat.msg = data.msg;
             chat.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
 
-            chat.save(function (err) {
+            Chat.save(function (err) {
                 if (err) {
                     console.error(err);
                     return;

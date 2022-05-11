@@ -35,8 +35,8 @@ router.get('/myPage/myExercise', authMiddleware, async (req, res, next) => {
     const myEx = [];
     try { 
           const myExercise = await Post.find({ userId });
-        for (let i = 0; i < myExercise[0].length; i++) {
-            const eachExercise = myExercise[0][i];
+        for (let i = 0; i < myExercise.length; i++) {
+            const eachExercise = myExercise[i];
             myEx.push(eachExercise);
         }
 

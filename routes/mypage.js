@@ -27,7 +27,7 @@ router.get('/myPage', authMiddleware, async (req, res) => {
 });
 
 // 참여한 운동
-router.get('/myPage/myExercise', authMiddleware, async (req, res) => {
+router.get('/myPage/myExercise', authMiddleware, async (req, res, next) => {
     const { user } = res.locals;
     const { userId } = user;
     console.log(userId)

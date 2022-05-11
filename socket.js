@@ -2,7 +2,7 @@ const SocketIO = require('socket.io');
 const moment = require('moment');
 const Chat = require('./schemas/chatting');
 const Room = require('./schemas/room');
-const authMiddleware = require('./middlewares/auth-middleware');
+const socketauthMiddleware = require('./middlewares/socket-auth-middleware');
 
 module.exports = (server) => {
     const io = SocketIO(server, {
@@ -14,9 +14,9 @@ module.exports = (server) => {
     console.log('소켓IO 서버 오픈');
 
     io.on('connection', function (socket) {
-        socket.on('join', authMiddleware, function (data) {
+        socket.on('join', socketauthMiddleware, function (data) {
             console.log('여긴가2')
-            const { user } = res.locals;
+            const { user } = socket.user;
             console.log('여긴가3')
             const { userId, nickName } = user;
             console.log(data)

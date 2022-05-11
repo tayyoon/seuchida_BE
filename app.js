@@ -38,6 +38,7 @@ const postsRouter = require('./routes/post');
 const usersRouter = require('./routes/user');
 const reviewsRouter = require('./routes/review');
 const mypageRouter = require('./routes/mypage');
+const chatsRouter = require('./routes/chatting');
 // const evlaueRouter = require('./routes/evalue');
 
 const requestMiddleware = (req, res, next) => {
@@ -53,6 +54,7 @@ app.use('/api', express.urlencoded({ extended: false }), postsRouter);
 app.use('/oauth', express.urlencoded({ extended: false }), usersRouter);
 app.use('/api', express.urlencoded({ extended: false }), reviewsRouter);
 app.use('/api', express.urlencoded({ extended: false }), mypageRouter);
+app.use('/api', express.urlencoded({ extended: false }), chatsRouter);
 // app.use('/api', express.urlencoded({ extended: false }), evlaueRouter);
 app.get('/', (req, res) => {
     res.send('hi');

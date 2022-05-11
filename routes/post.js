@@ -6,6 +6,7 @@ const moment = require('moment');
 const authMiddleware = require('../middlewares/auth-middleware');
 const Review = require('../schemas/review');
 const Room = require('../schemas/room');
+const {v4} = require('uuid')
 
 // 전체(메인)게시글 조회
 router.get('/postList', authMiddleware, async (req, res, next) => {
@@ -196,12 +197,22 @@ router.post('/postPush/:postId', authMiddleware, async (req, res) => {
             { $push: { nowMember: userInfo } }
         );
 
+        const newPostInfo = await Post.findOne({ postId });
+        // console.log('asdfasdfasdfasdf', pp);
+        res.status(200).send('성공', newPostInfo);
+    } catch (error) {
+        console.error(error);
+        res.status(404).send('실패!');
+
         const newPostInfo = await Post.findOne({ _id: postId });
+
         const userPush = await User.updateMany(
             { userId },
             { $push: { pushExercise: postId } }
         );
+
         res.status(200).json({ newPostInfo });
+
     }
 });
 
@@ -237,7 +248,11 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
     require('moment-timezone');
     moment.tz.setDefault('Asia/Seoul');
     const createdAt = String(moment().format('YYYY-MM-DD HH:mm:ss'));
-
+    const uuid = () => {
+        const tokens = v4().split('-')
+        return tokens[2] + tokens[1] + tokens[0] + tokens[3] + tokens[4];
+    }
+    const roomId = uuid()
     try {
         const postList = await Post.create({
             userId: usersId,
@@ -267,8 +282,10 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
             createdAt,
             memberAge,
             status,
+            roomId
         });
         await Room.create({
+            roomId,
             postTitle,
             maxMember,
             owner: usersId,

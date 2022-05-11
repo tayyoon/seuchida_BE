@@ -21,22 +21,36 @@ router.get('/myPage', authMiddleware, async (req, res) => {
         const myPage = await User.find({ userId });
         res.status(200).json({ myPage });
     } catch (err) {
+        console.log('마이페이지 에이피아이',  err)
         res.status(400).json({ msg: 'mypage error' });
-        next(err);
     }
 });
 
 // 참여한 운동
-router.get('/myPage/myExercise', authMiddleware, async (req, res) => {
+router.get('/myPage/myExercise', authMiddleware, async (req, res, next) => {
     const { user } = res.locals;
     const { userId } = user;
+    console.log(userId)
 
-    try {
-        const myExcersie = await nowMember.find({ userId });
-        res.status(200).json({ myExcersie });
+    const myEx = [];
+    try { 
+        const myExercise = await Post.find({ userId });
+        myEx.push(myExercise)
+        
+        const pushEx = await User.find({userId},{pushExercise:1})
+        console.log('푸시 운동', pushEx)
+        
+        for (let i=0; i < pushEx.length; i++) { 
+
+            const aaa = await Post.findOne({_id:pushEx[i]})
+            myEx.push(aaa)
+        }
+
+        res.status(200).json({ myExercise });
     } catch (err) {
-        res.status(400).json({ msg: 'myExcersie error' });
-        next(err);
+        console.log('마이페이지 에이피아이2',  err)
+        res.status(400).json({ msg: 'myExercise error' });
+        next(err)
     }
 });
 
@@ -49,8 +63,8 @@ router.get('/myPage/post', authMiddleware, async (req, res) => {
         const myPost = await Post.find({ userId });
         res.status(200).json({ myPost });
     } catch (err) {
+        console.log('마이페이지 에이피아이3',  err)
         res.status(400).json({ msg: 'mypage post error' });
-        next(err);
     }
 });
 
@@ -63,8 +77,8 @@ router.get('/myPage/myReview', authMiddleware, async (req, res) => {
         const myPost = await Review.find({ userId });
         res.status(200).json({ myPost });
     } catch (err) {
+        console.log('마이페이지 에이피아이4',  err)
         res.status(400).json({ msg: 'myPost error' });
-        next(err);
     }
 });
 
@@ -88,9 +102,15 @@ router.post(
         } = req.body;
 
         //특수문자 제한 정규식
-        const regexr = /^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]*$/;
-        if (!regexr.test(nickName, userContent)) {
-            return res.status(403).send('특수문자를 사용할 수 없습니다');
+        const regexr = /^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣\s]*$/
+        const regexr1 = /^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]*$/;
+        if (!regexr1.test(nickName)) {
+            return res.status(403)
+            .send('특수문자를 사용할 수 없습니다');
+        }
+        if (!regexr.test(userContent)) {
+            return res.status(403)
+            .send('특수문자를 사용할 수 없습니다'); 
         }
         // 기존 프로필 이미지와 새로운 프로필 이미지가 잘 들어가는지 확인
         

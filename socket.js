@@ -1,6 +1,6 @@
 const SocketIO = require('socket.io');
 const moment = require('moment');
-const Chat = require('./schemas/chating');
+const Chat = require('./schemas/chatting');
 const Room = require('./schemas/room');
 
 module.exports = (server) => {
@@ -16,10 +16,10 @@ module.exports = (server) => {
         socket.on('join', function (data) {
             console.log(data)
             console.log(data.nickname + '님이 입장하셨습니다.');
-            socket.join(data.room);
+            socket.join(data.roomId);
             console.log('확인용')
             Room.updateOne(
-                { _id: data.room },
+                { roomId: data.roomId },
                 { $addToSet: { userList: data.userId } },
                 function (err, output) {
                     if (err) {
@@ -29,13 +29,13 @@ module.exports = (server) => {
                     if (!output) {
                         return;
                     }
-                    Room.findOne({ _id: data.room }, function (err, room) {
-                        io.sockets.in(data.room).emit('userlist', room.userList); //자신포함 룸안의 전체유저한테 보내기
+                    Room.findOne({ roomId: data.roomId }, function (err, room) {
+                        io.sockets.in(data.roomId).emit('userlist', room.userList); //자신포함 룸안의 전체유저한테 보내기
                     });
                 }
             );
 
-            Chat.find({ room: data.room }, function (err, chats) {
+            Chat.find({ room: data.roomId }, function (err, chats) {
                 if (err) {
                     console.log(err);
                     return;
@@ -45,9 +45,9 @@ module.exports = (server) => {
                     return;
                 }
 
-                io.sockets.in(data.room).emit('chatlist', chats);
+                io.sockets.in(data.roomId).emit('chatlist', chats);
                 var msg = {
-                    room: data.room,
+                    room: data.roomId,
                     name: 'System',
                     msg: data.nickname + '님이 입장하셨습니다.',
                     createdAt: moment().format('YYYY-MM-DD HH:mm:ss'),
@@ -55,7 +55,7 @@ module.exports = (server) => {
 
                 //DB 채팅 내용 저장
                 var chat = new Chat();
-                chat.room = data.room;
+                chat.room = data.roomId;
                 chat.name = 'System';
                 chat.msg = data.nickname + '님이 입장하셨습니다.';
                 chat.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
@@ -67,22 +67,22 @@ module.exports = (server) => {
                     }
                 });
 
-                io.sockets.in(data.room).emit('broadcast', msg);
+                io.sockets.in(data.roomId).emit('broadcast', msg);
             }).sort({ createdAt: 1 });
         });
 
         socket.on('chat', function (data) {
             var msg = {
-                room: data.room,
+                room: data.roomId,
                 name: data.name,
                 msg: data.msg,
                 createdAt: moment().format('YYYY-MM-DD HH:mm:ss'),
             };
-            io.sockets.in(data.room).emit('broadcast', msg);
+            io.sockets.in(data.roomId).emit('broadcast', msg);
 
             //DB 채팅 내용 저장
             var chat = new Chat();
-            chat.room = data.room;
+            chat.room = data.roomId;
             chat.name = data.name;
             chat.msg = data.msg;
             chat.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
@@ -94,7 +94,7 @@ module.exports = (server) => {
                 }
                 console.log(
                     'Message %s from %s: %s',
-                    data.room,
+                    data.roomId,
                     data.name,
                     data.msg
                 );
@@ -103,10 +103,10 @@ module.exports = (server) => {
 
         socket.on('leave', function (data) {
             console.log(data.nickname + '님이 퇴장하셨습니다.');
-            socket.leave(data.room);
+            socket.leave(data.roomId);
 
             Room.updateOne(
-                { _id: data.room },
+                { roomId: data.roomId },
                 { $pullAll: { userList: [data.userId] } },
                 function (err, output) {
                     if (err) {
@@ -116,14 +116,14 @@ module.exports = (server) => {
                     if (!output) {
                         return;
                     }
-                    Room.findOne({ _id: data.room }, function (err, room) {
-                        io.sockets.in(data.room).emit('userlist', room.userList);
+                    Room.findOne({ roomId: data.roomId }, function (err, room) {
+                        io.sockets.in(data.roomId).emit('userlist', room.userList);
                     });
                 }
             );
 
             var msg = {
-                room: data.room,
+                room: data.roomId,
                 name: 'System',
                 msg: data.nickname + '님이 퇴장하셨습니다.',
                 createdAt: moment().format('YYYY-MM-DD HH:mm:ss'),
@@ -131,7 +131,7 @@ module.exports = (server) => {
 
             //DB 채팅 내용 저장
             var chat = new Chat();
-            chat.room = data.room;
+            chat.room = data.roomId;
             chat.name = 'System';
             chat.msg = data.nickname + '님이 퇴장하셨습니다.';
             chat.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
@@ -143,7 +143,7 @@ module.exports = (server) => {
                 }
             });
 
-            io.sockets.in(data.room).emit('broadcast', msg);
+            io.sockets.in(data.roomId).emit('broadcast', msg);
         });
     });
 };

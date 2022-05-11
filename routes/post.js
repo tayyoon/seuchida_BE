@@ -197,8 +197,17 @@ router.post('/postPush/:postId', authMiddleware, async (req, res) => {
             { $push: { nowMember: userInfo } }
         );
 
+        const newPostInfo = await Post.findOne({ postId });
+        // console.log('asdfasdfasdfasdf', pp);
+        res.status(200).send('성공', newPostInfo);
+    } catch (error) {
+        console.error(error);
+        res.status(404).send('실패!');
+
         const newPostInfo = await Post.findOne({ _id: postId });
+        const userPush = await User.updateMany({userId},{$push:{pushExercise:postId}})
         res.status(200).json({ newPostInfo });
+
     }
 });
 

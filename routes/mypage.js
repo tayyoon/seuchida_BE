@@ -32,8 +32,20 @@ router.get('/myPage/myExercise', authMiddleware, async (req, res, next) => {
     const { userId } = user;
     console.log(userId)
 
-    try {
+    const myEx = [];
+    try { 
         const myExercise = await Post.find({ userId });
+        myEx.push(myExercise)
+        
+        const pushEx = await User.find({userId},{pushExercise:1})
+        console.log('푸시 운동', pushEx)
+        
+        for (let i=0; i < pushEx.length; i++) { 
+
+            const aaa = await Post.findOne({_id:pushEx[i]})
+            myEx.push(aaa)
+        }
+
         res.status(200).json({ myExercise });
     } catch (err) {
         console.log('마이페이지 에이피아이2',  err)

@@ -127,7 +127,7 @@ module.exports = (server) => {
             var msg = {
                 room: data.roomId,
                 name: 'System',
-                msg: data.nickName + '님이 퇴장하셨습니다.',
+                msg: nickName + '님이 퇴장하셨습니다.',
                 createdAt: moment().format('YYYY-MM-DD HH:mm:ss'),
             };
 
@@ -135,7 +135,7 @@ module.exports = (server) => {
             var chat = new Chat();
             chat.room = data.roomId;
             chat.name = 'System';
-            chat.msg = data.nickName + '님이 퇴장하셨습니다.';
+            chat.msg = nickName + '님이 퇴장하셨습니다.';
             chat.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
 
             chat.save(function (err) {

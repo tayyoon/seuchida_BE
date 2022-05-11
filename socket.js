@@ -12,9 +12,9 @@ module.exports = (server) => {
         }
     });
     console.log('소켓IO 서버 오픈');
-
+    io.use(socketauthMiddleware)
     io.on('connection', function (socket) {
-        socket.on('join', socketauthMiddleware, function (data) {
+        socket.on('join', function (data) {
             console.log('여긴가2')
             const { user } = socket.user;
             console.log('여긴가3')

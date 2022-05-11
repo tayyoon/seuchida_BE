@@ -14,7 +14,7 @@ module.exports = (server) => {
     console.log('소켓IO 서버 오픈');
     io.use(socketauthMiddleware)
     io.on('connection', async function (socket) {
-        const { userId, nickName } = socket.user;
+        const { userId, nickName, userImg } = socket.user;
         socket.on('join', function (data) {
             console.log(data)
             console.log(nickName + '님이 입장하셨습니다.');
@@ -78,6 +78,7 @@ module.exports = (server) => {
                 room: data.roomId,
                 name: nickName,
                 msg: data.msg,
+                userImg: userImg,
                 createdAt: moment().format('YYYY-MM-DD HH:mm:ss'),
             };
             io.sockets.in(data.roomId).emit('broadcast', msg);
@@ -87,6 +88,7 @@ module.exports = (server) => {
             chat.room = data.roomId;
             chat.name = nickName;
             chat.msg = data.msg;
+            chat.userImg = userImg;
             chat.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
 
             chat.save(function (err) {

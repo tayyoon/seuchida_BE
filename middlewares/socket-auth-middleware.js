@@ -16,6 +16,7 @@ module.exports = async (socket, next) => {
                 socket.user = {
                     userId: user.userId,
                     nickName: user.nickName,
+                    userImg: user.userImg
                 }
             })
         next()

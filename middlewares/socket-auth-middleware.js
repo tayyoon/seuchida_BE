@@ -14,10 +14,9 @@ module.exports = async (socket, next) => {
         await User.findOne({ userId })
             .exec()
             .then((user) => {
-                console.log(socket)
                 socket.user = {
-                    userId: user['dataValues'].userId,
-                    nickName: user['dataValues'].nickName,
+                    userId: user.userId,
+                    nickName: user.nickName,
                 }
             })
         next()

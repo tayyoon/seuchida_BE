@@ -21,7 +21,7 @@ router.get('/myPage', authMiddleware, async (req, res) => {
         const myPage = await User.find({ userId });
         res.status(200).json({ myPage });
     } catch (err) {
-        console.log('마이페이지 에이피아이',  error)
+        console.log('마이페이지 에이피아이',  err)
         res.status(400).json({ msg: 'mypage error' });
     }
 });
@@ -36,7 +36,7 @@ router.get('/myPage/myExercise', authMiddleware, async (req, res) => {
         const myExercise = await Post.find({ userId });
         res.status(200).json({ myExercise });
     } catch (err) {
-        console.log('마이페이지 에이피아이2',  error)
+        console.log('마이페이지 에이피아이2',  err)
         res.status(400).json({ msg: 'myExercise error' });
         console.error(err)
     }
@@ -51,7 +51,7 @@ router.get('/myPage/post', authMiddleware, async (req, res) => {
         const myPost = await Post.find({ userId });
         res.status(200).json({ myPost });
     } catch (err) {
-        console.log('마이페이지 에이피아이3',  error)
+        console.log('마이페이지 에이피아이3',  err)
         res.status(400).json({ msg: 'mypage post error' });
     }
 });
@@ -65,7 +65,7 @@ router.get('/myPage/myReview', authMiddleware, async (req, res) => {
         const myPost = await Review.find({ userId });
         res.status(200).json({ myPost });
     } catch (err) {
-        console.log('마이페이지 에이피아이4',  error)
+        console.log('마이페이지 에이피아이4',  err)
         res.status(400).json({ msg: 'myPost error' });
     }
 });

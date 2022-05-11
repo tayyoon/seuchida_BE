@@ -2,6 +2,7 @@ const SocketIO = require('socket.io');
 const moment = require('moment');
 const Chat = require('./schemas/chatting');
 const Room = require('./schemas/room');
+const authMiddleware = require('./middlewares/auth-middleware');
 
 module.exports = (server) => {
     const io = SocketIO(server, {
@@ -13,14 +14,16 @@ module.exports = (server) => {
     console.log('소켓IO 서버 오픈');
 
     io.on('connection', function (socket) {
-        socket.on('join', function (data) {
+        socket.on('join', authMiddleware, function (data) {
+            const { user } = res.locals;
+            const { userId, nickName } = user;
             console.log(data)
-            console.log(data.nickname + '님이 입장하셨습니다.');
+            console.log(nickName + '님이 입장하셨습니다.');
             socket.join(data.roomId);
             console.log('확인용')
             Room.updateOne(
                 { roomId: data.roomId },
-                { $addToSet: { userList: data.userId } },
+                { $addToSet: { userList: userId } },
                 function (err, output) {
                     if (err) {
                         console.log(err);
@@ -49,7 +52,7 @@ module.exports = (server) => {
                 var msg = {
                     room: data.roomId,
                     name: 'System',
-                    msg: data.nickname + '님이 입장하셨습니다.',
+                    msg: nickName + '님이 입장하셨습니다.',
                     createdAt: moment().format('YYYY-MM-DD HH:mm:ss'),
                 };
 
@@ -57,7 +60,7 @@ module.exports = (server) => {
                 var chat = new Chat();
                 chat.room = data.roomId;
                 chat.name = 'System';
-                chat.msg = data.nickname + '님이 입장하셨습니다.';
+                chat.msg = nickName + '님이 입장하셨습니다.';
                 chat.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
 
                 chat.save(function (err) {
@@ -102,7 +105,7 @@ module.exports = (server) => {
         });
 
         socket.on('leave', function (data) {
-            console.log(data.nickname + '님이 퇴장하셨습니다.');
+            console.log(data.nickName + '님이 퇴장하셨습니다.');
             socket.leave(data.roomId);
 
             Room.updateOne(
@@ -125,7 +128,7 @@ module.exports = (server) => {
             var msg = {
                 room: data.roomId,
                 name: 'System',
-                msg: data.nickname + '님이 퇴장하셨습니다.',
+                msg: data.nickName + '님이 퇴장하셨습니다.',
                 createdAt: moment().format('YYYY-MM-DD HH:mm:ss'),
             };
 
@@ -133,7 +136,7 @@ module.exports = (server) => {
             var chat = new Chat();
             chat.room = data.roomId;
             chat.name = 'System';
-            chat.msg = data.nickname + '님이 퇴장하셨습니다.';
+            chat.msg = data.nickName + '님이 퇴장하셨습니다.';
             chat.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
 
             chat.save(function (err) {

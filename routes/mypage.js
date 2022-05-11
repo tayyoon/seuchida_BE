@@ -41,9 +41,11 @@ router.get('/myPage/myExercise', authMiddleware, async (req, res, next) => {
         console.log('푸시 운동', pushEx)
         
         for (let i=0; i < pushEx.length; i++) { 
+
             const aaa = await Post.findOne({_id:pushEx[i]})
             myEx.push(aaa)
         }
+
         res.status(200).json({ myExercise });
     } catch (err) {
         console.log('마이페이지 에이피아이2',  err)

@@ -5,6 +5,8 @@ const router = express.Router();
 const moment = require('moment');
 const authMiddleware = require('../middlewares/auth-middleware');
 const Review = require('../schemas/review');
+const Room = require('../schemas/room');
+const {v4} = require('uuid')
 
 // 전체(메인)게시글 조회
 router.get('/postList', authMiddleware, async (req, res, next) => {
@@ -91,9 +93,9 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
             .slice(0, 3);
 
-        console.log('carpost', caPost);
-        console.log('필터링리뷰', filterRe);
-        console.log('nearPost', nearPost);
+        // console.log('carpost', caPost);
+        // console.log('필터링리뷰', filterRe);
+        // console.log('nearPost', nearPost);
         res.status(200).json({ caPost, nearPost, filterRe });
     } catch (err) {
         console.log(err);
@@ -185,7 +187,7 @@ router.post('/postPush/:postId', authMiddleware, async (req, res) => {
             b = b + 1;
         }
     }
-    if (a >= 1) {
+        if (a >= 1) {
         res.status(401).json({
             errormessage: '참여에 실패하였습니다.',
         });
@@ -202,7 +204,7 @@ router.post('/postPush/:postId', authMiddleware, async (req, res) => {
         );
         res.status(200).json({ newPostInfo });
     }
-});
+})
 
 //게시글 작성
 router.post('/postWrite', authMiddleware, async (req, res) => {
@@ -236,7 +238,11 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
     require('moment-timezone');
     moment.tz.setDefault('Asia/Seoul');
     const createdAt = String(moment().format('YYYY-MM-DD HH:mm:ss'));
-
+    const uuid = () => {
+        const tokens = v4().split('-')
+        return tokens[2] + tokens[1] + tokens[0] + tokens[3] + tokens[4];
+    }
+    const roomId = uuid()
     try {
         const postList = await Post.create({
             userId: usersId,
@@ -266,6 +272,14 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
             createdAt,
             memberAge,
             status,
+            roomId
+        });
+        await Room.create({
+            roomId,
+            postTitle,
+            maxMember,
+            owner: usersId,
+            createdAt,
         });
 
         res.send({ result: 'success', postList });
@@ -284,6 +298,7 @@ router.delete('/postDelete/:postId', authMiddleware, async (req, res) => {
 
     try {
         await Post.deleteOne({ _id: postId });
+        await Room.deleteOne({ postId });
         await Review.deleteMany({ postId });
 
         res.send(200).json({ result: 'success' });

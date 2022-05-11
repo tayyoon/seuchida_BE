@@ -5,6 +5,7 @@ const cors = require('cors');
 const passportConfig = require('./passport');
 const fs = require('fs');
 const https = require('https');
+const socket = require('./socket');
 
 const privateKey = fs.readFileSync(__dirname + '/private.key', 'utf8');
 const certificate = fs.readFileSync(__dirname + '/certificate.crt', 'utf8');
@@ -37,7 +38,8 @@ const postsRouter = require('./routes/post');
 const usersRouter = require('./routes/user');
 const reviewsRouter = require('./routes/review');
 const mypageRouter = require('./routes/mypage');
-const evlaueRouter = require('./routes/evalue');
+const chatsRouter = require('./routes/chatting');
+// const evlaueRouter = require('./routes/evalue');
 
 const requestMiddleware = (req, res, next) => {
     console.log('Request URL:', req.originalUrl, ' - ', new Date());
@@ -52,7 +54,8 @@ app.use('/api', express.urlencoded({ extended: false }), postsRouter);
 app.use('/oauth', express.urlencoded({ extended: false }), usersRouter);
 app.use('/api', express.urlencoded({ extended: false }), reviewsRouter);
 app.use('/api', express.urlencoded({ extended: false }), mypageRouter);
-app.use('/api', express.urlencoded({ extended: false }), evlaueRouter);
+app.use('/api', express.urlencoded({ extended: false }), chatsRouter);
+// app.use('/api', express.urlencoded({ extended: false }), evlaueRouter);
 app.get('/', (req, res) => {
     res.send('hi');
 });
@@ -65,11 +68,13 @@ app.get(
         );
     }
 );
+const server = https.createServer(credentials, app);
+socket(server)
 
 app.listen(httpPort, () => {
     console.log('local서버가 켜졌어요!');
 });
 
-https.createServer(credentials, app).listen(httpsPort, () => {
+server.listen(httpsPort, () => {
     console.log('https서버가 켜졌어요!');
 });

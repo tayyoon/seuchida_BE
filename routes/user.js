@@ -9,6 +9,8 @@ const jwt = require('jsonwebtoken');
 const authMiddleware = require('../middlewares/auth-middleware');
 const upload = require('../S3/s3');
 const Joi = require('joi');
+const AWS = require('aws-sdk');
+const s3 = new AWS.S3();
 
 router.get('/kakao', passport.authenticate('kakao'));
 
@@ -35,23 +37,25 @@ const kakaoCallback = (req, res, next) => {
 
 router.get('/callback/kakao', kakaoCallback);
 
-const postUsersSchema = Joi.object({
-    nickName: Joi.string()
-        .required()
-        .pattern(new RegExp('^[a-zA-Z0-9ㄱ-ㅎ가-힣]{2,12}$')),
-    userAge: Joi.string().required(),
-    userGender: Joi.string().required(),
-    userInterest: Joi.string().required(),
-    userContent: Joi.string().required().pattern(new RegExp('')),
-    address: Joi.string().required(),
-});
+// const postUsersSchema = Joi.object({
+//     nickName: Joi.string()
+//         .required()
+//         .min(2)
+//         .max(12)
+//         .pattern(new RegExp('^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]*$')),
+//     userAge: Joi.string().required(),
+//     userGender: Joi.string().required(),
+//     userInterest: Joi.string().required(),
+//     userContent: Joi.string().required(),
+//     address: Joi.string().required(),
+// });
 //회원가입
 router.post(
     '/signUp',
     upload.single('userImg'),
     authMiddleware,
     async (req, res) => {
-        try {
+        // try {
             const {
                 nickName,
                 userAge,
@@ -59,7 +63,12 @@ router.post(
                 userContent,
                 userInterest,
                 address,
-            } = await postUsersSchema.validateAsync(req.body);
+            } = req.body
+            // await postUsersSchema.validateAsync(req.body);
+            // const regexr = /^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣\s]*$/;
+            // if (!regexr.test(userContent)) {
+            //     return res.status(403).send('특수문자를 사용할 수 없습니다');
+            // }
             const { user } = res.locals;
             let userId = user.userId;
             let userImg = req.file?.location;
@@ -88,26 +97,26 @@ router.post(
                     },
                 }
             );
-            await Evalue.create({
-                userId,
-                userEvalue: [
-                    { good1: 0 },
-                    { good2: 0 },
-                    { good3: 0 },
-                    { bad1: 0 },
-                    { bad2: 0 },
-                    { bad3: 0 },
-                ],
-            });
+            // await Evalue.create({
+            //     userId,
+            //     userEvalue: [
+            //         { good1: 0 },
+            //         { good2: 0 },
+            //         { good3: 0 },
+            //         { bad1: 0 },
+            //         { bad2: 0 },
+            //         { bad3: 0 },
+            //     ],
+            // });
             res.status(201).send({
                 message: '가입완료',
             });
-        } catch (err) {
-            console.log(err);
-            res.status(400).send({
-                errorMessage: '요청한 데이터 형식이 올바르지 않습니다.',
-            });
-        }
+        // } catch (err) {
+        //     console.log(err);
+        //     res.status(400).send({
+        //         errorMessage: '요청한 데이터 형식이 올바르지 않습니다.',
+        //     });
+        // }
     }
 );
 

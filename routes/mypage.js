@@ -38,7 +38,7 @@ router.get('/myPage/myExercise', authMiddleware, async (req, res, next) => {
     } catch (err) {
         console.log('마이페이지 에이피아이2',  err)
         res.status(400).json({ msg: 'myExercise error' });
-        console.error(err)
+        next(err)
     }
 });
 

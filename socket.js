@@ -15,7 +15,9 @@ module.exports = (server) => {
 
     io.on('connection', function (socket) {
         socket.on('join', authMiddleware, function (data) {
+            console.log('여긴가2')
             const { user } = res.locals;
+            console.log('여긴가3')
             const { userId, nickName } = user;
             console.log(data)
             console.log(nickName + '님이 입장하셨습니다.');

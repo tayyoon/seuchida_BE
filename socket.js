@@ -76,7 +76,7 @@ module.exports = (server) => {
         socket.on('chat', function (data) {
             var msg = {
                 room: data.roomId,
-                name: data.name,
+                name: nickName,
                 msg: data.msg,
                 createdAt: moment().format('YYYY-MM-DD HH:mm:ss'),
             };
@@ -85,7 +85,7 @@ module.exports = (server) => {
             //DB 채팅 내용 저장
             var chat = new Chat();
             chat.room = data.roomId;
-            chat.name = data.name;
+            chat.name = nickName;
             chat.msg = data.msg;
             chat.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
 
@@ -97,19 +97,19 @@ module.exports = (server) => {
                 console.log(
                     'Message %s from %s: %s',
                     data.roomId,
-                    data.name,
+                    nickName,
                     data.msg
                 );
             });
         });
 
         socket.on('leave', function (data) {
-            console.log(data.nickName + '님이 퇴장하셨습니다.');
+            console.log(nickName + '님이 퇴장하셨습니다.');
             socket.leave(data.roomId);
 
             Room.updateOne(
                 { roomId: data.roomId },
-                { $pullAll: { userList: [data.userId] } },
+                { $pullAll: { userList: userId } },
                 function (err, output) {
                     if (err) {
                         console.log(err);

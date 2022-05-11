@@ -205,7 +205,12 @@ router.post('/postPush/:postId', authMiddleware, async (req, res) => {
         res.status(404).send('실패!');
 
         const newPostInfo = await Post.findOne({ _id: postId });
-        const userPush = await User.updateMany({userId},{$push:{pushExercise:postId}})
+
+        const userPush = await User.updateMany(
+            { userId },
+            { $push: { pushExercise: postId } }
+        );
+
         res.status(200).json({ newPostInfo });
 
     }
@@ -284,8 +289,8 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
             postTitle,
             maxMember,
             owner: usersId,
-            createdAt
-        })
+            createdAt,
+        });
 
         res.send({ result: 'success', postList });
     } catch (error) {
@@ -303,7 +308,7 @@ router.delete('/postDelete/:postId', authMiddleware, async (req, res) => {
 
     try {
         await Post.deleteOne({ _id: postId });
-        await Room.deleteOne({postId})
+        await Room.deleteOne({ postId });
         await Review.deleteMany({ postId });
 
         res.send(200).json({ result: 'success' });

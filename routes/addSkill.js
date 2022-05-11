@@ -9,8 +9,8 @@
 //     });
 // });
 
-const { S3 } = require('aws-sdk');
-const user = require('../schemas/user');
+// const { S3 } = require('aws-sdk');
+// const user = require('../schemas/user');
 
 // 게시글 검색 - 정규표현식 객체 생성자 const a = new RegExp('찾는 내용')
 // content 자리에는 검색어가 들어가야 함

@@ -105,6 +105,9 @@ const PostSchema = new mongoose.Schema({
         default: true,
         required: true,
     },
+    roomId: {
+        type: String
+    }
 });
 
 PostSchema.virtual('PostId').get(function () {

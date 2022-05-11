@@ -8,7 +8,7 @@ const authorizationSchema = Joi.string()
 module.exports = async (socket, next) => {
     try {
         const Authorization = await authorizationSchema.validateAsync(
-            socket.handshake.headers.authorization)
+            socket.handshake.auth.auth)
         console.log(socket.handshake)
         const {userId} = jwt.verify(Authorization, process.env.MY_KEY);
         await User.findOne({ userId })

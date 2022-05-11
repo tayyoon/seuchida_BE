@@ -13,12 +13,9 @@ module.exports = (server) => {
     });
     console.log('소켓IO 서버 오픈');
     io.use(socketauthMiddleware)
-    io.on('connection', function (socket) {
+    io.on('connection', async function (socket) {
+        const { userId, nickName } = socket.user;
         socket.on('join', function (data) {
-            console.log('여긴가2')
-            const { user } = socket.user;
-            console.log('여긴가3')
-            const { userId, nickName } = user;
             console.log(data)
             console.log(nickName + '님이 입장하셨습니다.');
             socket.join(data.roomId);

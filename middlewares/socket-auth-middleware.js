@@ -14,7 +14,10 @@ module.exports = async (socket, next) => {
             .exec()
             .then((user) => {
                 console.log(socket)
-                socket.user = user
+                socket.user = {
+                    userId: user.userId,
+                    nickName: user.nickName,
+                }
             })
         next()
     } catch (error) {

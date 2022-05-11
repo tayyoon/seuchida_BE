@@ -36,6 +36,7 @@ router.get('/myPage/myExercise', authMiddleware, async (req, res) => {
         const myExercise = await Post.find({ userId });
         res.status(200).json({ myExercise });
     } catch (err) {
+        console.error(err)
         res.status(400).json({ msg: 'myExercise error' });
         console.error(err)
     }

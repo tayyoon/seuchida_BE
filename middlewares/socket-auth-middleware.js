@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../schemas/user');
 const Joi = require("joi")
 
-const authorizationSchema = Joi.string().required()
+const authorizationSchema = Joi.string()
 
 module.exports = async (socket, next) => {
     try {

@@ -35,15 +35,15 @@ router.get('/myPage/myExercise', authMiddleware, async (req, res, next) => {
     const myEx = [];
     try { 
         const myExercise = await Post.find({ userId });
-        myEx.push(myExercise)
-        
-        const pushEx = await User.find({userId},{pushExercise:1})
-        console.log('푸시 운동', pushEx)
-        
-        for (let i=0; i < pushEx.length; i++) { 
+        myEx.push(myExercise);
 
-            const aaa = await Post.findOne({_id:pushEx[i]})
-            myEx.push(aaa)
+        const pushEx = await User.find({ userId }, { pushExercise: 1 });
+        console.log('푸시 운동', pushEx);
+
+        for (let i = 0; i < pushEx[0].pushExercise.length; i++) {
+            const aaa = await Post.findOne({ _id: pushEx[0].pushExercise[i] });
+            console.log('aaaaa가 어떻게 나오지', aaa);
+            myEx.push(aaa);
         }
 
         res.status(200).json({ myEx });

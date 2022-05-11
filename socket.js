@@ -16,13 +16,11 @@ module.exports = (server) => {
     io.on('connection', async function (socket) {
         const { userId, nickName, userImg } = socket.user;
         socket.on('join', function (data) {
-            console.log(data)
             console.log(nickName + '님이 입장하셨습니다.');
             socket.join(data.roomId);
-            console.log('확인용')
             Room.updateOne(
                 { roomId: data.roomId },
-                { $addToSet: { userList: userId } },
+                { $addToSet: { userList: [ userId ] } },
                 function (err, output) {
                     if (err) {
                         console.log(err);
@@ -111,7 +109,7 @@ module.exports = (server) => {
 
             Room.updateOne(
                 { roomId: data.roomId },
-                { $pullAll: { userList: userId } },
+                { $pullAll: { userList: [ userId ] } },
                 function (err, output) {
                     if (err) {
                         console.log(err);

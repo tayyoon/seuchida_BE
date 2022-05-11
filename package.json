@@ -17,7 +17,8 @@
     "passport": "^0.5.2",
     "passport-kakao": "^1.0.1",
     "prettier": "^2.6.2",
-    "socket.io": "^4.5.0"
+    "socket.io": "^4.5.0",
+    "uuid4": "^2.0.2"
   },
   "name": "seuchida_be",
   "version": "1.0.0",
@@ -36,6 +37,5 @@
     "url": "https://github.com/seuchida/seuchida_BE/issues"
   },
   "homepage": "https://github.com/seuchida/seuchida_BE#readme",
-  "devDependencies": {},
   "description": ""
 }

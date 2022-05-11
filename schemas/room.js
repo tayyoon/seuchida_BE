@@ -21,6 +21,9 @@ const roomSchema = new mongoose.Schema({
         default: moment().format("YYYY-MM-DD HH:mm:ss"),
     },
     userList: Array,
+    roomId: {
+        type: String
+    }
 });
 
 module.exports = mongoose.model('Room',roomSchema);

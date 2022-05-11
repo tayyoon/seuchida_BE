@@ -21,7 +21,7 @@ router.get('/myPage', authMiddleware, async (req, res) => {
         const myPage = await User.find({ userId });
         res.status(200).json({ myPage });
     } catch (err) {
-        console.log('마이페이지 에이피아이',  err)
+        console.log('마이페이지 에이피아이', err);
         res.status(400).json({ msg: 'mypage error' });
     }
 });
@@ -30,27 +30,29 @@ router.get('/myPage', authMiddleware, async (req, res) => {
 router.get('/myPage/myExercise', authMiddleware, async (req, res, next) => {
     const { user } = res.locals;
     const { userId } = user;
-    console.log(userId)
+    console.log(userId);
 
     const myEx = [];
-    try { 
+    try {
         const myExercise = await Post.find({ userId });
-        myEx.push(myExercise)
-        
-        const pushEx = await User.find({userId},{pushExercise:1})
-        console.log('푸시 운동', pushEx)
-        
-        for (let i=0; i < pushEx.length; i++) { 
+        for (let i = 0; i < myExercise.length; i++) {
+            const eachExercise = myExercise[i];
+            myEx.push(eachExercise);
+        }
 
-            const aaa = await Post.findOne({_id:pushEx[i]})
-            myEx.push(aaa)
+        const pushEx = await User.find({ userId }, { pushExercise: 1 });
+        console.log('푸시 운동', pushEx);
+
+        for (let i = 0; i < pushEx[0].pushExercise.length; i++) {
+            const aaa = await Post.findOne({ _id: pushEx[0].pushExercise[i] });
+            console.log('aaaaa가 어떻게 나오지', aaa);
+            myEx.push(aaa);
         }
 
         res.status(200).json({ myEx });
     } catch (err) {
-        console.log('마이페이지 에이피아이2',  err)
+        console.log('마이페이지 에이피아이2', err);
         res.status(400).json({ msg: 'myExercise error' });
-        next(err)
     }
 });
 
@@ -63,7 +65,7 @@ router.get('/myPage/post', authMiddleware, async (req, res) => {
         const myPost = await Post.find({ userId });
         res.status(200).json({ myPost });
     } catch (err) {
-        console.log('마이페이지 에이피아이3',  err)
+        console.log('마이페이지 에이피아이3', err);
         res.status(400).json({ msg: 'mypage post error' });
     }
 });
@@ -77,7 +79,7 @@ router.get('/myPage/myReview', authMiddleware, async (req, res) => {
         const myPost = await Review.find({ userId });
         res.status(200).json({ myPost });
     } catch (err) {
-        console.log('마이페이지 에이피아이4',  err)
+        console.log('마이페이지 에이피아이4', err);
         res.status(400).json({ msg: 'myPost error' });
     }
 });
@@ -91,7 +93,7 @@ router.post(
         const { user } = res.locals;
         const userId = user.userId;
         let newUserImg = req.file?.location;
-        
+
         const {
             nickName,
             userAge,
@@ -102,28 +104,26 @@ router.post(
         } = req.body;
 
         //특수문자 제한 정규식
-        const regexr = /^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣\s]*$/
+        const regexr = /^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣\s]*$/;
         const regexr1 = /^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]*$/;
         if (!regexr1.test(nickName)) {
-            return res.status(403)
-            .send('특수문자를 사용할 수 없습니다');
+            return res.status(403).send('특수문자를 사용할 수 없습니다');
         }
         if (!regexr.test(userContent)) {
-            return res.status(403)
-            .send('특수문자를 사용할 수 없습니다'); 
+            return res.status(403).send('특수문자를 사용할 수 없습니다');
         }
         // 기존 프로필 이미지와 새로운 프로필 이미지가 잘 들어가는지 확인
-        
+
         if (newUserImg) {
             try {
                 const myInfo = await User.find({ userId });
-    
+
                 // 현재 URL에 전달된 id값을 받아서 db찾음
                 const url = myInfo[0].userImg.split('/');
-    
+
                 // video에 저장된 fileUrl을 가져옴
                 const delFileName = url[url.length - 1];
-    
+
                 s3.deleteObject(
                     {
                         Bucket: process.env.BUCKET_NAME,
@@ -135,7 +135,7 @@ router.post(
                         }
                     }
                 );
-    
+
                 await User.updateOne(
                     { userId },
                     {
@@ -150,7 +150,7 @@ router.post(
                         },
                     }
                 );
-    
+
                 res.status(200).send({
                     message: '수정 완료',
                 });

@@ -196,6 +196,10 @@ router.post('/postPush/:postId', authMiddleware, async (req, res) => {
         );
 
         const newPostInfo = await Post.findOne({ _id: postId });
+        const userPush = await User.updateMany(
+            { userId },
+            { $push: { pushExercise: postId } }
+        );
         res.status(200).json({ newPostInfo });
     }
 });

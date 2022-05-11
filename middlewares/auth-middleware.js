@@ -28,7 +28,6 @@ module.exports = (req, res, next) => {
         User.findOne({ userId }) //mongodb면 findOne을 사용 exec() 추가해야함
             .exec()
             .then((user) => {
-                console.log('res',res)
                 res.locals.user = user;
                 next();
             });

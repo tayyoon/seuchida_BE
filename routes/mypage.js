@@ -34,8 +34,11 @@ router.get('/myPage/myExercise', authMiddleware, async (req, res, next) => {
 
     const myEx = [];
     try { 
-        const myExercise = await Post.find({ userId });
-        myEx.push(myExercise);
+          const myExercise = await Post.find({ userId });
+        for (let i = 0; i < myExercise[0].length; i++) {
+            const eachExercise = myExercise[0][i];
+            myEx.push(eachExercise);
+        }
 
         const pushEx = await User.find({ userId }, { pushExercise: 1 });
         console.log('푸시 운동', pushEx);

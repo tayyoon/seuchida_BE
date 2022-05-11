@@ -38,7 +38,6 @@ router.get('/myPage/myExercise', authMiddleware, async (req, res) => {
     } catch (err) {
         res.status(400).json({ msg: 'myExercise error' });
         console.error(err)
-        next(err);
     }
 });
 

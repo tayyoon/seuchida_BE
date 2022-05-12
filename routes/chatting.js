@@ -4,6 +4,7 @@ const router = express.Router();
 const authMiddleware = require('../middlewares/auth-middleware');
 const Room = require('../schemas/room');
 const Chat = require('../schemas/chatting');
+const User = require('../schemas/user');
 
 router.get('/chatting', authMiddleware, async (req, res) => {
     const { user } = res.locals;
@@ -13,6 +14,7 @@ router.get('/chatting', authMiddleware, async (req, res) => {
         const chattingRoom = await Room.find({ 
             $or: [ {userList: [userId]}, {owner: userId} ] 
         });
+
         let chattingRoomId = [];
         let lastChatting = [];
         for(let i=0; i<chattingRoom.length; i++) {
@@ -26,13 +28,28 @@ router.get('/chatting', authMiddleware, async (req, res) => {
             lastChatting.push(lastChatting1)
         }
         
-        
-        
         res.status(200).json({ chattingRoom, lastChatting });
     } catch (err) {
         console.log(err);
         res.status(400).send({
             errorMessage: '채팅방불러오기 오류'
+        });
+    }
+});
+
+router.get('/chatUserList/:roomId', authMiddleware, async (req, res) => {
+    const { roomId } = req.params;
+    try{
+        const roomInfo = await Room.findOne({ 
+            roomId,
+        });
+        const chatUserList = roomInfo.userList;
+
+        res.status(200).json({ chatUserList });
+    } catch(err) {
+        console.log(err);
+        res.status(400).send({
+            errorMessage: '채팅방 유저목록불러오기 오류'
         });
     }
 });

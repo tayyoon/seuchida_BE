@@ -14,12 +14,21 @@ router.get('/chatting', authMiddleware, async (req, res) => {
             $or: [ {userList: [userId]}, {owner: userId} ] 
         });
         const roomChatting = [];
+        const lastChatting = '';
         for(let i=0; i<chattingRoom.length; i++) {
             roomChatting.push(chattingRoom[i].roomId)
         }
-        const lastChatting = await Chat.find({
+        const lastChatting1 = await Chat.find({
             room: roomChatting
         })
+        for(i=lastChatting1.length-1; i>=0; i--) {
+            if(lastChatting1[i].name!=='system'){
+                lastChatting = lastChatting1[i];
+                break;
+            }
+        }
+        
+        
         
         res.status(200).json({ chattingRoom, lastChatting });
     } catch (err) {

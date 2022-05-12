@@ -12,6 +12,8 @@ module.exports = (server) => {
         }
     });
     console.log('소켓IO 서버 오픈');
+    require('moment-timezone');
+    moment.tz.setDefault('Asia/Seoul');
     io.use(socketauthMiddleware)
     io.on('connection', async function (socket) {
         const { userId, nickName, userImg } = socket.user;

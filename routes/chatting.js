@@ -1,7 +1,9 @@
 const express = require('express');
+const { json } = require('express/lib/response');
 const router = express.Router();
 const authMiddleware = require('../middlewares/auth-middleware');
 const Room = require('../schemas/room');
+const Chat = require('../schemas/chatting');
 
 router.get('/chatting', authMiddleware, async (req, res) => {
     const { user } = res.locals;
@@ -11,8 +13,15 @@ router.get('/chatting', authMiddleware, async (req, res) => {
         const chattingRoom = await Room.find({ 
             $or: [ {userList: [userId]}, {owner: userId} ] 
         });
-
-        res.status(200).json({ chattingRoom });
+        const roomChatting = [];
+        for(let i=0; i<chattingRoom.length; i++) {
+            roomChatting.push(chattingRoom[i].roomId)
+        }
+        const lastChatting = await Chat.find({
+            room: roomChatting
+        })
+        
+        res.status(200).json({ chattingRoom, lastChatting });
     } catch (err) {
         console.log(err);
         res.status(400).send({

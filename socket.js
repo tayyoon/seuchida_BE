@@ -25,7 +25,6 @@ module.exports = (server) => {
                     if (err) {
                         console.log(err);
                     }
-                    console.log(output);
                     if (!output) {
                         return;
                     }

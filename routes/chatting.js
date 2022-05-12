@@ -1,5 +1,4 @@
 const express = require('express');
-const { json } = require('express/lib/response');
 const router = express.Router();
 const authMiddleware = require('../middlewares/auth-middleware');
 const Room = require('../schemas/room');
@@ -43,7 +42,14 @@ router.get('/chatUserList/:roomId', authMiddleware, async (req, res) => {
         const roomInfo = await Room.findOne({ 
             roomId,
         });
-        const chatUserList = roomInfo.userList;
+        const chatUserList = [];
+        for(let i=0; i<roomInfo.userList.length; i++) {
+            chatUserList.push(
+                await User.findOne({ 
+                    userId: roomInfo.userList[i][0],
+                })
+            );
+        };
 
         res.status(200).json({ chatUserList });
     } catch(err) {

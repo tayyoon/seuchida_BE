@@ -20,7 +20,7 @@ router.get('/chatting', authMiddleware, async (req, res) => {
         }
         for(i=0; i<chattingRoomId.length; i++) {
             let lastChatting1 = '';
-            lastChatting1 = await Chat.find({
+            lastChatting1 = await Chat.findOne({
                 room: chattingRoomId[i]
             }).sort({ dateCreated: -1 })
             lastChatting.push(lastChatting1)

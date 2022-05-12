@@ -13,19 +13,17 @@ router.get('/chatting', authMiddleware, async (req, res) => {
         const chattingRoom = await Room.find({ 
             $or: [ {userList: [userId]}, {owner: userId} ] 
         });
-        const roomChatting = [];
-        const lastChatting = '';
+        let chattingRoomId = [];
+        let lastChatting = [];
         for(let i=0; i<chattingRoom.length; i++) {
-            roomChatting.push(chattingRoom[i].roomId)
+            chattingRoomId.push(chattingRoom[i].roomId)
         }
-        const lastChatting1 = await Chat.find({
-            room: roomChatting
-        })
-        for(i=lastChatting1.length-1; i>=0; i--) {
-            if(lastChatting1[i].name!=='system'){
-                lastChatting = lastChatting1[i];
-                break;
-            }
+        for(i=0; i<chattingRoomId.length; i++) {
+            let lastChatting1 = '';
+            lastChatting1 = await Chat.find({
+                room: chattingRoomId[i]
+            })
+            lastChatting.push(lastChatting1)
         }
         
         

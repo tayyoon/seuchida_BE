@@ -110,7 +110,7 @@ module.exports = (server) => {
 
             Room.updateOne(
                 { roomId: data.roomId },
-                { $pullAll: { userList: [ userId ] } },
+                { $pullAll: { userList: [ [ userId ] ] } },
                 function (err, output) {
                     if (err) {
                         console.log(err);

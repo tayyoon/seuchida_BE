@@ -25,7 +25,7 @@ router.post(
     authMiddleware,
     async (req, res) => {
         const postId = req.params.postId;
-        const post = await Post.findOne({ _id: postId });
+        const post = await Post.findOne({ postId });
         const { user } = res.locals;
         const { userId, nickName, userAge } = user;
         const { userImg } = user;

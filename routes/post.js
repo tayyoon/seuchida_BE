@@ -6,7 +6,7 @@ const moment = require('moment');
 const authMiddleware = require('../middlewares/auth-middleware');
 const Review = require('../schemas/review');
 const Room = require('../schemas/room');
-const {v4} = require('uuid')
+const { v4 } = require('uuid');
 
 // 전체(메인)게시글 조회
 router.get('/postList', authMiddleware, async (req, res, next) => {
@@ -187,7 +187,7 @@ router.post('/postPush/:postId', authMiddleware, async (req, res) => {
             b = b + 1;
         }
     }
-        if (a >= 1) {
+    if (a >= 1) {
         res.status(401).json({
             errormessage: '참여에 실패하였습니다.',
         });
@@ -202,9 +202,15 @@ router.post('/postPush/:postId', authMiddleware, async (req, res) => {
             { userId },
             { $push: { pushExercise: postId } }
         );
+        const thisPost = await Post.findOne({ _id: postId });
+        if (thisPost.maxMember === thisPost.nowMember.length) {
+            await Post.updateOne({ _id: postId }, { $set: { status: true } });
+        }
+        console.log('디스포스트 맥스맴버', thisPost.maxMember);
+        console.log('디스포스트 나우맴버 랭스', thisPost.nowMember.length);
         res.status(200).json({ newPostInfo });
     }
-})
+});
 
 //게시글 작성
 router.post('/postWrite', authMiddleware, async (req, res) => {
@@ -239,10 +245,10 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
     moment.tz.setDefault('Asia/Seoul');
     const createdAt = String(moment().format('YYYY-MM-DD HH:mm:ss'));
     const uuid = () => {
-        const tokens = v4().split('-')
+        const tokens = v4().split('-');
         return tokens[2] + tokens[1] + tokens[0] + tokens[3] + tokens[4];
-    }
-    const roomId = uuid()
+    };
+    const roomId = uuid();
     try {
         const postList = await Post.create({
             userId: usersId,
@@ -272,7 +278,7 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
             createdAt,
             memberAge,
             status,
-            roomId
+            roomId,
         });
         await Room.create({
             roomId,

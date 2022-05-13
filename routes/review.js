@@ -25,6 +25,7 @@ router.post(
     authMiddleware,
     async (req, res) => {
         const postId = req.params.postId;
+        console.log('리뷰 작성 PostId 파라미터', postId);
         const post = await Post.findOne({ postId });
         const { user } = res.locals;
         const { userId, nickName, userAge } = user;

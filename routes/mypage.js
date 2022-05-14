@@ -138,7 +138,43 @@ router.post(
                         }
                     }
                 );
-    
+
+                await Post.updateMany(
+                    { userId },
+                    {
+                         $set: {
+                             userImg: newUserImg
+                            }});
+                    
+                await Review.updateMany(
+                    { userId },
+                    {
+                        $set: {
+                            userImg: newUserImg
+                        }});
+                
+                // nowMember 부분 확인하기
+                await Now.updateMany(
+                    { memberId: userId },
+                    {
+                        $set: {
+                            memberImg: newUserImg
+                        }
+                    }
+                )
+                        
+                await Room.updateMany(
+                    { owner: userId },
+                    {
+                        $set: {
+                            ownerImg: newUserImg 
+                        }});
+                
+                // 채팅에 userId가 같이 저장 안 됨. 상렬님께 같이 저장되게 해달라고 말하기.
+                // await Chat.updateMany(
+                    // { userId },
+                    // { $set: { userImg: newUserImg } } // );
+
                 await User.updateOne(
                     { userId },
                     {
@@ -153,7 +189,20 @@ router.post(
                         },
                     }
                 );
+
+// 프로필 이미지 사진 수정 시 기존 이미지 손실 되는 부분 수정
+                await Post.updateOne(
+                    {userId},
+                    {
+                        $set: {
+                            userImg: newUserImg
+                        }
+                    }
+                )
     
+// 모든 전체 조회에서 update set 사용해서
+// userImg: newUserImg 넣어주기
+
                 res.status(200).send({
                     message: '수정 완료',
                 });

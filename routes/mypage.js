@@ -170,6 +170,26 @@ router.post(
                 //     { $set: { userImg: newUserImg } }
                 // );
 
+                await Post.updateMany(
+                    { userId },
+                    { $set: { userImg: newUserImg } }
+                );
+
+                // 나우맴버 이미지는 우짜지
+
+                await Review.updateMany(
+                    { userId },
+                    { $set: { userImg: newUserImg } }
+                );
+                await Room.updateMany(
+                    { owner: userId },
+                    { $set: { ownerImg: newUserImg } }
+                );
+                // await Chat.updateMany(
+                //     { userId },
+                //     { $set: { userImg: newUserImg } }
+                // );
+
                 res.status(200).send({
                     message: '수정 완료',
                 });

@@ -2,6 +2,8 @@ const express = require('express');
 const Post = require('../schemas/post');
 const User = require('../schemas/user');
 const Review = require('../schemas/review');
+const Room = require('../schemas/room');
+const Chat = require('../schemas/chatting');
 const router = express.Router();
 const upload = require('../S3/s3');
 const AWS = require('aws-sdk');
@@ -35,6 +37,7 @@ router.get('/myPage/myExercise', authMiddleware, async (req, res, next) => {
     const myEx = [];
     try {
         const myExercise = await Post.find({ userId });
+
         for (let i = 0; i < myExercise.length; i++) {
             const eachExercise = myExercise[i];
             myEx.push(eachExercise);
@@ -43,9 +46,10 @@ router.get('/myPage/myExercise', authMiddleware, async (req, res, next) => {
         const pushEx = await User.find({ userId }, { pushExercise: 1 });
         console.log('푸시 운동', pushEx);
 
+
         for (let i = 0; i < pushEx[0].pushExercise.length; i++) {
             const aaa = await Post.findOne({ _id: pushEx[0].pushExercise[i] });
-            console.log('aaaaa가 어떻게 나오지', aaa);
+
             myEx.push(aaa);
         }
 
@@ -53,6 +57,7 @@ router.get('/myPage/myExercise', authMiddleware, async (req, res, next) => {
     } catch (err) {
         console.log('마이페이지 에이피아이2', err);
         res.status(400).json({ msg: 'myExercise error' });
+
     }
 });
 
@@ -63,6 +68,7 @@ router.get('/myPage/post', authMiddleware, async (req, res) => {
 
     try {
         const myPost = await Post.find({ userId });
+
         res.status(200).json({ myPost });
     } catch (err) {
         console.log('마이페이지 에이피아이3', err);
@@ -150,6 +156,7 @@ router.post(
                         },
                     }
                 );
+
 
                 res.status(200).send({
                     message: '수정 완료',

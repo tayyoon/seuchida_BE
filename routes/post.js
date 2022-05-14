@@ -206,8 +206,8 @@ router.post('/postPush/:postId', authMiddleware, async (req, res) => {
         if (thisPost.maxMember === thisPost.nowMember.length) {
             await Post.updateOne({ _id: postId }, { $set: { status: false } });
         }
-        console.log('디스포스트 맥스맴버', thisPost.maxMember);
-        console.log('디스포스트 나우맴버 랭스', thisPost.nowMember.length);
+        // console.log('디스포스트 맥스맴버', thisPost.maxMember);
+        // console.log('디스포스트 나우맴버 랭스', thisPost.nowMember.length);
         res.status(200).json({ newPostInfo });
     }
 });

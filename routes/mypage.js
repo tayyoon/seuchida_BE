@@ -37,21 +37,27 @@ router.get('/myPage/myExercise', authMiddleware, async (req, res, next) => {
     const myEx = [];
     try {
         const myExercise = await Post.find({ userId });
-        myEx.push(myExercise);
+
+        for (let i = 0; i < myExercise.length; i++) {
+            const eachExercise = myExercise[i];
+            myEx.push(eachExercise);
+        }
 
         const pushEx = await User.find({ userId }, { pushExercise: 1 });
         console.log('푸시 운동', pushEx);
 
-        for (let i = 0; i < pushEx.length; i++) {
-            const aaa = await Post.findOne({ _id: pushEx[i] });
+
+        for (let i = 0; i < pushEx[0].pushExercise.length; i++) {
+            const aaa = await Post.findOne({ _id: pushEx[0].pushExercise[i] });
+
             myEx.push(aaa);
         }
 
-        res.status(200).json({ myExercise });
+        res.status(200).json({ myEx });
     } catch (err) {
         console.log('마이페이지 에이피아이2', err);
         res.status(400).json({ msg: 'myExercise error' });
-        next(err);
+
     }
 });
 
@@ -150,45 +156,7 @@ router.post(
                         },
                     }
                 );
-                await Post.updateMany(
-                    { userId },
-                    { $set: { userImg: newUserImg } }
-                );
 
-                // 나우맴버 이미지는 우짜지
-
-                await Review.updateMany(
-                    { userId },
-                    { $set: { userImg: newUserImg } }
-                );
-                await Room.updateMany(
-                    { owner: userId },
-                    { $set: { ownerImg: newUserImg } }
-                );
-                // await Chat.updateMany(
-                //     { userId },
-                //     { $set: { userImg: newUserImg } }
-                // );
-
-                await Post.updateMany(
-                    { userId },
-                    { $set: { userImg: newUserImg } }
-                );
-
-                // 나우맴버 이미지는 우짜지
-
-                await Review.updateMany(
-                    { userId },
-                    { $set: { userImg: newUserImg } }
-                );
-                await Room.updateMany(
-                    { owner: userId },
-                    { $set: { ownerImg: newUserImg } }
-                );
-                // await Chat.updateMany(
-                //     { userId },
-                //     { $set: { userImg: newUserImg } }
-                // );
 
                 res.status(200).send({
                     message: '수정 완료',

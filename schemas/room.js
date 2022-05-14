@@ -16,6 +16,9 @@ const roomSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    ownerImg:{
+        type: String,
+    },
     createdAt:{
         type: String,
         default: moment().format("YYYY-MM-DD HH:mm:ss"),

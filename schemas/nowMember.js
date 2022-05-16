@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 
 const NowSchema = new mongoose.Schema({
     postId: {
-        type: String
+        type: String,
     },
     memberId: { 
-        type: String
+        type: String,
     },
     memberImg: {
         type: String,

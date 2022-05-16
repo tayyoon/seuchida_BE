@@ -158,14 +158,14 @@ router.post(
                 
                 // nowMember 부분 확인하기
                 await NowMember.updateMany(
-                    { memberId: userId },
+                    { memberId: userId }, 
                     {
                         $set: {
                             memberImg: newUserImg
                         }
-                    }
-                )
-                        
+                    } 
+                ) 
+                  
                 await Room.updateMany(
                     { owner: userId },
                     {
@@ -191,17 +191,6 @@ router.post(
                         },
                     }
                 );
-
-// 프로필 이미지 사진 수정 시 기존 이미지 손실 되는 부분 수정
-                await Post.updateOne(
-                    {userId},
-                    {
-                        $set: {
-                            userImg: newUserImg
-                        }
-                    }
-                )
-    
                 res.status(200).send({
                     message: '수정 완료',
                 });

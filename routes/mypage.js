@@ -2,6 +2,9 @@ const express = require('express');
 const Post = require('../schemas/post');
 const User = require('../schemas/user');
 const Review = require('../schemas/review');
+const Chat = require('../schemas/chatting')
+const Room = require('../schemas/room')
+const NowMember = require('../schemas/nowMember')
 const router = express.Router();
 const upload = require('../S3/s3');
 const AWS = require('aws-sdk');
@@ -154,7 +157,7 @@ router.post(
                         }});
                 
                 // nowMember 부분 확인하기
-                await Now.updateMany(
+                await NowMember.updateMany(
                     { memberId: userId },
                     {
                         $set: {
@@ -170,10 +173,9 @@ router.post(
                             ownerImg: newUserImg 
                         }});
                 
-                // 채팅에 userId가 같이 저장 안 됨. 상렬님께 같이 저장되게 해달라고 말하기.
-                // await Chat.updateMany(
-                    // { userId },
-                    // { $set: { userImg: newUserImg } } // );
+                await Chat.updateMany(
+                    { userId },
+                    { $set: { userImg: newUserImg }});
 
                 await User.updateOne(
                     { userId },
@@ -200,9 +202,6 @@ router.post(
                     }
                 )
     
-// 모든 전체 조회에서 update set 사용해서
-// userImg: newUserImg 넣어주기
-
                 res.status(200).send({
                     message: '수정 완료',
                 });

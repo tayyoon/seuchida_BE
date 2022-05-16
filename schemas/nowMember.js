@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 
 const NowSchema = new mongoose.Schema({
+    postId: {
+        type: String
+    },
     memberId: { 
         type: String
     },

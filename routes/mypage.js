@@ -2,8 +2,9 @@ const express = require('express');
 const Post = require('../schemas/post');
 const User = require('../schemas/user');
 const Review = require('../schemas/review');
-const Room = require('../schemas/room');
-const Chat = require('../schemas/chatting');
+const Chat = require('../schemas/chatting')
+const Room = require('../schemas/room')
+const NowMember = require('../schemas/nowMember')
 const router = express.Router();
 const upload = require('../S3/s3');
 const AWS = require('aws-sdk');
@@ -142,6 +143,40 @@ router.post(
                     }
                 );
 
+                await Post.updateMany(
+                    { userId },
+                    {
+                         $set: {
+                             userImg: newUserImg
+                            }});
+                    
+                await Review.updateMany(
+                    { userId },
+                    {
+                        $set: {
+                            userImg: newUserImg
+                        }});
+                
+                await NowMember.updateMany(
+                    { memberId: userId }, 
+                    {
+                        $set: {
+                            memberImg: newUserImg
+                        }
+                    } 
+                ) 
+                  
+                await Room.updateMany(
+                    { owner: userId },
+                    {
+                        $set: {
+                            ownerImg: newUserImg 
+                        }});
+                
+                await Chat.updateMany(
+                    { userId },
+                    { $set: { userImg: newUserImg }});
+
                 await User.updateOne(
                     { userId },
                     {
@@ -156,8 +191,6 @@ router.post(
                         },
                     }
                 );
-
-
                 res.status(200).send({
                     message: '수정 완료',
                 });

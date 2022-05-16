@@ -41,37 +41,6 @@ const PostSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
-    nowMember: {
-        type: [
-            {
-                memberId: { type: String },
-                memberImg: {
-                    type: String,
-                },
-                memberNickname: {
-                    type: String,
-                    // required: true,
-                },
-                memberGen: {
-                    type: String,
-                    // required: true,
-                },
-                memberAgee: {
-                    type: Number,
-                    // required: true,
-                },
-                memberCategory: {
-                    type: [],
-                    // required: true,
-                },
-                memberDesc: {
-                    type: String,
-                    // required: true,
-                },
-            },
-        ],
-        required: true,
-    },
     memberGender: {
         type: String,
         required: true,

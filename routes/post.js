@@ -166,6 +166,7 @@ router.post('/postPush/:postId', authMiddleware, async (req, res) => {
         userInterest,
         userContent,
     } = user;
+    // 지워도 되는지 확인하기
     const userInfo = {
         memberId: userId,
         memberImg: userImg,
@@ -176,12 +177,13 @@ router.post('/postPush/:postId', authMiddleware, async (req, res) => {
         memberDesc: userContent,
     };
 
-    const alreadymem = await Post.findOne({ _id: postId });
+    // 참여 여부 판별
+    const alreadymem = await NowMember.find({ postId });
     let a = 0;
     let b = 0;
 
-    for (let i = 0; i < alreadymem.nowMember.length; i++) {
-        if (userId === alreadymem.nowMember[i].memberId) {
+    for (let i = 0; i < alreadymem[0].length; i++) {
+        if (userId === alreadymem[0][i].memberId) {
             a = a + 1;
         } else {
             b = b + 1;
@@ -192,23 +194,33 @@ router.post('/postPush/:postId', authMiddleware, async (req, res) => {
             errormessage: '참여에 실패하였습니다.',
         });
     } else if (b >= 1) {
-        const NMember = await Post.updateOne(
-            { _id: postId },
-            { $push: { nowMember: userInfo } }
-        );
+        const newMember = await NowMember.create({
+            postId,
+            memberId: userId,
+            memberImg: userImg,
+            memberNickname: nickName,
+            memberGen: userGender,
+            memberAgee: userAge,
+            memberCategory: userInterest,
+            memberDesc: userContent,
+        });
 
         const newPostInfo = await Post.findOne({ _id: postId });
+        const newNowMember = await NowMember.find({ postId });
         const userPush = await User.updateMany(
             { userId },
             { $push: { pushExercise: postId } }
         );
+
+        // 글의 참여상황 확인
         const thisPost = await Post.findOne({ _id: postId });
-        if (thisPost.maxMember === thisPost.nowMember.length) {
+        const thisPostNowMem = await NowMember.find({ postId });
+        if (thisPost.maxMember === thisPostNowMem[0].length) {
             await Post.updateOne({ _id: postId }, { $set: { status: false } });
         }
         // console.log('디스포스트 맥스맴버', thisPost.maxMember);
         // console.log('디스포스트 나우맴버 랭스', thisPost.nowMember.length);
-        res.status(200).json({ newPostInfo });
+        res.status(200).json({ newPostInfo, newNowMember });
     }
 });
 
@@ -289,7 +301,50 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
             createdAt,
         });
 
-        res.send({ result: 'success', postList });
+        const thisPost = await Post.find({}, { postTitle: 1 });
+        let i = 0;
+        if ((thisPost[i], postTitle != postTitle)) {
+            const thisPostId = await Post.find({ postTitle }, { _id: i });
+            // 배열인지 객체인지 확인
+            console.log('포스트아이디0', thisPostId);
+            await NowMember.create({
+                postId: thisPostId,
+                // 참여하는 유저 아이디 들어가게 수정
+                memberId: usersId,
+                memberImg: userImg,
+                memberNickname: nickName,
+                memberGen: userGender,
+                memberAgee: userAge,
+                memberCategory: userInterest,
+                memberDesc: userContent,
+            });
+        } else {
+            const thisPosts = await Post.find(
+                { postTitle },
+                { _id: 1, createAt: 1 }
+            );
+            console.log('포스트아이디1', thisPosts);
+
+            const thisPostId = thisPosts
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                .slice(0, 1);
+
+            const A = String(thisPostId[0]._id).split('"');
+            console.log('포스트아이디2', A);
+
+            await NowMember.create({
+                postId: A[0],
+                memberId: usersId,
+                memberImg: userImg,
+                memberNickname: nickName,
+                memberGen: userGender,
+                memberAgee: userAge,
+                memberCategory: userInterest,
+                memberDesc: userContent,
+            });
+        }
+
+        res.send({ result: 'success', postList, NowMember });
     } catch (error) {
         console.log(error);
 

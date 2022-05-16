@@ -75,11 +75,11 @@ const PostSchema = new mongoose.Schema({
         required: true,
     },
     roomId: {
-        type: String
-    }
+        type: String,
+    },
 });
 
-PostSchema.virtual('PostId').get(function () {
+PostSchema.virtual('postId').get(function () {
     return this._id.toHexString();
 });
 PostSchema.set('toJSON', {

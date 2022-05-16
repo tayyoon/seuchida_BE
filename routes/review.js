@@ -6,14 +6,26 @@ const moment = require('moment');
 const upload = require('../S3/s3');
 const authMiddleware = require('../middlewares/auth-middleware');
 
+// 리뷰 포스트 정보
+router.get('/reviewPost/:postId', authMiddleware, async (req, res) => {
+    try {
+        const { postId } = req.params;
+        const post = await Post.findOne({ _id: postId });
+        res.status(200).json({ result: 'success', post });
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({ msg: '리뷰작성전 포스트 가져가기 실패' });
+    }
+});
+
 // 리뷰 등록
 router.post(
     '/review/:postId',
     upload.single('image'),
     authMiddleware,
     async (req, res) => {
-        const { postId } = req.params;
-        const post = await Post.findOne({ postId });
+        const postId = req.params.postId;
+        const post = await Post.findOne({ _id: postId });
         const { user } = res.locals;
         const { userId, nickName, userAge } = user;
         const { userImg } = user;
@@ -26,7 +38,7 @@ router.post(
         const createdAt = String(moment().format('YYYY-MM-DD HH:mm:ss'));
         try {
             const reviewList = await Review.create({
-                postId,
+                postId: postId,
                 userId,
                 nickName,
                 userImg,
@@ -38,7 +50,7 @@ router.post(
                 spot,
                 postCategory,
             });
-            res.send({ result: 'success', reviewList });
+            res.status(200).json({ result: 'success', reviewList });
         } catch (error) {
             console.log(error);
             res.status(400).send({ msg: '리뷰가 작성되지 않았습니다.' });
@@ -72,10 +84,10 @@ router.get('/review', authMiddleware, async (req, res) => {
 });
 
 // 리뷰 조회
-router.get('/review/:postId', authMiddleware, async (req, res) => {
-    const { postId } = req.params;
+router.get('/review/:reviewId', authMiddleware, async (req, res) => {
+    const { reviewId } = req.params;
     try {
-        const reviews = await Review.find({ postId });
+        const reviews = await Review.find({ _id: reviewId });
         res.status(200).json({ reviews });
     } catch (error) {
         console.log(error);

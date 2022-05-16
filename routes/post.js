@@ -113,6 +113,7 @@ router.get('/nearPostList', authMiddleware, async (req, res) => {
         const nearPosts = await Post.find(
             { address },
             {
+                postId: 1,
                 postTitle: 1,
                 postDesc: 1,
                 datemate: 1,
@@ -131,7 +132,14 @@ router.get('/nearPostList', authMiddleware, async (req, res) => {
             }
         ).sort({ $natural: -1 });
 
-        res.status(200).json({ nearPosts });
+        const nearPostsMem = [];
+        for (let i = 0; i < nearPosts[0].length; i++) {
+            const mems = await NowMember.find({
+                postId: nearPosts[0][i].postId,
+            });
+        }
+
+        res.status(200).json({ post });
     } catch (err) {
         console.log(err);
         res.status(400).send('본인위치 근처 전체 포스트 오류');
@@ -142,12 +150,12 @@ router.get('/nearPostList', authMiddleware, async (req, res) => {
 router.get('/postDetail/:postId', authMiddleware, async (req, res) => {
     const { postId } = req.params;
     const post = await Post.findOne({ _id: postId });
-    const { nowMember } = post;
+    const nowMember = await NowMember.find({ postId });
 
     // 참여자들의 정보 같이 넘기기
     const membersId = [];
-    for (let i = 0; i < nowMember.length; i++) {
-        const user = nowMember[i].memberId;
+    for (let i = 0; i < nowMember[0].length; i++) {
+        const user = nowMember[0][i].memberId;
         membersId.push(user);
     }
 
@@ -214,9 +222,7 @@ router.post('/postPush/:postId', authMiddleware, async (req, res) => {
         );
 
         // 글의 참여상황 확인
-        const thisPost = await Post.findOne({ _id: postId });
-        const thisPostNowMem = await NowMember.find({ postId });
-        if (thisPost.maxMember === thisPostNowMem[0].length) {
+        if (newPostInfo.maxMember === newNowMember[0].length) {
             await Post.updateOne({ _id: postId }, { $set: { status: false } });
         }
         // console.log('디스포스트 맥스맴버', thisPost.maxMember);
@@ -302,53 +308,54 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
             createdAt,
         });
 
+        const thisPost = await Post.find({}, { postTitle: 1 });
+        for (let i = 0; i < thisPost[0].length; i++) {
+            if (thisPost[0][i].postTitle != postTitle) {
+                const thisPostId = await Post.find({ postTitle }, { _id: i });
+                // 배열인지 객체인지 확인
+                console.log('포스트아이디0', thisPostId);
 
-        const thisPost = await Post.find({}, {postTitle:1})
-        let i=0;
-        if(thisPost[i], postTitle != postTitle) {
-            const thisPostId = await Post.find({postTitle}, {_id: i})
-            // 배열인지 객체인지 확인
-            console.log("포스트아이디0", thisPostId)
+                const nowMems = await NowMember.create({
+                    postId: thisPostId,
+                    // 참여하는 유저 아이디 들어가게 수정
+                    memberId: usersId,
+                    memberImg: userImg,
+                    memberNickname: nickName,
+                    memberGen: userGender,
+                    memberAgee: userAge,
+                    memberCategory: userInterest,
+                    memberDesc: userContent,
+                });
+            } else {
+                const thisPosts = await Post.find(
+                    { postTitle },
+                    { _id: 1, createAt: 1 }
+                );
+                console.log('포스트아이디1', thisPosts);
 
-            await NowMember.create({
-                postId: thisPostId,
-                // 참여하는 유저 아이디 들어가게 수정
-                memberId: usersId,
-                memberImg: userImg,
-                memberNickname: nickName,
-                memberGen: userGender,
-                memberAgee: userAge,
-                memberCategory: userInterest,
-                memberDesc: userContent,
+                const thisPostId = thisPosts
+                    .sort(
+                        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+                    )
+                    .slice(0, 1);
 
-            })
-        } else {
-            const thisPosts = await Post.find({postTitle}, {_id:1, createAt:1})
-            console.log("포스트아이디1", thisPosts)
+                const A = String(thisPostId[0]._id).split('"');
+                console.log('포스트아이디2', A);
 
-            const thisPostId = thisPosts
-            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-            .slice(0,1);
-
-            const A = String(thisPostId[0]._id).split("\"")
-            console.log("포스트아이디2", A)
-
-
-            await NowMember.create({
-                postId: A[0],
-                memberId: usersId,
-                memberImg: userImg,
-                memberNickname: nickName,
-                memberGen: userGender,
-                memberAgee: userAge,
-                memberCategory: userInterest,
-                memberDesc: userContent,
-
-            });
-
+                const nowMems = await NowMember.create({
+                    postId: A[0],
+                    memberId: usersId,
+                    memberImg: userImg,
+                    memberNickname: nickName,
+                    memberGen: userGender,
+                    memberAgee: userAge,
+                    memberCategory: userInterest,
+                    memberDesc: userContent,
+                });
+            }
         }
 
-        res.send({ result: 'success', postList, NowMember });
+        res.send({ result: 'success', postList, nowMems });
     } catch (error) {
         console.log(error);
 
@@ -365,6 +372,7 @@ router.delete('/postDelete/:postId', authMiddleware, async (req, res) => {
     try {
         await Post.deleteOne({ _id: postId });
         await Room.deleteOne({ postId });
+        await NowMember.deleteMany({ postId });
         await Review.deleteMany({ postId });
 
         res.send(200).json({ result: 'success' });

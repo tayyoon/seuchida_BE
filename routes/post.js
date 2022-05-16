@@ -279,7 +279,6 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
             postTitle,
             maxMember,
             owner: usersId,
-            ownerImg: userImg,
             createdAt,
         });
 

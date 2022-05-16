@@ -12,6 +12,7 @@ const chatSchema = new mongoose.Schema({
     msg: String,
     gif: String,
     createdAt: String,
+    userId: String,
     userImg: {
         type: String
     }

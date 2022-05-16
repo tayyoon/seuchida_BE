@@ -1,6 +1,7 @@
 const express = require('express');
 const Post = require('../schemas/post');
 const User = require('../schemas/user');
+const NowMember = require('../schemas/nowMember');
 const router = express.Router();
 const moment = require('moment');
 const authMiddleware = require('../middlewares/auth-middleware');
@@ -289,7 +290,47 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
             createdAt,
         });
 
-        res.send({ result: 'success', postList });
+        const thisPost = await Post.find({}, {postTitle:1})
+        let i=0;
+        if(thisPost[i], postTitle != postTitle) {
+            const thisPostId = await Post.find({postTitle}, {_id: i})
+            // 배열인지 객체인지 확인
+            console.log("포스트아이디0", thisPostId)
+            await NowMember.create({
+                postId: thisPostId,
+                // 참여하는 유저 아이디 들어가게 수정
+                memberId: usersId,
+                memberImg: userImg,
+                memberNickname: nickName,
+                memberGen: userGender,
+                memberAgee: userAge,
+                memberCategory: userInterest,
+                memberDesc: userContent,
+            })
+        } else {
+            const thisPosts = await Post.find({postTitle}, {_id:1, createAt:1})
+            console.log("포스트아이디1", thisPosts)
+
+            const thisPostId = thisPosts
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .slice(0,1);
+
+            const A = String(thisPostId[0]._id).split("\"")
+            console.log("포스트아이디2", A)
+
+            await NowMember.create({
+                postId: A[0],
+                memberId: usersId,
+                memberImg: userImg,
+                memberNickname: nickName,
+                memberGen: userGender,
+                memberAgee: userAge,
+                memberCategory: userInterest,
+                memberDesc: userContent,
+            })
+        }
+
+        res.send({ result: 'success', postList, NowMember });
     } catch (error) {
         console.log(error);
 

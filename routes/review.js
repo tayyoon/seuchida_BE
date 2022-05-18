@@ -62,7 +62,7 @@ router.post(
                 checkUserId = otherId[i];
                 checkEvalue = evalues[i];
                 userInfo1 = await User.findOne({
-                    checkUserId
+                    userId: checkUserId
                 });
                 evalue = Number(userInfo1.userEvalue) + Number(checkEvalue) //후기 작성하나에 얼마나 올려줄지 정해야함
                 userInfo2 = await User.updateOne(

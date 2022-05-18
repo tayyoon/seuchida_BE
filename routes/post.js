@@ -223,13 +223,14 @@ router.get('/postDetail/:postId', authMiddleware, async (req, res) => {
     }
 
     // 참여자들의 정보 같이 넘기기
-    const membersId = [];
-    for (let i = 0; i < nownMember[0].length; i++) {
-        const user = nownMember[0][i].memberId;
-        membersId.push(user);
-    }
+    // const membersId = [];
+    // for (let i = 0; i < nownMember[0].length; i++) {
+    //     const user = nownMember[0][i].memberId;
+    //     membersId.push(user);
+    // }
+    const newPost = await Post.findOne({ _id: postId });
 
-    res.status(200).json({ post });
+    res.status(200).json({ newPost });
 });
 
 // 참여버튼

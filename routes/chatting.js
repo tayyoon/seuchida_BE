@@ -5,6 +5,7 @@ const authMiddleware = require('../middlewares/auth-middleware');
 const Room = require('../schemas/room');
 const Chat = require('../schemas/chatting');
 const User = require('../schemas/user');
+const Post = require('../schemas/post');
 
 router.get('/chatting', authMiddleware, async (req, res) => {
     const { user } = res.locals;
@@ -14,7 +15,6 @@ router.get('/chatting', authMiddleware, async (req, res) => {
         const chattingRoom = await Room.find({
             $or: [ {userList: [userId]}, {owner: userId} ] 
         });
-
         let chattingRoomId = [];
         let lastChatting = [];
         for(let i=0; i<chattingRoom.length; i++) {
@@ -43,16 +43,19 @@ router.get('/chatUserList/:roomId', authMiddleware, async (req, res) => {
         const roomInfo = await Room.findOne({ 
             roomId,
         });
-        const chatUserList = [];
+        const nowMember = [];
         for(let i=0; i<roomInfo.userList.length; i++) {
-            chatUserList.push(
+            nowMember.push(
                 await User.findOne({ 
                     userId: roomInfo.userList[i][0],
                 })
             );
         };
-
-        res.status(200).json({ chatUserList });
+        const checkPostId = await Post.findOne({
+            roomId
+        })
+        const postId =checkPostId._id;
+        res.status(200).json({ nowMember, postId });
     } catch(err) {
         console.log(err);
         res.status(400).send({

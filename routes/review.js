@@ -1,6 +1,8 @@
 const express = require('express');
 const Post = require('../schemas/post');
 const Review = require('../schemas/review');
+const User = require('../schemas/user');
+const Report = require('../schemas/report');
 const router = express.Router();
 const moment = require('moment');
 const upload = require('../S3/s3');
@@ -30,9 +32,15 @@ router.post(
         const { userId, nickName, userAge } = user;
         const { userImg } = user;
         const { spot, address, postCategory } = post;
-        const { content } = req.body;
-        const image = req.file?.location;
-
+        const { content, evalues, otherId } = req.body; 
+        const image = req.file?.location; 
+        console.log(otherId)
+        console.log(evalues)
+        let checkUserId = '';
+        let checkEvalue = 0;
+        let userInfo1 = '';
+        let userInfo2 = '';
+        let evalue = 0;
         require('moment-timezone');
         moment.tz.setDefault('Asia/Seoul');
         const createdAt = String(moment().format('YYYY-MM-DD HH:mm:ss'));
@@ -50,6 +58,22 @@ router.post(
                 spot,
                 postCategory,
             });
+            for(let i=0; i<otherId.length; i++) {
+                checkUserId = otherId[i];
+                checkEvalue = evalues[i];
+                userInfo1 = await User.findOne({
+                    checkUserId
+                });
+                evalue = Number(userInfo1.userEvalue) + Number(checkEvalue) //후기 작성하나에 얼마나 올려줄지 정해야함
+                userInfo2 = await User.updateOne(
+                    { userId: checkUserId },
+                    {
+                        $set: {
+                            userEvalue: evalue
+                        }
+                    }
+                );
+            };
             res.status(200).json({ result: 'success', reviewList });
         } catch (error) {
             console.log(error);
@@ -120,6 +144,27 @@ router.delete('/review/:reviewId', authMiddleware, async (req, res) => {
     } catch {
         res.status(400).send({ msg: '리뷰가 삭제되지 않았습니다.' });
     }
+});
+//신고하기
+router.post('/report', authMiddleware, async (req, res) => {
+    const { userId, content }= req.body;
+    await Report.create({
+        userId,
+        content
+    });
+    const userInfo = await User.findOne({
+        userId
+    });
+    let evalue = Number(userInfo.userEvalue)- Number(3)
+    await User.updateOne(
+        { userId },
+        {
+            $set: {
+                userEvalue: evalue
+            }
+        }
+    )
+    res.send({ result: 'success' });
 });
 
 module.exports = router;

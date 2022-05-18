@@ -284,6 +284,33 @@ router.post('/postPush/:postId', authMiddleware, async (req, res) => {
             memberDesc: userContent,
         });
 
+        //
+
+        const thisMember = await NowMember.find({ postId }, {});
+
+        const newMem = await NowMember.findOne(
+            {
+                postId: {
+                    $elemMatch: { memberId: userId },
+                },
+            },
+            { $set: { 'nowMember.$.memberImg': nownMember[i].memberImg } }
+        );
+
+        console.log('뉴멤', newMem);
+
+        pushMemInfo = await Post.updateOne(
+            { _id: postId },
+            { $push: { nowMember: newMem } }
+        );
+
+        //
+
+        const pushMember = await Post.updateOne(
+            { _id: postId },
+            { $push: { nowMember: newMemberInfo } }
+        );
+
         const newPostInfo = await Post.findOne({ _id: postId });
         const newNowMember = await NowMember.find({ postId });
         const userPush = await User.updateMany(

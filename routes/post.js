@@ -395,7 +395,7 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
             owner: usersId,
             createdAt,
         });
-
+        const nowMems ='';
         const thisPost = await Post.find({}, { postTitle: 1 });
         console.log('디이스으포스트으으으', thisPost);
         let nowMems;

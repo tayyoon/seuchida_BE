@@ -16,6 +16,7 @@ module.exports = (server) => {
     moment.tz.setDefault('Asia/Seoul'); //소켓으로 다시 서버로 socket.emit 보내면 서버에서 socket.leave해주면 될듯
     io.use(socketauthMiddleware)
     io.on('connection', async function (socket) {
+        console.log(socket.id)
         const { userId, nickName, userImg } = socket.user;
         socket.on('join', function (data) {
             console.log(nickName + '님이 입장하셨습니다.');
@@ -150,10 +151,17 @@ module.exports = (server) => {
             io.sockets.in(data.roomId).emit('broadcast', msg);
         });
         socket.on('banUser', (data) => { //어떻게 해야하지 io를 따로 빼서 해야하나?
+            socket.to(data.userId).emit('ban')
+        })
+        socket.on('banUserOut', (data) => { //어떻게 해야하지 io를 따로 빼서 해야하나?
+            console.log(nickName + '님이 퇴장하셨습니다.');
             socket.leave(data.roomId);
+
             Room.updateOne(
                 { roomId: data.roomId },
-                { $addToSet: { banUserList: [ data.banUserId ] } },
+                { $pullAll: { userList: [ [ userId ] ] },
+                  $addToSet: { banUserList: [ userId ] }
+                },
                 function (err, output) {
                     if (err) {
                         console.log(err);
@@ -162,8 +170,33 @@ module.exports = (server) => {
                     if (!output) {
                         return;
                     }
+                    Room.findOne({ roomId: data.roomId }, function (err, room) {
+                        io.sockets.in(data.roomId).emit('userlist', room.userList);
+                    });
                 }
             );
+            var msg = {
+                room: data.roomId,
+                name: 'System',
+                msg: nickName + '님이 강퇴당하셨습니다.',
+                createdAt: moment().format('YYYY-MM-DD HH:mm:ss'),
+            };
+
+            //DB 채팅 내용 저장
+            var chat = new Chat();
+            chat.room = data.roomId;
+            chat.name = 'System';
+            chat.msg = nickName + '님이 강퇴당하셨습니다.';
+            chat.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
+
+            chat.save(function (err) {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+            });
+
+            io.sockets.in(data.roomId).emit('broadcast', msg);
         })
         socket.on('disconnet', () => {
             clearInterval(socket.interval);

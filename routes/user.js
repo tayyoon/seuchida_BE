@@ -76,6 +76,8 @@ router.post(
             if (!userImg) {
                 userImg = process.env.DEFAULT_IMG;
             }
+            let userEvalue = Number(10);
+            let level = Number(2);
             //userId가 db에 존재하지않을 때 회원가입실패 메시지 송출
             const existUsers = await User.find({
                 $or: [{ userId }],
@@ -94,6 +96,8 @@ router.post(
                         userContent,
                         userInterest,
                         address,
+                        userEvalue,
+                        level
                     },
                 }
             );

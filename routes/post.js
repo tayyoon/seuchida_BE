@@ -399,7 +399,7 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
 
         const thisPost = await Post.find({}, { postTitle: 1 });
         console.log('디이스으포스트으으으', thisPost);
-        let nowMems;
+        let nowMem;
         let pushMemInfo;
         console.log('!!!!!!!!!!!!!!', thisPost.length);
         for (let i = 0; i < thisPost.length; i++) {
@@ -408,7 +408,7 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
                 // 배열인지 객체인지 확인
                 console.log('포스트아이디0', thisPostId);
 
-                nowMems = await NowMember.create({
+                nowMem = await NowMember.create({
                     postId: thisPostId,
                     // 참여하는 유저 아이디 들어가게 수정
                     memberId: usersId,
@@ -462,7 +462,7 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
                 const A = String(thisPostId[0]._id);
                 console.log('포스트아이디2', A);
 
-                nowMems = await NowMember.create({
+                nowMem = await NowMember.create({
                     postId: A,
                     memberId: usersId,
                     memberImg: userImg,
@@ -498,11 +498,11 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
                     { usersId },
                     { $push: { pushExercise: A } }
                 );
-                return res.status(200).json({ postList, nowMems });
+                return res.status(200).json({ postList });
             }
         }
 
-        res.send({ result: 'success', postList, nowMems });
+        // res.send({ result: 'success', postList, });
     } catch (error) {
         console.log(error);
 

@@ -2,6 +2,7 @@ const express = require('express');
 const Post = require('../schemas/post');
 const Review = require('../schemas/review');
 const User = require('../schemas/user');
+const Report = require('../schemas/report');
 const router = express.Router();
 const moment = require('moment');
 const upload = require('../S3/s3');

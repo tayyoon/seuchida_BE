@@ -44,10 +44,10 @@ router.get('/chatUserList/:roomId', authMiddleware, async (req, res) => {
             roomId,
         });
         const nowMember = [];
-        for(let i=0; i<roomInfo.userList.length; i++) {
+        for(let i=0; i<roomInfo.nowMember.length; i++) {
             nowMember.push(
                 await User.findOne({ 
-                    userId: roomInfo.userList[i][0],
+                    userId: roomInfo.nowMember[i][0],
                 })
             );
         };

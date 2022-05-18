@@ -31,8 +31,8 @@ router.post(
         const { userId, nickName, userAge } = user;
         const { userImg } = user;
         const { spot, address, postCategory } = post;
-        const { content, evalues, otherId } = req.body; //처음에 몇렙부터할지 후기 몇개에 몇렙할지 정확히 정해야함.
-        const image = req.file?.location; // 평가할 유저가 많으면 어떻게 데이터 주는지 물어봐야함
+        const { content, evalues, otherId } = req.body; 
+        const image = req.file?.location; 
         console.log(otherId)
         console.log(evalues)
         let checkUserId = '';
@@ -57,25 +57,22 @@ router.post(
                 spot,
                 postCategory,
             });
-            // if(otherId) {
-
-            // }
-            // for(let i=0; i<otherId.length; i++) {
-                // checkUserId = otherId;
-                // checkEvalue = evalues;
-                // userInfo1 = await User.findOne({
-                //     checkUserId
-                // });
-                // evalue = Number(userInfo1.userEvalue) + Number(checkEvalue) //후기 작성하나에 얼마나 올려줄지 정해야함
-                // userInfo2 = await User.updateOne(
-                //     { userId: checkUserId },
-                //     {
-                //         $set: {
-                //             userEvalue: evalue
-                //         }
-                //     }
-                // );
-            // };
+            for(let i=0; i<otherId.length; i++) {
+                checkUserId = otherId[i];
+                checkEvalue = evalues[i];
+                userInfo1 = await User.findOne({
+                    checkUserId
+                });
+                evalue = Number(userInfo1.userEvalue) + Number(checkEvalue) //후기 작성하나에 얼마나 올려줄지 정해야함
+                userInfo2 = await User.updateOne(
+                    { userId: checkUserId },
+                    {
+                        $set: {
+                            userEvalue: evalue
+                        }
+                    }
+                );
+            };
             res.status(200).json({ result: 'success', reviewList });
         } catch (error) {
             console.log(error);

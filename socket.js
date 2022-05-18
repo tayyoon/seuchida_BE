@@ -152,7 +152,8 @@ module.exports = (server) => {
             io.sockets.in(data.roomId).emit('broadcast', msg);
         });
         socket.on('banUser', (data) => { //방장이 서버로 이사람 강퇴해달라 신호보내는거
-            io.sockets.in(data.userId).emit('ban')// 서버에서 강퇴당할 사람에게 니가 서버로 다시 신호보내라고 하는거
+            let msg = true;
+            io.sockets.in(data.userId).emit('ban', msg)// 서버에서 강퇴당할 사람에게 니가 서버로 다시 신호보내라고 하는거
         })
         socket.on('banUserOut', (data) => { //강퇴당한 사람이 서버로 나 강퇴시켜달라 신호보내는거 
             console.log(nickName + '님이 강퇴당하셨습니다.');

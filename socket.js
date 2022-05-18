@@ -2,7 +2,7 @@ const SocketIO = require('socket.io');
 const moment = require('moment');
 const Chat = require('./schemas/chatting');
 const Room = require('./schemas/room');
-const Post = require('../schemas/post');
+const Post = require('./schemas/post');
 const socketauthMiddleware = require('./middlewares/socket-auth-middleware');
 
 module.exports = (server) => {
@@ -176,9 +176,10 @@ module.exports = (server) => {
                     });
                 }
             );
+            let memberId = userId;
             Post.updateOne(
                 { roomId: data.roomId },
-                { $pullAll: { nowMember: [ [ userId ] ] },
+                { $pullAll: { nowMember: [ [ memberId ] ] },
                   $addToSet: { banUserList: [ userId ] }
                 },
             );

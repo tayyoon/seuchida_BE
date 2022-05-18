@@ -89,10 +89,11 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
                 createdAt: 1,
             }
         ).sort({ $natural: -1 });
+        console.log('@@@@@@@@', nearByPosts);
 
         let changeNow;
-        for (let i = 0; i < nearByPosts.length; i++) {
-            const nearPost = nearByPosts[i];
+        for (let i = 0; i < nearByPosts[0].length; i++) {
+            const nearPost = nearByPosts[0][i];
             const nownMember = await NowMember.find({
                 postId: nearPost.postId,
             });

@@ -443,7 +443,7 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
                     { usersId },
                     { $push: { pushExercise: A } }
                 );
-                return res.status(200).json({ postList, nowMems });
+                return res.status(200).json({ postList });
             } else {
                 const thisPosts = await Post.find(
                     { postTitle },

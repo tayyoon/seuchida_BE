@@ -2,6 +2,7 @@ const SocketIO = require('socket.io');
 const moment = require('moment');
 const Chat = require('./schemas/chatting');
 const Room = require('./schemas/room');
+const Post = require('../schemas/post');
 const socketauthMiddleware = require('./middlewares/socket-auth-middleware');
 
 module.exports = (server) => {
@@ -118,7 +119,6 @@ module.exports = (server) => {
                     if (err) {
                         console.log(err);
                     }
-                    console.log(output);
                     if (!output) {
                         return;
                     }
@@ -168,7 +168,6 @@ module.exports = (server) => {
                     if (err) {
                         console.log(err);
                     }
-                    console.log(output);
                     if (!output) {
                         return;
                     }
@@ -176,6 +175,12 @@ module.exports = (server) => {
                         io.sockets.in(data.roomId).emit('userlist', room.nowMember);
                     });
                 }
+            );
+            Post.updateOne(
+                { roomId: data.roomId },
+                { $pullAll: { nowMember: [ [ userId ] ] },
+                  $addToSet: { banUserList: [ userId ] }
+                },
             );
             var msg = {
                 room: data.roomId,

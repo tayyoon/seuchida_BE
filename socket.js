@@ -18,6 +18,9 @@ module.exports = (server) => {
     io.on('connection', async function (socket) {
         console.log(socket.id)
         const { userId, nickName, userImg } = socket.user;
+        socket.join(userId)
+        let msg = 'g'
+        io.sockets.in(userId).emit('test', msg);
         socket.on('join', function (data) {
             console.log(nickName + '님이 입장하셨습니다.');
             socket.join(data.roomId);
@@ -82,7 +85,8 @@ module.exports = (server) => {
                 createdAt: moment().format('YYYY-MM-DD HH:mm:ss'),
             };
             io.sockets.in(data.roomId).emit('broadcast', msg);
-
+            
+            io.sockets.in(data.userId).emit('alert',msg)
             //DB 채팅 내용 저장
             var chat = new Chat();
             chat.room = data.roomId;
@@ -150,10 +154,10 @@ module.exports = (server) => {
 
             io.sockets.in(data.roomId).emit('broadcast', msg);
         });
-        socket.on('banUser', (data) => { //어떻게 해야하지 io를 따로 빼서 해야하나?
-            socket.to(data.userId).emit('ban')
+        socket.on('banUser', (data) => { //방장이 서버로 이사람 강퇴해달라 신호보내는거
+            io.sockets.in(data.userId).emit('ban')// 서버에서 강퇴당할 사람에게 니가 서버로 다시 신호보내라고 하는거
         })
-        socket.on('banUserOut', (data) => { //어떻게 해야하지 io를 따로 빼서 해야하나?
+        socket.on('banUserOut', (data) => { //강퇴당한 사람이 서버로 나 강퇴시켜달라 신호보내는거 
             console.log(nickName + '님이 퇴장하셨습니다.');
             socket.leave(data.roomId);
 

@@ -2,9 +2,9 @@ const express = require('express');
 const Post = require('../schemas/post');
 const User = require('../schemas/user');
 const Review = require('../schemas/review');
-const Chat = require('../schemas/chatting')
-const Room = require('../schemas/room')
-const NowMember = require('../schemas/nowMember')
+const Chat = require('../schemas/chatting');
+const Room = require('../schemas/room');
+const NowMember = require('../schemas/nowMember');
 const router = express.Router();
 const upload = require('../S3/s3');
 const AWS = require('aws-sdk');
@@ -47,7 +47,6 @@ router.get('/myPage/myExercise', authMiddleware, async (req, res, next) => {
         const pushEx = await User.find({ userId }, { pushExercise: 1 });
         console.log('푸시 운동', pushEx);
 
-
         for (let i = 0; i < pushEx[0].pushExercise.length; i++) {
             const aaa = await Post.findOne({ _id: pushEx[0].pushExercise[i] });
 
@@ -58,7 +57,6 @@ router.get('/myPage/myExercise', authMiddleware, async (req, res, next) => {
     } catch (err) {
         console.log('마이페이지 에이피아이2', err);
         res.status(400).json({ msg: 'myExercise error' });
-
     }
 });
 
@@ -146,38 +144,57 @@ router.post(
                 await Post.updateMany(
                     { userId },
                     {
-                         $set: {
-                             userImg: newUserImg
-                            }}
+                        $set: {
+                            userImg: newUserImg,
+                        },
+                    }
                 );
-                    
+
+                const allPost = await Post.find({}, { nowMember: 1 });
+
+                // for (let i = 0; i < allPost.length; i++) {
+                //     const noo = allPost[i].nowMember[0][i].memberImg;
+                //     console.log('^^^^^^^^^^^', allPost[i].nowMember[i]);
+
+                //     await Post.updateMany(
+                //         { : { memberId: userId } },
+                //         { $set: { memberImg: newUserImg } }
+                //     );
+                // }
+
                 await Review.updateMany(
                     { userId },
                     {
                         $set: {
-                            userImg: newUserImg
-                        }}
+                            userImg: newUserImg,
+                        },
+                    }
                 );
-                
+
                 await NowMember.updateMany(
-                    { memberId: userId }, 
+                    { memberId: userId },
                     {
                         $set: {
-                            memberImg: newUserImg
-                        }
-                    } 
-                ) 
-                  
+                            memberImg: newUserImg,
+                        },
+                    }
+                );
+
+                await Post.updateMany({ userId }, { userImg: newUserImg });
+
                 await Room.updateMany(
                     { owner: userId },
                     {
                         $set: {
-                            ownerImg: newUserImg 
-                        }});
-                
+                            ownerImg: newUserImg,
+                        },
+                    }
+                );
+
                 await Chat.updateMany(
                     { userId },
-                    { $set: { userImg: newUserImg }});
+                    { $set: { userImg: newUserImg } }
+                );
 
                 await User.updateOne(
                     { userId },

@@ -90,7 +90,45 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
             }
         ).sort({ $natural: -1 });
 
-        const nearPost = nearByPosts
+        let changeNow;
+        for (let i = 0; i < nearByPosts[0].length; i++) {
+            const nearPost = nearByPosts[0][i];
+            const nownMember = await NowMember.find({
+                postId: nearPost.postId,
+            });
+            if (nearPost.nowMember[i].memberImg != nownMember[i].memberImg) {
+                changeNow = await Post.findOneAndUpdate(
+                    {
+                        _id: nearPost.postId,
+                        nowMember: {
+                            $elemMatch: { _id: nownMember[i]._id },
+                        },
+                    },
+                    {
+                        $set: {
+                            'nowMember.$.memberImg': nownMember[i].memberImg,
+                        },
+                    }
+                );
+            }
+        }
+
+        const newNearByPosts = await Post.find(
+            { address },
+            {
+                postTitle: 1,
+                postDesc: 1,
+                datemate: 1,
+                status: 1,
+                maxMember: 1,
+                nowMember: 1,
+                longitude: 1,
+                latitude: 1,
+                createdAt: 1,
+            }
+        ).sort({ $natural: -1 });
+
+        const nearPost = newNearByPosts
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
             .slice(0, 3);
 
@@ -121,7 +159,6 @@ router.get('/nearPostList', authMiddleware, async (req, res) => {
                 userImg: 1,
                 status: 1,
                 maxMember: 1,
-                nowMember: 1,
                 longitude: 1,
                 latitude: 1,
                 createdAt: 1,
@@ -132,14 +169,14 @@ router.get('/nearPostList', authMiddleware, async (req, res) => {
             }
         ).sort({ $natural: -1 });
 
-        const nearPostsMem = [];
-        for (let i = 0; i < nearPosts[0].length; i++) {
-            const mems = await NowMember.find({
-                postId: nearPosts[0][i].postId,
-            });
-        }
+        // const nearPostsMem = [];
+        // for (let i = 0; i < nearPosts[0].length; i++) {
+        //     const mems = await NowMember.find({
+        //         postId: nearPosts[0][i].postId,
+        //     });
+        // }
 
-        res.status(200).json({ post });
+        res.status(200).json({ nearPosts });
     } catch (err) {
         console.log(err);
         res.status(400).send('본인위치 근처 전체 포스트 오류');
@@ -152,10 +189,43 @@ router.get('/postDetail/:postId', authMiddleware, async (req, res) => {
     const post = await Post.findOne({ _id: postId });
     const nowMember = await NowMember.find({ postId });
 
+    const postNowMember = post.nowMember;
+    const nownMember = await NowMember.find(
+        { postId },
+        {
+            memberId: 1,
+            memberImg: 1,
+            memberNickname: 1,
+            memberGen: 1,
+            memberAgee: 1,
+            memberCategory: 1,
+            memberDesc: 1,
+        }
+    );
+
+    console.log('나우멤바', nownMember);
+
+    for (let i = 0; i < nownMember.length; i++) {
+        const same = nownMember[0][i];
+        if (post.nowMember[i].memberImg != nownMember[i].memberImg) {
+            console.log('111', nownMember[i].memberImg);
+            console.log('2222', post.nowMember[i].memberImg);
+            await Post.findOneAndUpdate(
+                {
+                    _id: postId,
+                    nowMember: {
+                        $elemMatch: { _id: nownMember[i]._id },
+                    },
+                },
+                { $set: { 'nowMember.$.memberImg': nownMember[i].memberImg } }
+            );
+        }
+    }
+
     // 참여자들의 정보 같이 넘기기
     const membersId = [];
-    for (let i = 0; i < nowMember[0].length; i++) {
-        const user = nowMember[0][i].memberId;
+    for (let i = 0; i < nownMember[0].length; i++) {
+        const user = nownMember[0][i].memberId;
         membersId.push(user);
     }
 
@@ -213,6 +283,33 @@ router.post('/postPush/:postId', authMiddleware, async (req, res) => {
             memberCategory: userInterest,
             memberDesc: userContent,
         });
+
+        //
+
+        const thisMember = await NowMember.find({ postId }, {});
+
+        const newMem = await NowMember.findOne(
+            {
+                postId: {
+                    $elemMatch: { memberId: userId },
+                },
+            },
+            { $set: { 'nowMember.$.memberImg': nownMember[i].memberImg } }
+        );
+
+        console.log('뉴멤', newMem);
+
+        pushMemInfo = await Post.updateOne(
+            { _id: postId },
+            { $push: { nowMember: newMem } }
+        );
+
+        //
+
+        const pushMember = await Post.updateOne(
+            { _id: postId },
+            { $push: { nowMember: newMemberInfo } }
+        );
 
         const newPostInfo = await Post.findOne({ _id: postId });
         const newNowMember = await NowMember.find({ postId });
@@ -279,15 +376,7 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
             postCategory,
             datemate,
             maxMember,
-            nowMember: {
-                memberId: usersId,
-                memberImg: userImg,
-                memberNickname: nickName,
-                memberGen: userGender,
-                memberAgee: userAge,
-                memberCategory: userInterest,
-                memberDesc: userContent,
-            },
+            nowMember: [],
             memberGender,
             userGender,
             address,
@@ -308,9 +397,13 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
         });
         const nowMems ='';
         const thisPost = await Post.find({}, { postTitle: 1 });
-        for (let i = 0; i < thisPost[0].length; i++) {
-            if (thisPost[0][i].postTitle != postTitle) {
-                const thisPostId = await Post.find({ postTitle }, { _id: i });
+        console.log('디이스으포스트으으으', thisPost);
+        let nowMems;
+        let pushMemInfo;
+        console.log('!!!!!!!!!!!!!!', thisPost.length);
+        for (let i = 0; i < thisPost.length; i++) {
+            if (thisPost[i].postTitle != postTitle) {
+                const thisPostId = await Post.find({ postTitle }, { _id: 1 });
                 // 배열인지 객체인지 확인
                 console.log('포스트아이디0', thisPostId);
 
@@ -325,10 +418,36 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
                     memberCategory: userInterest,
                     memberDesc: userContent,
                 });
+
+                const newMem = await NowMember.findOne(
+                    {
+                        postId: A,
+                    },
+                    {
+                        memberId: 1,
+                        memberImg: 1,
+                        memberNickname: 1,
+                        memberGen: 1,
+                        memberAgee: 1,
+                        memberCategory: 1,
+                        memberDesc: 1,
+                    }
+                );
+
+                pushMemInfo = await Post.updateOne(
+                    { _id: A },
+                    { $push: { nowMember: newMem } }
+                );
+
+                const userPush = await User.updateMany(
+                    { usersId },
+                    { $push: { pushExercise: A } }
+                );
+                return res.status(200).json({ postList, nowMems });
             } else {
                 const thisPosts = await Post.find(
                     { postTitle },
-                    { _id: 1, createAt: 1 }
+                    { _id: 1, createdAt: 1 }
                 );
                 console.log('포스트아이디1', thisPosts);
 
@@ -337,12 +456,13 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
                         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
                     )
                     .slice(0, 1);
+                console.log(thisPostId);
 
-                const A = String(thisPostId[0]._id).split('"');
+                const A = String(thisPostId[0]._id);
                 console.log('포스트아이디2', A);
 
                 nowMems = await NowMember.create({
-                    postId: A[0],
+                    postId: A,
                     memberId: usersId,
                     memberImg: userImg,
                     memberNickname: nickName,
@@ -351,6 +471,33 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
                     memberCategory: userInterest,
                     memberDesc: userContent,
                 });
+                const newMem = await NowMember.findOne(
+                    {
+                        postId: A,
+                    },
+                    {
+                        memberId: 1,
+                        memberImg: 1,
+                        memberNickname: 1,
+                        memberGen: 1,
+                        memberAgee: 1,
+                        memberCategory: 1,
+                        memberDesc: 1,
+                    }
+                );
+
+                console.log('뉴멤', newMem);
+
+                pushMemInfo = await Post.updateOne(
+                    { _id: A },
+                    { $push: { nowMember: newMem } }
+                );
+
+                const userPush = await User.updateMany(
+                    { usersId },
+                    { $push: { pushExercise: A } }
+                );
+                return res.status(200).json({ postList, nowMems });
             }
         }
 

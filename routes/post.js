@@ -397,15 +397,11 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
         });
         const nowMems ='';
         const thisPost = await Post.find({}, { postTitle: 1 });
-        console.log('디이스으포스트으으으', thisPost);
         let nowMem;
         let pushMemInfo;
-        console.log('!!!!!!!!!!!!!!', thisPost.length);
         for (let i = 0; i < thisPost.length; i++) {
             if (thisPost[i].postTitle != postTitle) {
                 const thisPostId = await Post.find({ postTitle }, { _id: 1 });
-                // 배열인지 객체인지 확인
-                console.log('포스트아이디0', thisPostId);
 
                 nowMem = await NowMember.create({
                     postId: thisPostId,
@@ -449,17 +445,14 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
                     { postTitle },
                     { _id: 1, createdAt: 1 }
                 );
-                console.log('포스트아이디1', thisPosts);
 
                 const thisPostId = thisPosts
                     .sort(
                         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
                     )
                     .slice(0, 1);
-                console.log(thisPostId);
 
                 const A = String(thisPostId[0]._id);
-                console.log('포스트아이디2', A);
 
                 nowMem = await NowMember.create({
                     postId: A,
@@ -485,8 +478,6 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
                         memberDesc: 1,
                     }
                 );
-
-                console.log('뉴멤', newMem);
 
                 pushMemInfo = await Post.updateOne(
                     { _id: A },

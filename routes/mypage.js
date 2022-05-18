@@ -148,14 +148,16 @@ router.post(
                     {
                          $set: {
                              userImg: newUserImg
-                            }});
+                            }}
+                );
                     
                 await Review.updateMany(
                     { userId },
                     {
                         $set: {
                             userImg: newUserImg
-                        }});
+                        }}
+                );
                 
                 await NowMember.updateMany(
                     { memberId: userId }, 

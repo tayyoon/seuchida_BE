@@ -306,7 +306,7 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
             owner: usersId,
             createdAt,
         });
-
+        const nowMems ='';
         const thisPost = await Post.find({}, { postTitle: 1 });
         for (let i = 0; i < thisPost[0].length; i++) {
             if (thisPost[0][i].postTitle != postTitle) {
@@ -314,7 +314,7 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
                 // 배열인지 객체인지 확인
                 console.log('포스트아이디0', thisPostId);
 
-                const nowMems = await NowMember.create({
+                nowMems = await NowMember.create({
                     postId: thisPostId,
                     // 참여하는 유저 아이디 들어가게 수정
                     memberId: usersId,
@@ -341,7 +341,7 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
                 const A = String(thisPostId[0]._id).split('"');
                 console.log('포스트아이디2', A);
 
-                const nowMems = await NowMember.create({
+                nowMems = await NowMember.create({
                     postId: A[0],
                     memberId: usersId,
                     memberImg: userImg,

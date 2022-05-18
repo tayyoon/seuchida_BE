@@ -34,6 +34,12 @@ const UserSchema = new mongoose.Schema({
     },
     pushExercise: {
         type: Array,
+    },
+    level: {
+        type: String,
+    },
+    userEvalue: {
+        type: Number
     }
 });
 module.exports = mongoose.model('User', UserSchema);

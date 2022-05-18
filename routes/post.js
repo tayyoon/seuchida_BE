@@ -404,8 +404,12 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
             if (thisPost[i].postTitle != postTitle) {
                 const thisPostId = await Post.find({ postTitle }, { _id: 1 });
 
+                // 배열인지 객체인지 확인
+                console.log('포스트아이디0', thisPost[0]);
+
+
                 nowMem = await NowMember.create({
-                    postId: thisPostId,
+                    postId: thisPostId.id,
                     // 참여하는 유저 아이디 들어가게 수정
                     memberId: usersId,
                     memberImg: userImg,
@@ -418,7 +422,7 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
 
                 const newMem = await NowMember.findOne(
                     {
-                        postId: A,
+                        postId: thisPostId._id,
                     },
                     {
                         memberId: 1,
@@ -432,15 +436,14 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
                 );
 
                 pushMemInfo = await Post.updateOne(
-                    { _id: A },
+                    { _id: thisPostId._id },
                     { $push: { nowMember: newMem } }
                 );
 
                 const userPush = await User.updateMany(
                     { usersId },
-                    { $push: { pushExercise: A } }
+                    { $push: { pushExercise: thisPostId._id } }
                 );
-                return res.status(200).json({ postList });
             } else {
                 const thisPosts = await Post.find(
                     { postTitle },
@@ -489,11 +492,11 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
                     { usersId },
                     { $push: { pushExercise: A } }
                 );
-                return res.status(200).json({ postList });
+                // return res.status(200).json({ postList });
             }
         }
 
-        // res.send({ result: 'success', postList, });
+        res.status(200).json({ postList });
     } catch (error) {
         console.log(error);
 

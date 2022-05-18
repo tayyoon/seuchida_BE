@@ -23,7 +23,7 @@ const roomSchema = new mongoose.Schema({
         type: String,
         default: moment().format("YYYY-MM-DD HH:mm:ss"),
     },
-    userList: Array,
+    nowMember: Array,
     banUserList: Array,
     roomId: {
         type: String

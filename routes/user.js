@@ -129,7 +129,7 @@ router.delete('/signDown', authMiddleware, async (req, res) => {
     const { user } = res.locals;
     let userId = user.userId;
     const userInfo = await User.find({ userId: userId });
-    const deleteImgURL = userInfo.userImg;
+    const deleteImgURL = userInfo[0].userImg;
     //db에 있는 userImgURL에서 s3버킷의 파일명으로 분리
     const deleteImg = deleteImgURL.split('/')[3];
     await User.deleteOne({ userId: userId });

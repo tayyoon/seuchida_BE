@@ -179,7 +179,7 @@ module.exports = (server) => {
             let memberId = userId;
             Post.updateOne(
                 { roomId: data.roomId },
-                { $pull: { nowMember: { memberId }  },
+                { $pull: { nowMember: memberId },
                   $addToSet: { banUserList: [ userId ] }
                 },
             );

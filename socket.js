@@ -23,7 +23,7 @@ module.exports = (server) => {
             socket.join(data.roomId);
             Room.updateOne(
                 { roomId: data.roomId },
-                { $addToSet: { userList: [ userId ] } },
+                { $addToSet: { nowMember: [ userId ] } },
                 function (err, output) {
                     if (err) {
                         console.log(err);
@@ -32,7 +32,7 @@ module.exports = (server) => {
                         return;
                     }
                     Room.findOne({ roomId: data.roomId }, function (err, room) {
-                        io.sockets.in(data.roomId).emit('userlist', room.userList); //자신포함 룸안의 전체유저한테 보내기
+                        io.sockets.in(data.roomId).emit('userlist', room.nowMember); //자신포함 룸안의 전체유저한테 보내기
                     });
                 }
             );
@@ -112,7 +112,7 @@ module.exports = (server) => {
 
             Room.updateOne(
                 { roomId: data.roomId },
-                { $pullAll: { userList: [ [ userId ] ] } },
+                { $pullAll: { nowMember: [ [ userId ] ] } },
                 function (err, output) {
                     if (err) {
                         console.log(err);
@@ -122,7 +122,7 @@ module.exports = (server) => {
                         return;
                     }
                     Room.findOne({ roomId: data.roomId }, function (err, room) {
-                        io.sockets.in(data.roomId).emit('userlist', room.userList);
+                        io.sockets.in(data.roomId).emit('userlist', room.nowMember);
                     });
                 }
             );
@@ -159,7 +159,7 @@ module.exports = (server) => {
 
             Room.updateOne(
                 { roomId: data.roomId },
-                { $pullAll: { userList: [ [ userId ] ] },
+                { $pullAll: { nowMember: [ [ userId ] ] },
                   $addToSet: { banUserList: [ userId ] }
                 },
                 function (err, output) {
@@ -171,7 +171,7 @@ module.exports = (server) => {
                         return;
                     }
                     Room.findOne({ roomId: data.roomId }, function (err, room) {
-                        io.sockets.in(data.roomId).emit('userlist', room.userList);
+                        io.sockets.in(data.roomId).emit('userlist', room.nowMember);
                     });
                 }
             );

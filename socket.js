@@ -16,11 +16,8 @@ module.exports = (server) => {
     moment.tz.setDefault('Asia/Seoul'); //소켓으로 다시 서버로 socket.emit 보내면 서버에서 socket.leave해주면 될듯
     io.use(socketauthMiddleware)
     io.on('connection', async function (socket) {
-        console.log(socket.id)
         const { userId, nickName, userImg } = socket.user;
         socket.join(userId)
-        let msg = 'g'
-        io.sockets.in(userId).emit('test', msg);
         socket.on('join', function (data) {
             console.log(nickName + '님이 입장하셨습니다.');
             socket.join(data.roomId);
@@ -158,7 +155,7 @@ module.exports = (server) => {
             io.sockets.in(data.userId).emit('ban')// 서버에서 강퇴당할 사람에게 니가 서버로 다시 신호보내라고 하는거
         })
         socket.on('banUserOut', (data) => { //강퇴당한 사람이 서버로 나 강퇴시켜달라 신호보내는거 
-            console.log(nickName + '님이 퇴장하셨습니다.');
+            console.log(nickName + '님이 강퇴당하셨습니다.');
             socket.leave(data.roomId);
 
             Room.updateOne(

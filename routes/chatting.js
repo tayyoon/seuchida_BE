@@ -54,7 +54,6 @@ router.get('/chatUserList/:roomId', authMiddleware, async (req, res) => {
         const checkPostId = await Post.findOne({
             roomId
         })
-        console.log('checkPostId',checkPostId)
         const postId =checkPostId._id;
         res.status(200).json({ nowMember, postId });
     } catch(err) {

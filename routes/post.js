@@ -26,31 +26,20 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
                 if (
                     likeThing[0].userInterest[i] === totalList[j].postCategory
                 ) {
-                    const likeThingsPost = await Post.findOne(
+                    var likeThingsPost = await Post.findOne(
                         {
                             _id: totalList[j]._id,
-                        },
-                        {
-                            userId: 1,
-                            longitude: 1,
-                            latitude: 1,
-                            postTitle: 1,
-                            postDesc: 1,
-                            postCategory: 1,
-                            createdAt: 1,
-                            status: 1,
                         }
                     );
                     const userInfo = await User.findOne({
                         userId: likeThingsPost.userId
                     })
-                    const userImg = {
-                        userImg: userInfo.userImg
-                    };
-                    const test = Object.assign(likeThingsPost, userImg)
-                    console.log('likeThingsPost', likeThingsPost)
-                    console.log('test', test)
-                    categoryPost.push(test);
+                    likeThingsPost['nickName'] = `${userInfo.nickName}`;
+                    likeThingsPost['userAge'] = `${userInfo.userAge}`;
+                    likeThingsPost['userGender'] = `${userInfo.userGender}`;
+                    likeThingsPost['userImg'] = `${userInfo.userImg}`;
+                    
+                    categoryPost.push(likeThingsPost);
                 }
             }
         }
@@ -60,8 +49,8 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
             .slice(0, 6);
 
         // 작성된 전체 리뷰 최신순으로 넘기기
-        const filterReview = [];
-        const allReviews = await Review.find(
+        var filterReview = [];
+        var allReviews = await Review.find(
             {},
             {
                 userImg: 1,
@@ -83,7 +72,7 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
             .slice(0, 8);
 
-        const newNearByPosts = await Post.find(
+        var newNearByPosts = await Post.find(
             { address },
             {
                 postTitle: 1,
@@ -98,6 +87,34 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
             }
         ).sort({ $natural: -1 });
 
+        var userInfo = '';
+        var nowInfo = '';
+        var nowMember = '';
+        for(let i=0; i<newNearByPosts.length; i++) {
+            userInfo = await User.findOne({
+                userId: newNearByPosts[i].userId
+            })
+            for(let j=0; j<newNearByPosts[i].nowMember.length; j++) {
+                nowMember = await User.findOne({
+                    userId: newNearByPosts[i].nowMember[j]
+                })
+                nowInfo = {
+                    memberId: nowMember.userId,
+                    memberImg: nowMember.userImg,
+                    memberNickname: nowMember.nickName,
+                    memberAgee: nowMember.userAge,
+                    memberGen: nowMember.userGender,
+                    memberDesc: nowMember.userContent
+                }
+                newNearByPosts[i]['nowMember'].push(nowInfo) 
+            }
+            
+            newNearByPosts[i]['nickName'] = `${userInfo.nickName}`;
+            newNearByPosts[i]['userAge'] = `${userInfo.userAge}`;;
+            newNearByPosts[i]['userGender'] = `${userInfo.userGender}`;
+            newNearByPosts[i]['userImg'] = `${userInfo.userImg}`;
+            
+        }
         const nearPost = newNearByPosts
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
             .slice(0, 3);

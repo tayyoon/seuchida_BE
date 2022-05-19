@@ -75,7 +75,10 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
         var newNearByPosts = await Post.find(
             { address },
         ).sort({ $natural: -1 });
-
+        let newNearByPostsLength = [];
+        for(let i=0; i<newNearByPosts.length; i++) {
+            newNearByPostsLength.push(newNearByPosts[i].nowMember.length)
+        }
         var userInfo = '';
         var nowInfo = '';
         var nowMember = '';
@@ -86,7 +89,7 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
                 userId: newNearByPosts[i].userId
             })
             console.log('newNearByPosts[i].nowMember.length',newNearByPosts[i].nowMember.length)
-            for(let j=0; j<newNearByPosts[i].nowMember.length; j++) {
+            for(let j=0; j<newNearByPostsLength[i]; j++) {
                 console.log('newNearByPosts[i].nowMember[j]',newNearByPosts[i].nowMember[j])
                 nowMember = await User.findOne({
                     userId: newNearByPosts[i].nowMember[j]

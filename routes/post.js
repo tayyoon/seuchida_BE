@@ -89,12 +89,12 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
         var userInfo = '';
         var nowInfo = '';
         var nowMember = '';
-        var nowInfoPush = [];
         for(let i=0; i<nowmemberId2.length; i++) {
             userInfo = await User.findOne({
                 userId: newNearByPosts[i].userId
             })
-            for(let j=0; j<newNearByPosts[i].nowMember.length; j++) {
+            newNearByPosts[i]['nowMember'] = [];
+            for(let j=0; j<nowmemberId2[i].length; j++) {
                 nowMember = await User.findOne({
                     userId: nowmemberId2[i][j]
                 })
@@ -106,11 +106,8 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
                     memberGen: nowMember.userGender,
                     memberDesc: nowMember.userContent
                 }
-                nowInfoPush.push(nowInfo)
+                newNearByPosts[i]['nowMember'].push(nowInfo);
             }
-            console.log(nowInfoPush)
-            newNearByPosts[i]['nowMember'] = [];
-            newNearByPosts[i]['nowMember'].push(nowInfoPush);
             newNearByPosts[i]['nickName'] = `${userInfo.nickName}`;
             newNearByPosts[i]['userAge'] = `${userInfo.userAge}`;
             newNearByPosts[i]['userGender'] = `${userInfo.userGender}`;

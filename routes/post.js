@@ -75,24 +75,28 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
         var newNearByPosts = await Post.find(
             { address },
         ).sort({ $natural: -1 });
-        let newNearByPostsLength = [];
-        for(let i=0; i<newNearByPosts.length; i++) {
-            newNearByPostsLength.push(newNearByPosts[i].nowMember.length)
+        //미리 유저 아이디 저장
+        let nowmemberId2 = [];
+        for(let i =0; i<newNearByPosts.length; i++ ) {
+            let nowmemberId = [];
+            for(let j=0; j<newNearByPosts[i].nowMember.length; j++){
+                nowmemberId.push(newNearByPosts[i].nowMember[j])
+            }
+            nowmemberId2.push(nowmemberId)
         }
+        console.log(nowmemberId2)
+
         var userInfo = '';
         var nowInfo = '';
         var nowMember = '';
         var nowInfoPush = [];
-        console.log('newNearByPosts.length',newNearByPosts.length)
-        for(let i=0; i<newNearByPosts.length; i++) {
+        for(let i=0; i<nowmemberId2.length; i++) {
             userInfo = await User.findOne({
                 userId: newNearByPosts[i].userId
             })
-            console.log('newNearByPosts[i].nowMember.length',newNearByPosts[i].nowMember.length)
-            for(let j=0; j<newNearByPostsLength[i]; j++) {
-                console.log('newNearByPosts[i].nowMember[j]',newNearByPosts[i].nowMember[j])
+            for(let j=0; j<newNearByPosts[i].nowMember.length; j++) {
                 nowMember = await User.findOne({
-                    userId: newNearByPosts[i].nowMember[j]
+                    userId: nowmemberId2[i][j]
                 })
                 nowInfo = {
                     memberId: nowMember.userId,

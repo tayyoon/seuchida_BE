@@ -164,7 +164,7 @@ router.get('/postDetail/:postId', authMiddleware, async (req, res) => {
 
     let nowmemberId = '';
     let nowMember = '';
-    for(let i=0; j<newPost.nowMember.length; i++){
+    for(let i=0; i<newPost.nowMember.length; i++){
         nowmemberId.push(newPost.nowMember[i])
     }
     for(let i=0; i<nowmemberId.length; i++) {

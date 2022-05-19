@@ -312,6 +312,42 @@ router.post('/postPush/:postId', authMiddleware, async (req, res) => {
             errormessage: '참여에 실패하였습니다.',
         });
     } else if (b >= 1) {
+        // const newMember = await NowMember.create({
+        //     postId,
+        //     memberId: userId,
+        //     memberImg: userImg,
+        //     memberNickname: nickName,
+        //     memberGen: userGender,
+        //     memberAgee: userAge,
+        //     memberCategory: userInterest,
+        //     memberDesc: userContent,
+        // });
+
+        // //
+
+        // const thisMember = await NowMember.find({ postId }, {});
+
+        // const newMem = await NowMember.findOne(
+        //     {
+        //         postId:postId,
+        //     },
+        //     {}
+        // );
+
+        // console.log('뉴멤', newMem);
+
+        // let pushMemInfo = await Post.updateOne(
+        //     { _id: postId },
+        //     { $push: { nowMember: newMem } }
+        // );
+
+        // const newPostInfo = await Post.findOne({ _id: postId });
+        // const newNowMember = await NowMember.find({ postId });
+        // const userPush = await User.updateMany(
+        //     { userId },
+        //     { $push: { pushExercise: postId } }
+        // );
+
         const newMember = await NowMember.create({
             postId,
             memberId: userId,
@@ -322,25 +358,9 @@ router.post('/postPush/:postId', authMiddleware, async (req, res) => {
             memberCategory: userInterest,
             memberDesc: userContent,
         });
-
-        //
-
-        // const thisMember = await NowMember.find({ postId }, {});
-
-        // const newMem = await NowMember.findOne(
-        //     {
-        //         postId: {
-        //             $elemMatch: { memberId: userId },
-        //         },
-        //     },
-        //     {}
-        // );
-
-        console.log('뉴멤', newMem);
-
-        let pushMemInfo = await Post.updateOne(
+        const NMember = await Post.updateOne(
             { _id: postId },
-            { $push: { nowMember: newMem } }
+            { $push: { nowMember: userInfo } }
         );
 
         const newPostInfo = await Post.findOne({ _id: postId });

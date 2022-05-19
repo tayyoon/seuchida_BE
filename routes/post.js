@@ -84,7 +84,6 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
             }
             nowmemberId2.push(nowmemberId)
         }
-        console.log(nowmemberId2)
 
         var userInfo = '';
         var nowInfo = '';
@@ -112,7 +111,6 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
             newNearByPosts[i]['userAge'] = `${userInfo.userAge}`;
             newNearByPosts[i]['userGender'] = `${userInfo.userGender}`;
             newNearByPosts[i]['userImg'] = `${userInfo.userImg}`;
-            console.log(newNearByPosts[i])
         }
         const nearPost = newNearByPosts
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))

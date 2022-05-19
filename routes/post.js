@@ -257,6 +257,8 @@ router.get('/postDetail/:postId', authMiddleware, async (req, res) => {
                 },
                 { $set: { 'nowMember.$.memberImg': nownMember[i].memberImg } }
             );
+        } else {
+            console.log('이리로 넘어옴');
         }
     }
 

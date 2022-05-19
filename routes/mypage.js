@@ -38,11 +38,38 @@ router.get('/myPage/myExercise', authMiddleware, async (req, res, next) => {
     try {
         const pushEx = await User.findOne({ userId }, { pushExercise: 1 });
         for (let i = 0; i < pushEx.pushExercise.length; i++) {
-            const aaa = await Post.findOne({ roomId: pushEx.pushExercise[i] });
-            console.log(aaa)
-            myEx.push(aaa);
+            let postEx = await Post.findOne({ roomId: pushEx.pushExercise[i] });
+            const userInfo = await User.findOne({
+                userId
+            })
+            postEx['nickName'] = `${userInfo.nickName}`;
+            postEx['userAge'] = `${userInfo.userAge}`;
+            postEx['userGender'] = `${userInfo.userGender}`;
+            postEx['userImg'] = `${userInfo.userImg}`;
+
+            let nowmemberId = [];
+            let nowMember = '';
+            for(let i=0; i<postEx.nowMember.length; i++){
+                nowmemberId.push(postEx.nowMember[i])
+            }
+            postEx['nowMember'] = [];
+            for(let i=0; i<nowmemberId.length; i++) {
+                nowMember = await User.findOne({
+                    userId: nowmemberId[i]
+                })
+                nowInfo = {
+                    memberId: nowMember.userId,
+                    memberImg: nowMember.userImg,
+                    memberNickname: nowMember.nickName,
+                    memberAgee: nowMember.userAge,
+                    memberGen: nowMember.userGender,
+                    memberDesc: nowMember.userContent
+                }
+                postEx['nowMember'].push(nowInfo); 
+            }
+            myEx.push(postEx);
         }
-        console.log('myEx',myEx)
+
         res.status(200).json({ myEx });
     } catch (err) {
         console.log('마이페이지 에이피아이2', err);

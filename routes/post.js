@@ -245,41 +245,7 @@ router.post('/postPush/:postId', authMiddleware, async (req, res) => {
             errormessage: '참여에 실패하였습니다.',
         });
     } else if (b >= 1) {
-        // const newMember = await NowMember.create({
-        //     postId,
-        //     memberId: userId,
-        //     memberImg: userImg,
-        //     memberNickname: nickName,
-        //     memberGen: userGender,
-        //     memberAgee: userAge,
-        //     memberCategory: userInterest,
-        //     memberDesc: userContent,
-        // });
-
-        // //
-
-        // const thisMember = await NowMember.find({ postId }, {});
-
-        // const newMem = await NowMember.findOne(
-        //     {
-        //         postId:postId,
-        //     },
-        //     {}
-        // );
-
-        // console.log('뉴멤', newMem);
-
-        // let pushMemInfo = await Post.updateOne(
-        //     { _id: postId },
-        //     { $push: { nowMember: newMem } }
-        // );
-
-        // const newPostInfo = await Post.findOne({ _id: postId });
-        // const newNowMember = await NowMember.find({ postId });
-        // const userPush = await User.updateMany(
-        //     { userId },
-        //     { $push: { pushExercise: postId } }
-        // );
+        
 
         const newMember = await NowMember.create({
             postId,
@@ -380,13 +346,19 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
         const userInfo = await User.findOne({
             userId: usersId
         });
-        console.log(postList)
-        console.log('userInfo.nickName',userInfo.nickName)
+        const nowInfo = {
+            memberId: userInfo.userId,
+            memberImg: userInfo.userImg,
+            memberNickname: userInfo.nickName,
+            memberAgee: userInfo.userInfo.userAge,
+            memberGen: userInfo.userGender,
+            memberDesc: userInfo.userContent
+        }
         postList['nickName'] = `${userInfo.nickName}`;
         postList['userAge'] = `${userInfo.userAge}`;
         postList['userGender'] = `${userInfo.userGender}`;
-        postList['userImg'] = `${userInfo.userImg}`; 
-        console.log(postList)       
+        postList['userImg'] = `${userInfo.userImg}`;
+        postList['nowMember'].push(nowInfo) 
         res.status(200).json({ postList });
     } catch (error) {
         console.log(error);

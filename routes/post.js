@@ -90,21 +90,6 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
             }
         ).sort({ $natural: -1 });
 
-<<<<<<< Updated upstream
-        let changeNow;
-        // for (let i = 0; i < nearByPosts.length; i++) {
-        //     const nearPost = nearByPosts[i];
-        //     // console.log('nnnneeee', nearPost);
-        //     var nearPostImg = nearPost.nowMember[i].memberImg;
-
-        //     const nownMember = await NowMember.find({
-        //         postId: nearPost.postId,
-        //     });
-        //     var nownMemberImg = nownMember[i].memberImg;
-        //     console.log('nnnnnown', nearPostImg);
-        //     console.log('11111', nownMemberImg);
-        //     if (nearPostImg != nownMemberImg) {
-=======
         // let changeNow;
         // for (let i = 0; i < nearByPosts[0].length; i++) {
         //     const nearPost = nearByPosts[0][i];
@@ -112,7 +97,6 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
         //         postId: nearPost.postId,
         //     });
         //     if (nearPost.nowMember[i].memberImg != nownMember[i].memberImg) {
->>>>>>> Stashed changes
         //         changeNow = await Post.findOneAndUpdate(
         //             {
         //                 _id: nearPost.postId,

@@ -3,6 +3,7 @@ const moment = require('moment');
 const Chat = require('./schemas/chatting');
 const Room = require('./schemas/room');
 const Post = require('./schemas/post');
+const NowMember = require('./schemas/nowMember');
 const socketauthMiddleware = require('./middlewares/socket-auth-middleware');
 
 module.exports = (server) => {
@@ -179,7 +180,7 @@ module.exports = (server) => {
             let memberId = userId;
             Post.updateOne(
                 { roomId: data.roomId },
-                { $pull: { nowMember: memberId },
+                { $pull: { nowMember: { $in: [ memberId ] } },
                   $addToSet: { banUserList: [ userId ] }
                 },
             );

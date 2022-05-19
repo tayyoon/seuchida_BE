@@ -186,7 +186,7 @@ router.get('/postDetail/:postId', authMiddleware, async (req, res) => {
 });
 
 // 참여버튼
-router.post('/postPush/:postId', authMiddleware, async (req, res) => {
+router.get('/postPush/:postId', authMiddleware, async (req, res) => {
     const { postId } = req.params;
     const { user } = res.locals;
     const { userId } = user;

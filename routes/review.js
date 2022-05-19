@@ -40,7 +40,10 @@ router.post(
         let checkEvalue = 0;
         let userInfo1 = '';
         let userInfo2 = '';
+        let userInfo3 = '';
         let evalue = 0;
+        let upEvalue = 0;
+        let eventEvalue = 0;
         require('moment-timezone');
         moment.tz.setDefault('Asia/Seoul');
         const createdAt = String(moment().format('YYYY-MM-DD HH:mm:ss'));
@@ -58,13 +61,59 @@ router.post(
                 spot,
                 postCategory,
             });
+            //이미지첨부 후기글이면 5점 아니면 3점주기
+            if(!image) {
+                upEvalue = Number(3);
+            } else {
+                upEvalue = Number(5);
+            }
+            //첫 후기글일때 5점 주기
+            const checkReview = await Review.find({
+                userId
+            });
+            if(!checkReview){
+                eventEvalue = Number(5);
+            } else {
+                eventEvalue = Number(0);
+            }
+            
+            //내 평점추가
+            userInfo3 = await User.findOne({
+                userId
+            });
+            let selfEvalue = upEvalue + eventEvalue + Number(userInfo3.userEvalue)
+            if(selfEvalue>=60) {
+                level = 7
+            } else if(selfEvalue>=50) {
+                level = 6
+            } else if(selfEvalue>=40) {
+                level = 5
+            } else if(selfEvalue>=30) {
+                level = 4
+            } else if(selfEvalue>=20) {
+                level = 3
+            } else if(selfEvalue>=10) {
+                level = 2
+            } else {
+                level = 1
+            }
+            await User.updateOne(
+                { userId },
+                {  
+                    $set: {
+                        userEvalue: selfEvalue,
+                        level
+                    }
+                }
+            );
+            //다른사람 평가
             for(let i=0; i<otherId.length; i++) {
                 checkUserId = otherId[i];
                 checkEvalue = evalues[i];
                 userInfo1 = await User.findOne({
                     userId: checkUserId
                 });
-                evalue = Number(userInfo1.userEvalue) + Number(checkEvalue) //후기 작성하나에 얼마나 올려줄지 정해야함
+                evalue = Number(userInfo1.userEvalue) + Number(checkEvalue)
                 userInfo2 = await User.updateOne(
                     { userId: checkUserId },
                     {
@@ -156,11 +205,27 @@ router.post('/report', authMiddleware, async (req, res) => {
         userId
     });
     let evalue = Number(userInfo.userEvalue)- Number(3)
+    if(evalue>=60) {
+        level = 7
+    } else if(evalue>=50) {
+        level = 6
+    } else if(evalue>=40) {
+        level = 5
+    } else if(evalue>=30) {
+        level = 4
+    } else if(evalue>=20) {
+        level = 3
+    } else if(evalue>=10) {
+        level = 2
+    } else {
+        level = 1
+    }
     await User.updateOne(
         { userId },
         {
             $set: {
-                userEvalue: evalue
+                userEvalue: evalue,
+                level
             }
         }
     )

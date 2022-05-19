@@ -80,6 +80,7 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
         var nowInfo = '';
         var nowMember = '';
         var nowInfoPush = [];
+        console.log('newNearByPosts.length',newNearByPosts.length)
         for(let i=0; i<newNearByPosts.length; i++) {
             userInfo = await User.findOne({
                 userId: newNearByPosts[i].userId
@@ -107,7 +108,7 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
             newNearByPosts[i]['userAge'] = `${userInfo.userAge}`;
             newNearByPosts[i]['userGender'] = `${userInfo.userGender}`;
             newNearByPosts[i]['userImg'] = `${userInfo.userImg}`;
-            
+            console.log(newNearByPosts[i])
         }
         const nearPost = newNearByPosts
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))

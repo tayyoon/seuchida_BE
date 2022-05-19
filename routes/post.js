@@ -113,20 +113,20 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
         //     }
         // }
 
-        // const newNearByPosts = await Post.find(
-        //     { address },
-        //     {
-        //         postTitle: 1,
-        //         postDesc: 1,
-        //         datemate: 1,
-        //         status: 1,
-        //         maxMember: 1,
-        //         nowMember: 1,
-        //         longitude: 1,
-        //         latitude: 1,
-        //         createdAt: 1,
-        //     }
-        // ).sort({ $natural: -1 });
+        const newNearByPosts = await Post.find(
+            { address },
+            {
+                postTitle: 1,
+                postDesc: 1,
+                datemate: 1,
+                status: 1,
+                maxMember: 1,
+                nowMember: 1,
+                longitude: 1,
+                latitude: 1,
+                createdAt: 1,
+            }
+        ).sort({ $natural: -1 });
 
         const nearPost = newNearByPosts
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))

@@ -111,9 +111,9 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
                 }
                 nowInfoPush.push(nowInfo)
             }
-            newNearByPosts[i]['nowMember'] = `${nowInfoPush}`
+            newNearByPosts[i]['nowMember'] = `${nowInfoPush}`;
             newNearByPosts[i]['nickName'] = `${userInfo.nickName}`;
-            newNearByPosts[i]['userAge'] = `${userInfo.userAge}`;;
+            newNearByPosts[i]['userAge'] = `${userInfo.userAge}`;
             newNearByPosts[i]['userGender'] = `${userInfo.userGender}`;
             newNearByPosts[i]['userImg'] = `${userInfo.userImg}`;
             

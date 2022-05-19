@@ -132,7 +132,7 @@ router.get('/nearPostList', authMiddleware, async (req, res) => {
         var nearPosts = await Post.find(
             { address },
         ).sort({ $natural: -1 });
-
+        let userInfo = '';
         for(let i=0; i<nearPosts.length; i++) {
             userInfo = await User.findOne({
                 userId: nearPosts[i].userId
@@ -153,53 +153,34 @@ router.get('/nearPostList', authMiddleware, async (req, res) => {
 // 상세페이지 조회
 router.get('/postDetail/:postId', authMiddleware, async (req, res) => {
     const { postId } = req.params;
-    const post = await Post.findOne({ _id: postId });
-    // const nowMember = await NowMember.find({ postId });
+    var newPost = await Post.findOne({ _id: postId });
+    const userInfo = await User.findOne({
+        userId: newPost.userId
+    })
+    newPost['nickName'] = `${userInfo.nickName}`;
+    newPost['userAge'] = `${userInfo.userAge}`;
+    newPost['userGender'] = `${userInfo.userGender}`;
+    newPost['userImg'] = `${userInfo.userImg}`;
 
-    // const postNowMember = post.nowMember;
-    const nownMember = await NowMember.find(
-        { postId },
-        {
-            memberId: 1,
-            memberImg: 1,
-            memberNickname: 1,
-            memberGen: 1,
-            memberAgee: 1,
-            memberCategory: 1,
-            memberDesc: 1,
-        }
-    );
-
-    console.log('나우멤바', post.nowMember[0].memberImg);
-    console.log('post', post);
-    console.log('nownMember', nownMember);
-
-    for (let i = 0; i < nownMember.length; i++) {
-        const same = nownMember[0][i];
-        if (post.nowMember[i].memberImg != nownMember[i].memberImg) {
-            console.log('111', nownMember[i].memberImg);
-            console.log('2222', post.nowMember[i].memberImg);
-            await Post.findOneAndUpdate(
-                {
-                    _id: postId,
-                    nowMember: {
-                        $elemMatch: { memberId: nownMember[i].memberId },
-                    },
-                },
-                { $set: { 'nowMember.$.memberImg': nownMember[i].memberImg } }
-            );
-        } else {
-            console.log('이리로 넘어옴');
-        }
+    let nowmemberId = '';
+    let nowMember = '';
+    for(let i=0; j<newPost.nowMember.length; i++){
+        nowmemberId.push(newPost.nowMember[i])
     }
-
-    // 참여자들의 정보 같이 넘기기
-    // const membersId = [];
-    // for (let i = 0; i < nownMember[0].length; i++) {
-    //     const user = nownMember[0][i].memberId;
-    //     membersId.push(user);
-    // }
-    const newPost = await Post.findOne({ _id: postId });
+    for(let i=0; i<nowmemberId.length; i++) {
+        nowMember = await User.findOne({
+            userId: nowmemberId[i]
+        })
+        nowInfo = {
+            memberId: nowMember.userId,
+            memberImg: nowMember.userImg,
+            memberNickname: nowMember.nickName,
+            memberAgee: nowMember.userAge,
+            memberGen: nowMember.userGender,
+            memberDesc: nowMember.userContent
+        }
+        newPost['nowMember'].push(nowInfo); 
+    }
 
     res.status(200).json({ newPost, msg: '성고옹' });
 });

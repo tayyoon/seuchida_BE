@@ -129,33 +129,19 @@ router.get('/nearPostList', authMiddleware, async (req, res) => {
     const { address } = user;
 
     try {
-        const nearPosts = await Post.find(
+        var nearPosts = await Post.find(
             { address },
-            {
-                postId: 1,
-                postTitle: 1,
-                postDesc: 1,
-                datemate: 1,
-                nickName: 1,
-                userImg: 1,
-                status: 1,
-                maxMember: 1,
-                longitude: 1,
-                latitude: 1,
-                createdAt: 1,
-                spot: 1,
-                postCategory: 1,
-                memberAge: 1,
-                memberGender: 1,
-            }
         ).sort({ $natural: -1 });
 
-        // const nearPostsMem = [];
-        // for (let i = 0; i < nearPosts[0].length; i++) {
-        //     const mems = await NowMember.find({
-        //         postId: nearPosts[0][i].postId,
-        //     });
-        // }
+        for(let i=0; i<nearPosts.length; i++) {
+            userInfo = await User.findOne({
+                userId: nearPosts[i].userId
+            })
+            nearPosts[i]['nickName'] = `${userInfo.nickName}`;
+            nearPosts[i]['userAge'] = `${userInfo.userAge}`;
+            nearPosts[i]['userGender'] = `${userInfo.userGender}`;
+            nearPosts[i]['userImg'] = `${userInfo.userImg}`;
+        }
 
         res.status(200).json({ nearPosts });
     } catch (err) {

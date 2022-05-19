@@ -162,7 +162,7 @@ router.get('/postDetail/:postId', authMiddleware, async (req, res) => {
     newPost['userGender'] = `${userInfo.userGender}`;
     newPost['userImg'] = `${userInfo.userImg}`;
 
-    let nowmemberId = '';
+    let nowmemberId = [];
     let nowMember = '';
     for(let i=0; i<newPost.nowMember.length; i++){
         nowmemberId.push(newPost.nowMember[i])

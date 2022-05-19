@@ -89,30 +89,35 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
                 createdAt: 1,
             }
         ).sort({ $natural: -1 });
-        console.log('@@@@@@@@', nearByPosts);
 
         let changeNow;
-        for (let i = 0; i < nearByPosts[0].length; i++) {
-            const nearPost = nearByPosts[0][i];
-            const nownMember = await NowMember.find({
-                postId: nearPost.postId,
-            });
-            if (nearPost.nowMember[i].memberImg != nownMember[i].memberImg) {
-                changeNow = await Post.findOneAndUpdate(
-                    {
-                        _id: nearPost.postId,
-                        nowMember: {
-                            $elemMatch: { _id: nownMember[i]._id },
-                        },
-                    },
-                    {
-                        $set: {
-                            'nowMember.$.memberImg': nownMember[i].memberImg,
-                        },
-                    }
-                );
-            }
-        }
+        // for (let i = 0; i < nearByPosts.length; i++) {
+        //     const nearPost = nearByPosts[i];
+        //     // console.log('nnnneeee', nearPost);
+        //     var nearPostImg = nearPost.nowMember[i].memberImg;
+
+        //     const nownMember = await NowMember.find({
+        //         postId: nearPost.postId,
+        //     });
+        //     var nownMemberImg = nownMember[i].memberImg;
+        //     console.log('nnnnnown', nearPostImg);
+        //     console.log('11111', nownMemberImg);
+        //     if (nearPostImg != nownMemberImg) {
+        //         changeNow = await Post.findOneAndUpdate(
+        //             {
+        //                 _id: nearPost.postId,
+        //                 nowMember: {
+        //                     $elemMatch: { _id: nownMember[i]._id },
+        //                 },
+        //             },
+        //             {
+        //                 $set: {
+        //                     'nowMember.$.memberImg': nownMember[i].memberImg,
+        //                 },
+        //             }
+        //         );
+        //     }
+        // }
 
         const newNearByPosts = await Post.find(
             { address },
@@ -132,6 +137,43 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
         const nearPost = newNearByPosts
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
             .slice(0, 3);
+        // const nownMember = await NowMember.find({
+        //     postId: nearPost.postId,
+        // });
+
+        // for (let i = 0; i < nearPost.length; i++) {
+        //     const nownMember = await NowMember.find({
+        //         postId: nearPost[i].postId,
+        //     });
+        //     console.log('울고싶다...', nownMember.length);
+        //     for (let j = 0; j < nownMember.length; j++) {
+        //         const nearPostt = nearPost[i];
+        //         console.log('nnnneeee', nearPostt, [i]);
+        //         var nearPostImg = nearPostt.nowMember[i];
+        //         console.log('nnnnnown', nearPostImg);
+
+        //         var nownMemberImg = nownMember[j].memberImg;
+
+        //         console.log('11111', nownMemberImg);
+        //         console.log([i]);
+        //         if (nearPostImg != nownMemberImg) {
+        //             changeNow = await Post.findOneAndUpdate(
+        //                 {
+        //                     _id: nearPost.postId,
+        //                     nowMember: {
+        //                         $elemMatch: { _id: nownMember[j]._id },
+        //                     },
+        //                 },
+        //                 {
+        //                     $set: {
+        //                         'nowMember.$.memberImg':
+        //                             nownMember[j].memberImg,
+        //                     },
+        //                 }
+        //             );
+        //         }
+        //     }
+        // }
 
         // console.log('carpost', caPost);
         // console.log('필터링리뷰', filterRe);
@@ -204,7 +246,7 @@ router.get('/postDetail/:postId', authMiddleware, async (req, res) => {
         }
     );
 
-    console.log('나우멤바', nownMember);
+    console.log('나우멤바', post.nowMember[0].memberImg);
 
     for (let i = 0; i < nownMember.length; i++) {
         const same = nownMember[0][i];
@@ -215,7 +257,7 @@ router.get('/postDetail/:postId', authMiddleware, async (req, res) => {
                 {
                     _id: postId,
                     nowMember: {
-                        $elemMatch: { _id: nownMember[i]._id },
+                        $elemMatch: { memberId: nownMember[i].memberId },
                     },
                 },
                 { $set: { 'nowMember.$.memberImg': nownMember[i].memberImg } }
@@ -322,6 +364,9 @@ router.post('/postPush/:postId', authMiddleware, async (req, res) => {
         res.status(200).json({ newPostInfo, newNowMember });
     }
 });
+
+// 참여 취소
+router.post('/postPushCancle', authMiddleware, async (req, res) => {});
 
 //게시글 작성
 router.post('/postWrite', authMiddleware, async (req, res) => {

@@ -348,7 +348,7 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
     };
     const roomId = uuid();
     try {
-        const createPost = await Post.create({
+        const postList = await Post.create({
             userId: usersId,
             postTitle,
             postDesc,
@@ -376,13 +376,10 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
         const userInfo = await User.findOne({
             usersId
         });
-        const push = {
-            nickName: userInfo.nickName,
-            userAge: userInfo.userAge,
-            userGender: userInfo.userGender,
-            userImg: userInfo.userImg
-        }
-        const postList = Object.assign(createPost,push)
+        postList.nickName = userInfo.nickName;
+        postList.userAge = userInfo.userAge;
+        postList.userGender = userInfo.userGender;
+        postList.userImg = userInfo.userImg;        
         res.status(200).json({ postList });
     } catch (error) {
         console.log(error);

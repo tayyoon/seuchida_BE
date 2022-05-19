@@ -348,7 +348,7 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
     };
     const roomId = uuid();
     try {
-        const postList = await Post.create({
+        let postList = await Post.create({
             userId: usersId,
             postTitle,
             postDesc,
@@ -376,6 +376,8 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
         const userInfo = await User.findOne({
             usersId
         });
+        console.log(postList)
+        console.log('userInfo.nickName',userInfo.nickName)
         postList.nickName = userInfo.nickName;
         postList.userAge = userInfo.userAge;
         postList.userGender = userInfo.userGender;

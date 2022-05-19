@@ -44,8 +44,11 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
                     const userInfo = await User.findOne({
                         userId: likeThingsPost.userId
                     })
-                    const userImg = userInfo.Img;
+                    const userImg = {
+                        userImg: userInfo.userImg
+                    };
                     const test = Object.assign(likeThingsPost, userImg)
+                    console.log('likeThingsPost', likeThingsPost)
                     console.log('test', test)
                     categoryPost.push(test);
                 }

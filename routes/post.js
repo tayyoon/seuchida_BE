@@ -186,22 +186,22 @@ router.get('/postDetail/:postId', authMiddleware, async (req, res) => {
 });
 
 // 참여버튼
-router.get('/postPush/:postId', authMiddleware, async (req, res) => {
-    const { postId } = req.params;
+router.get('/postPush/:roomId', authMiddleware, async (req, res) => {
+    const { roomId } = req.params;
     const { user } = res.locals;
     const { userId } = user;
 
     await Post.updateOne(
-        { _id: postId },
+        { roomId: roomId },
         { $push: { nowMember: userId } }
     );
 
-    await User.updateMany(
+    await User.updateOne(
         { userId },
-        { $push: { pushExercise: postId } }
+        { $push: { pushExercise: roomId } }
     );
 
-    res.status(200).json({ msg: '성공' });    
+    res.status(200).send({ msg: '성공' });    
 });
 
 // 참여 취소
@@ -283,7 +283,11 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
         postList['userAge'] = `${userInfo.userAge}`;
         postList['userGender'] = `${userInfo.userGender}`;
         postList['userImg'] = `${userInfo.userImg}`;
-        postList['nowMember'].push(nowInfo) 
+        postList['nowMember'].push(nowInfo);
+        await User.updateOne(
+            { userId: usersId },
+            { $push: { pushExercise: roomId } }
+        ); 
         res.status(200).json({ postList });
     } catch (error) {
         console.log(error);
@@ -293,16 +297,12 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
 });
 
 // 게시글 삭제
-router.delete('/postDelete/:postId', authMiddleware, async (req, res) => {
-    const { postId } = req.params;
-    const { user } = res.locals;
-    const { userId } = user;
+router.delete('/postDelete/:roomId', authMiddleware, async (req, res) => {
+    const { roomId } = req.params;
 
     try {
-        await Post.deleteOne({ _id: postId });
-        await Room.deleteOne({ postId });
-        await NowMember.deleteMany({ postId });
-        await Review.deleteMany({ postId });
+        await Post.deleteOne({ roomId });
+        await Room.deleteOne({ roomId });
 
         res.send(200).json({ result: 'success' });
     } catch (error) {

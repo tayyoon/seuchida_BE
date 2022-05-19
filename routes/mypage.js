@@ -33,26 +33,16 @@ router.get('/myPage', authMiddleware, async (req, res) => {
 router.get('/myPage/myExercise', authMiddleware, async (req, res, next) => {
     const { user } = res.locals;
     const { userId } = user;
-    console.log(userId);
 
-    const myEx = [];
+    let myEx = [];
     try {
-        const myExercise = await Post.find({ userId });
-
-        for (let i = 0; i < myExercise.length; i++) {
-            const eachExercise = myExercise[i];
-            myEx.push(eachExercise);
-        }
-
-        const pushEx = await User.find({ userId }, { pushExercise: 1 });
-        console.log('푸시 운동', pushEx);
-
-        for (let i = 0; i < pushEx[0].pushExercise.length; i++) {
-            const aaa = await Post.findOne({ _id: pushEx[0].pushExercise[i] });
-
+        const pushEx = await User.findOne({ userId }, { pushExercise: 1 });
+        for (let i = 0; i < pushEx.pushExercise.length; i++) {
+            const aaa = await Post.findOne({ roomId: pushEx.pushExercise[i] });
+            console.log(aaa)
             myEx.push(aaa);
         }
-
+        console.log('myEx',myEx)
         res.status(200).json({ myEx });
     } catch (err) {
         console.log('마이페이지 에이피아이2', err);
@@ -67,6 +57,7 @@ router.get('/myPage/post', authMiddleware, async (req, res) => {
 
     try {
         const myPost = await Post.find({ userId });
+
 
         res.status(200).json({ myPost });
     } catch (err) {

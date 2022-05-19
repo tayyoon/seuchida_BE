@@ -78,6 +78,7 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
         const nearByPosts = await Post.find(
             { address },
             {
+                postId: 1,
                 postTitle: 1,
                 postDesc: 1,
                 datemate: 1,
@@ -324,16 +325,16 @@ router.post('/postPush/:postId', authMiddleware, async (req, res) => {
 
         //
 
-        const thisMember = await NowMember.find({ postId }, {});
+        // const thisMember = await NowMember.find({ postId }, {});
 
-        const newMem = await NowMember.findOne(
-            {
-                postId: {
-                    $elemMatch: { memberId: userId },
-                },
-            },
-            {}
-        );
+        // const newMem = await NowMember.findOne(
+        //     {
+        //         postId: {
+        //             $elemMatch: { memberId: userId },
+        //         },
+        //     },
+        //     {}
+        // );
 
         console.log('뉴멤', newMem);
 

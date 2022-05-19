@@ -365,6 +365,10 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
             memberAge,
             status,
             roomId,
+            nickName: 'a',
+            userAge: 'a',
+            userGender: 'a',
+            userImg: 'a'
         });
         await Room.create({
             roomId,

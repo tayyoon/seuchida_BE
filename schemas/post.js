@@ -21,22 +21,22 @@ const PostSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    // nickName: {
-    //     type: String,
-    //     // required: true,
-    // },
-    // userAge: {
-    //     type: String,
-    //     required: true,
-    // },
-    // userGender: {
-    //     type: String,
-    //     required: true,
-    // },
-    // userImg: {
-    //     type: String,
-    //     required: true,
-    // },
+    nickName: {
+        type: String,
+        // required: true,
+    },
+    userAge: {
+        type: String,
+        required: true,
+    },
+    userGender: {
+        type: String,
+        required: true,
+    },
+    userImg: {
+        type: String,
+        required: true,
+    },
     maxMember: {
         type: Number,
         required: true,

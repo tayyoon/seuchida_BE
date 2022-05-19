@@ -337,12 +337,6 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
     // 사용자 브라우저에서 보낸 쿠키를 인증미들웨어통해 user변수 생성, 구조분해할당으로 인식이 되지않아 구조분해할당 해제
     const { user } = res.locals;
     const usersId = user.userId;
-    const userImg = user.userImg;
-    const nickName = user.nickName;
-    const userGender = user.userGender;
-    const userAge = user.userAge;
-    const userInterest = user.userInterest;
-    const userContent = user.userContent;
 
     // 글작성시각 생성
     require('moment-timezone');
@@ -354,11 +348,8 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
     };
     const roomId = uuid();
     try {
-        const postList = await Post.create({
+        const createPost = await Post.create({
             userId: usersId,
-            nickName,
-            userImg,
-            userAge,
             postTitle,
             postDesc,
             postCategory,
@@ -366,7 +357,6 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
             maxMember,
             nowMember: [],
             memberGender,
-            userGender,
             address,
             spot,
             latitude,
@@ -383,284 +373,16 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
             owner: usersId,
             createdAt,
         });
-        const nowMems = '';
-        const thisPost = await Post.find({}, { postTitle: 1 });
-        let nowMem;
-        let pushMemInfo;
-        for (let i = 0; i < thisPost.length; i++) {
-            if (thisPost[i].postTitle === postTitle) {
-                const thisPosts = await Post.find(
-                    { postTitle },
-                    { _id: 1, createdAt: 1 }
-                );
-                console.log('포스트아이디1', thisPosts);
-
-                const thisPostId = thisPosts
-                    .sort(
-                        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-                    )
-                    .slice(0, 1);
-                console.log(thisPostId);
-
-                postIdA = String(thisPostId[0]._id);
-                console.log('포스트아이디2', postIdA);
-
-                nowMem = await NowMember.create({
-                    postId: postIdA,
-                    memberId: usersId,
-                    memberImg: userImg,
-                    memberNickname: nickName,
-                    memberGen: userGender,
-                    memberAgee: userAge,
-                    memberCategory: userInterest,
-                    memberDesc: userContent,
-                });
-                // const newMem = await NowMember.findOne(
-                //     {
-                //         postId: postIdA,
-                //     },
-                //     {
-                //         memberId: 1,
-                //         memberImg: 1,
-                //         memberNickname: 1,
-                //         memberGen: 1,
-                //         memberAgee: 1,
-                //         memberCategory: 1,
-                //         memberDesc: 1,
-                //     }
-                // );
-
-                // console.log('뉴멤', newMem);
-
-                // pushMemInfo = await Post.updateOne(
-                //     { _id: postIdA },
-                //     { $push: { nowMember: newMem } }
-                // );
-
-                // const userPush = await User.updateMany(
-                //     { usersId },
-                //     { $push: { pushExercise: postIdA } }
-                // );
-                /////////////////
-                // const thisPostId = await Post.find({ postTitle }, { _id: 1 });
-                // // 배열인지 객체인지 확인
-                // console.log('포스트아이디0', thisPost[0]);
-
-                // nowMem = await NowMember.create({
-                //     postId: thisPostId.id,
-                //     // 참여하는 유저 아이디 들어가게 수정
-                //     memberId: usersId,
-                //     memberImg: userImg,
-                //     memberNickname: nickName,
-                //     memberGen: userGender,
-                //     memberAgee: userAge,
-                //     memberCategory: userInterest,
-                //     memberDesc: userContent,
-                // });
-
-                // const newMem = await NowMember.findOne(
-                //     {
-                //         postId: thisPostId._id,
-                //     },
-                //     {
-                //         memberId: 1,
-                //         memberImg: 1,
-                //         memberNickname: 1,
-                //         memberGen: 1,
-                //         memberAgee: 1,
-                //         memberCategory: 1,
-                //         memberDesc: 1,
-                //     }
-                // );
-
-                // pushMemInfo = await Post.updateOne(
-                //     { _id: thisPostId._id },
-                //     { $push: { nowMember: newMem } }
-                // );
-
-                // const userPush = await User.updateOne(
-                //     { usersId },
-                //     { $push: { pushExercise: thisPostId._id } }
-                // );
-                // const thisPosts = await Post.find(
-                //     { postTitle },
-                //     { _id: 1, createdAt: 1 }
-                // );
-                // console.log('포스트아이디1', thisPosts);
-
-                // const thisPostId = thisPosts
-                //     .sort(
-                //         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-                //     )
-                //     .slice(0, 1);
-                // console.log(thisPostId);
-
-                // const A = String(thisPostId[0]._id);
-                // console.log('포스트아이디2', A);
-
-                // nowMem = await NowMember.create({
-                //     postId: A,
-                //     memberId: usersId,
-                //     memberImg: userImg,
-                //     memberNickname: nickName,
-                //     memberGen: userGender,
-                //     memberAgee: userAge,
-                //     memberCategory: userInterest,
-                //     memberDesc: userContent,
-                // });
-                // const newMem = await NowMember.findOne(
-                //     {
-                //         postId: A,
-                //     },
-                //     {
-                //         memberId: 1,
-                //         memberImg: 1,
-                //         memberNickname: 1,
-                //         memberGen: 1,
-                //         memberAgee: 1,
-                //         memberCategory: 1,
-                //         memberDesc: 1,
-                //     }
-                // );
-
-                // console.log('뉴멤', newMem);
-
-                // pushMemInfo = await Post.updateOne(
-                //     { _id: A },
-                //     { $push: { nowMember: newMem } }
-                // );
-
-                // const userPush = await User.updateMany(
-                //     { usersId },
-                //     { $push: { pushExercise: A } }
-                // );
-
-                // return;
-            } else {
-                // const thisPosts = await Post.find(
-                //     { postTitle },
-                //     { _id: 1, createdAt: 1 }
-                // );
-                // console.log('포스트아이디1', thisPosts);
-
-                // const thisPostId = thisPosts
-                //     .sort(
-                //         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-                //     )
-                //     .slice(0, 1);
-                // console.log(thisPostId);
-
-                // const A = String(thisPostId[0]._id);
-                // console.log('포스트아이디2', A);
-
-                // nowMem = await NowMember.create({
-                //     postId: A,
-                //     memberId: usersId,
-                //     memberImg: userImg,
-                //     memberNickname: nickName,
-                //     memberGen: userGender,
-                //     memberAgee: userAge,
-                //     memberCategory: userInterest,
-                //     memberDesc: userContent,
-                // });
-                // const newMem = await NowMember.findOne(
-                //     {
-                //         postId: A,
-                //     },
-                //     {
-                //         memberId: 1,
-                //         memberImg: 1,
-                //         memberNickname: 1,
-                //         memberGen: 1,
-                //         memberAgee: 1,
-                //         memberCategory: 1,
-                //         memberDesc: 1,
-                //     }
-                // );
-
-                // console.log('뉴멤', newMem);
-
-                // pushMemInfo = await Post.updateOne(
-                //     { _id: A },
-                //     { $push: { nowMember: newMem } }
-                // );
-
-                // const userPush = await User.updateMany(
-                //     { usersId },
-                //     { $push: { pushExercise: A } }
-                // );
-
-                const thisPostId = await Post.find({ postTitle }, { _id: 1 });
-                // // 배열인지 객체인지 확인
-                console.log('포스트아이디0', thisPost[0]);
-
-                nowMem = await NowMember.create({
-                    postId: thisPostId.id,
-                    // 참여하는 유저 아이디 들어가게 수정
-                    memberId: usersId,
-                    memberImg: userImg,
-                    memberNickname: nickName,
-                    memberGen: userGender,
-                    memberAgee: userAge,
-                    memberCategory: userInterest,
-                    memberDesc: userContent,
-                });
-
-                // const newMem = await NowMember.findOne(
-                //     {
-                //         postId: thisPostId._id,
-                //     },
-                //     {
-                //         memberId: 1,
-                //         memberImg: 1,
-                //         memberNickname: 1,
-                //         memberGen: 1,
-                //         memberAgee: 1,
-                //         memberCategory: 1,
-                //         memberDesc: 1,
-                //     }
-                // );
-
-                // pushMemInfo = await Post.updateOne(
-                //     { _id: thisPostId._id },
-                //     { $push: { nowMember: newMem } }
-                // );
-
-                // const userPush = await User.updateOne(
-                //     { usersId },
-                //     { $push: { pushExercise: thisPostId._id } }
-                // );
-                // return;
-            }
+        const userInfo = await User.findOne({
+            usersId
+        });
+        const push = {
+            nickName: userInfo.nickName,
+            userAge: userInfo.userAge,
+            userGender: userInfo.userGender,
+            userImg: userInfo.userImg
         }
-        const newMem = await NowMember.findOne(
-            {
-                postId: postIdA,
-            },
-            {
-                _id: 1,
-                memberId: 1,
-                memberImg: 1,
-                memberNickname: 1,
-                memberGen: 1,
-                memberAgee: 1,
-                memberCategory: 1,
-                memberDesc: 1,
-            }
-        );
-
-        console.log('뉴멤', newMem);
-
-        pushMemInfo = await Post.updateOne(
-            { _id: postIdA },
-            { $push: { nowMember: newMem } }
-        );
-
-        const userPush = await User.updateMany(
-            { usersId },
-            { $addToSet: { pushExercise: postIdA } }
-        );
-
+        const postList = Object.assign(createPost,push)
         res.status(200).json({ postList });
     } catch (error) {
         console.log(error);

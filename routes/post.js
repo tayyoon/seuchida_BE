@@ -32,7 +32,6 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
                         },
                         {
                             userId: 1,
-                            userImg: 1,
                             longitude: 1,
                             latitude: 1,
                             postTitle: 1,

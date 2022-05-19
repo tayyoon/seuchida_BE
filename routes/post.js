@@ -181,7 +181,7 @@ router.get('/postDetail/:postId', authMiddleware, async (req, res) => {
         }
         newPost['nowMember'].push(nowInfo); 
     }
-
+    console.log('newPost', newPost)
     res.status(200).json({ newPost, msg: '성고옹' });
 });
 

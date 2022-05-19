@@ -182,7 +182,6 @@ router.get('/postDetail/:postId', authMiddleware, async (req, res) => {
         }
         newPost['nowMember'].push(nowInfo); 
     }
-    console.log('newPost', newPost)
     res.status(200).json({ newPost, msg: '성고옹' });
 });
 
@@ -190,75 +189,19 @@ router.get('/postDetail/:postId', authMiddleware, async (req, res) => {
 router.post('/postPush/:postId', authMiddleware, async (req, res) => {
     const { postId } = req.params;
     const { user } = res.locals;
-    const {
-        userId,
-        userImg,
-        nickName,
-        userGender,
-        userAge,
-        userInterest,
-        userContent,
-    } = user;
-    // 지워도 되는지 확인하기
-    const userInfo = {
-        memberId: userId,
-        memberImg: userImg,
-        memberNickname: nickName,
-        memberGen: userGender,
-        memberAgee: userAge,
-        memberCategory: userInterest,
-        memberDesc: userContent,
-    };
+    const { userId } = user;
 
-    // 참여 여부 판별
-    const alreadymem = await NowMember.find({ postId });
-    let a = 0;
-    let b = 0;
+    await Post.updateOne(
+        { _id: postId },
+        { $push: { nowMember: userId } }
+    );
 
-    for (let i = 0; i < alreadymem.length; i++) {
-        if (userId === alreadymem[i].memberId) {
-            a = a + 1;
-        } else {
-            b = b + 1;
-        }
-    }
-    if (a >= 1) {
-        res.status(401).json({
-            errormessage: '참여에 실패하였습니다.',
-        });
-    } else if (b >= 1) {
-        
+    await User.updateMany(
+        { userId },
+        { $push: { pushExercise: postId } }
+    );
 
-        const newMember = await NowMember.create({
-            postId,
-            memberId: userId,
-            memberImg: userImg,
-            memberNickname: nickName,
-            memberGen: userGender,
-            memberAgee: userAge,
-            memberCategory: userInterest,
-            memberDesc: userContent,
-        });
-        const NMember = await Post.updateOne(
-            { _id: postId },
-            { $push: { nowMember: userInfo } }
-        );
-
-        const newPostInfo = await Post.findOne({ _id: postId });
-        const newNowMember = await NowMember.find({ postId });
-        const userPush = await User.updateMany(
-            { userId },
-            { $push: { pushExercise: postId } }
-        );
-
-        // 글의 참여상황 확인
-        if (newPostInfo.maxMember === newNowMember[0].length) {
-            await Post.updateOne({ _id: postId }, { $set: { status: false } });
-        }
-        // console.log('디스포스트 맥스맴버', thisPost.maxMember);
-        // console.log('디스포스트 나우맴버 랭스', thisPost.nowMember.length);
-        res.status(200).json({ newPostInfo, newNowMember });
-    }
+    res.status(200).json({ msg: '성공' });    
 });
 
 // 참여 취소

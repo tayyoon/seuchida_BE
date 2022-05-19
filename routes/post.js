@@ -350,7 +350,7 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
             memberId: userInfo.userId,
             memberImg: userInfo.userImg,
             memberNickname: userInfo.nickName,
-            memberAgee: userInfo.userInfo.userAge,
+            memberAgee: userInfo.userAge,
             memberGen: userInfo.userGender,
             memberDesc: userInfo.userContent
         }

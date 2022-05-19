@@ -378,10 +378,11 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
         });
         console.log(postList)
         console.log('userInfo.nickName',userInfo.nickName)
-        postList['nickName'] = userInfo.nickName;
-        postList['userAge'] = userInfo.userAge;
-        postList['userGender'] = userInfo.userGender;
-        postList['userImg'] = userInfo.userImg;        
+        postList['nickName'] = `${userInfo.nickName}`;
+        postList['userAge'] = `${userInfo.userAge}`;
+        postList['userGender'] = `${userInfo.userGender}`;
+        postList['userImg'] = `${userInfo.userImg}`; 
+        console.log(postList)       
         res.status(200).json({ postList });
     } catch (error) {
         console.log(error);

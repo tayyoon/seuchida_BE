@@ -321,7 +321,7 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
             postCategory,
             datemate,
             maxMember,
-            nowMember: [],
+            nowMember: [usersId],
             memberGender,
             address,
             spot,

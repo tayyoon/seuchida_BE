@@ -167,6 +167,7 @@ router.get('/postDetail/:postId', authMiddleware, async (req, res) => {
     for(let i=0; i<newPost.nowMember.length; i++){
         nowmemberId.push(newPost.nowMember[i])
     }
+    newPost['nowMember'] = [];
     for(let i=0; i<nowmemberId.length; i++) {
         nowMember = await User.findOne({
             userId: nowmemberId[i]

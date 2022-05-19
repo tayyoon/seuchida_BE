@@ -225,9 +225,9 @@ router.get('/nearPostList', authMiddleware, async (req, res) => {
 router.get('/postDetail/:postId', authMiddleware, async (req, res) => {
     const { postId } = req.params;
     const post = await Post.findOne({ _id: postId });
-    const nowMember = await NowMember.find({ postId });
+    // const nowMember = await NowMember.find({ postId });
 
-    const postNowMember = post.nowMember;
+    // const postNowMember = post.nowMember;
     const nownMember = await NowMember.find(
         { postId },
         {
@@ -242,6 +242,8 @@ router.get('/postDetail/:postId', authMiddleware, async (req, res) => {
     );
 
     console.log('나우멤바', post.nowMember[0].memberImg);
+    console.log('post', post);
+    console.log('nownMember', nownMember);
 
     for (let i = 0; i < nownMember.length; i++) {
         const same = nownMember[0][i];
@@ -270,7 +272,7 @@ router.get('/postDetail/:postId', authMiddleware, async (req, res) => {
     // }
     const newPost = await Post.findOne({ _id: postId });
 
-    res.status(200).json({ newPost });
+    res.status(200).json({ newPost, msg: '성고옹' });
 });
 
 // 참여버튼

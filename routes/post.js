@@ -74,46 +74,6 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
             .slice(0, 8);
 
-        // 유저의 주소중 본인의 시,구 를 기준으로 카테고리상관없이 전체목록 최신순으로 넘겨주기
-        const nearByPosts = await Post.find(
-            { address },
-            {
-                postId: 1,
-                postTitle: 1,
-                postDesc: 1,
-                datemate: 1,
-                status: 1,
-                maxMember: 1,
-                nowMember: 1,
-                longitude: 1,
-                latitude: 1,
-                createdAt: 1,
-            }
-        ).sort({ $natural: -1 });
-
-        // let changeNow;
-        // for (let i = 0; i < nearByPosts[0].length; i++) {
-        //     const nearPost = nearByPosts[0][i];
-        //     const nownMember = await NowMember.find({
-        //         postId: nearPost.postId,
-        //     });
-        //     if (nearPost.nowMember[i].memberImg != nownMember[i].memberImg) {
-        //         changeNow = await Post.findOneAndUpdate(
-        //             {
-        //                 _id: nearPost.postId,
-        //                 nowMember: {
-        //                     $elemMatch: { _id: nownMember[i]._id },
-        //                 },
-        //             },
-        //             {
-        //                 $set: {
-        //                     'nowMember.$.memberImg': nownMember[i].memberImg,
-        //                 },
-        //             }
-        //         );
-        //     }
-        // }
-
         const newNearByPosts = await Post.find(
             { address },
             {
@@ -132,47 +92,7 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
         const nearPost = newNearByPosts
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
             .slice(0, 3);
-        // const nownMember = await NowMember.find({
-        //     postId: nearPost.postId,
-        // });
 
-        // for (let i = 0; i < nearPost.length; i++) {
-        //     const nownMember = await NowMember.find({
-        //         postId: nearPost[i].postId,
-        //     });
-        //     console.log('울고싶다...', nownMember.length);
-        //     for (let j = 0; j < nownMember.length; j++) {
-        //         const nearPostt = nearPost[i];
-        //         console.log('nnnneeee', nearPostt, [i]);
-        //         var nearPostImg = nearPostt.nowMember[i];
-        //         console.log('nnnnnown', nearPostImg);
-
-        //         var nownMemberImg = nownMember[j].memberImg;
-
-        //         console.log('11111', nownMemberImg);
-        //         console.log([i]);
-        //         if (nearPostImg != nownMemberImg) {
-        //             changeNow = await Post.findOneAndUpdate(
-        //                 {
-        //                     _id: nearPost.postId,
-        //                     nowMember: {
-        //                         $elemMatch: { _id: nownMember[j]._id },
-        //                     },
-        //                 },
-        //                 {
-        //                     $set: {
-        //                         'nowMember.$.memberImg':
-        //                             nownMember[j].memberImg,
-        //                     },
-        //                 }
-        //             );
-        //         }
-        //     }
-        // }
-
-        // console.log('carpost', caPost);
-        // console.log('필터링리뷰', filterRe);
-        // console.log('nearPost', nearPost);
         res.status(200).json({ caPost, nearPost, filterRe });
     } catch (err) {
         console.log(err);

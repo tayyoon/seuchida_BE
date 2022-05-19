@@ -31,6 +31,7 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
                             _id: totalList[j]._id,
                         },
                         {
+                            userId: 1,
                             userImg: 1,
                             longitude: 1,
                             latitude: 1,
@@ -41,7 +42,13 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
                             status: 1,
                         }
                     );
-                    categoryPost.push(likeThingsPost);
+                    const userInfo = await User.findOne({
+                        userId: likeThingsPost.userId
+                    })
+                    const userImg = userInfo.Img;
+                    const test = Object.assign(likeThingsPost, userImg)
+                    console.log('test', test)
+                    categoryPost.push(test);
                 }
             }
         }

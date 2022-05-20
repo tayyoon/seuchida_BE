@@ -32,9 +32,6 @@ const UserSchema = new mongoose.Schema({
     like: {
         type: Array,
     },
-    pushExercise: {
-        type: Array,
-    },
     level: {
         type: String,
     },

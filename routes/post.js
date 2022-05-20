@@ -356,6 +356,7 @@ router.delete('/postDelete/:roomId', authMiddleware, async (req, res) => {
     try {
         await Post.deleteOne({ roomId });
         await Room.deleteOne({ roomId });
+        await Myex.deleteMany({ roomId });
         res.status(200).send({ result: 'success' });
     } catch (error) {
         console.error(error);

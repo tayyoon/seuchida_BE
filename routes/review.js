@@ -141,7 +141,7 @@ router.get('/review', authMiddleware, async (req, res) => {
         let allReviews = await Review.find({}).sort({ $natural: -1 });
         // 전체 리뷰를 조회하되 프론트에서 필요한 정보만을 주기위해 key:1(true) 를 설정해줌
         // sort()함수에 $natural:-1 을 시켜 저장된 반대로 , 최신순으로 정렬시킴
-        for(i=1; i<allReviews.length; i++) {
+        for(i=0; i<allReviews.length; i++) {
             const userInfo = await User.findOne({
                 userId: allReviews[i].userId
             })

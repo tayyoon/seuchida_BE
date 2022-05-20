@@ -176,10 +176,9 @@ module.exports = (server) => {
                     });
                 }
             );
-            let memberId = userId;
             Post.updateOne(
                 { roomId: data.roomId },
-                { $pullAll: { nowMember: [ userId ] },
+                { $pullAll: { nowMember: [ [ userId ] ] },
                   $addToSet: { banUserList: [ userId ] }
                 },
             );

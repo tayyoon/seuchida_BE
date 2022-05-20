@@ -187,7 +187,7 @@ router.get('/postPush/:roomId', authMiddleware, async (req, res) => {
 
     await Post.updateOne(
         { roomId: roomId },
-        { $push: { nowMember: userId } }
+        { $push: { nowMember: [userId] } }
     );
     await Room.updateOne(
         { roomId: roomId },
@@ -208,7 +208,7 @@ router.get('/postPushCancle/:roomId', authMiddleware, async (req, res) => {
     const { userId } = user;
     await Post.updateOne(
         { roomId },
-        { $pullAll: { nowMember: [ userId ] } }
+        { $pullAll: { nowMember: [ [ userId ] ] } }
     )
     await Room.updateOne(
         { roomId },

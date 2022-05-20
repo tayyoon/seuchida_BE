@@ -135,6 +135,7 @@ router.get('/nearPostList', authMiddleware, async (req, res) => {
             nearPosts[i]['userAge'] = `${userInfo.userAge}`;
             nearPosts[i]['userGender'] = `${userInfo.userGender}`;
             nearPosts[i]['userImg'] = `${userInfo.userImg}`;
+            nearPosts[i]['level'] =`${userInfo.level}`;
             let nowmemberId = [];
             let nowMember = '';
             for(let j=0; j<nearPosts[i].nowMember.length; j++){
@@ -307,7 +308,8 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
             nickName: 'a',
             userAge: 'a',
             userGender: 'a',
-            userImg: 'a'
+            userImg: 'a',
+            level: 'a'
         });
         await Room.create({
             roomId,

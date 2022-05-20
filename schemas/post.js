@@ -79,6 +79,7 @@ const PostSchema = new mongoose.Schema({
     },
     banUserList: Array,
     nowMember: Array,
+    level: String
 });
 
 PostSchema.virtual('postId').get(function () {

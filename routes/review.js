@@ -164,7 +164,7 @@ router.post(
     }
 );
 
-// 전체리뷰 조회 (이건 어디지)
+// 전체리뷰 조회 
 router.get('/review', authMiddleware, async (req, res) => {
     try {
         let allReviews = await Review.find({}).sort({ $natural: -1 });

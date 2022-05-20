@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const Post = require('../schemas/post');
+const Myex = require('../schemas/myexercise');
 const User = require('../schemas/user');
 const router = express.Router();
 const passport = require('passport');
@@ -9,6 +9,7 @@ const authMiddleware = require('../middlewares/auth-middleware');
 const upload = require('../S3/s3');
 const Joi = require('joi');
 const AWS = require('aws-sdk');
+const myexercise = require('../schemas/myexercise');
 const s3 = new AWS.S3();
 
 router.get('/kakao', passport.authenticate('kakao'));
@@ -145,16 +146,11 @@ router.post(
 router.delete('/signDown', authMiddleware, async (req, res) => {
     const { user } = res.locals;
     let userId = user.userId;
-    const userInfo = await User.find({ userId: userId });
-    for(let i=0; i<userInfo[0].pushExercise.length; i++) {
-        await Post.updateOne(
-            { roomId: userInfo[0].pushExercise[i] },
-            { $pullAll: { nowMember: [ [ userId ] ] }}
-        )
-    }
+    
     const deleteImgURL = userInfo[0].userImg;
     //db에 있는 userImgURL에서 s3버킷의 파일명으로 분리
     const deleteImg = deleteImgURL.split('/')[3];
+    await Myex.deleteMany({ userId })
     await User.deleteOne({ userId: userId });
     s3.deleteObject(
         {

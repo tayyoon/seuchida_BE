@@ -41,9 +41,6 @@ const PostSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
-    nowMember: {
-        type: Array,
-    },
     memberGender: {
         type: String,
         required: true,
@@ -80,7 +77,8 @@ const PostSchema = new mongoose.Schema({
     roomId: {
         type: String,
     },
-    banUserList: Array
+    banUserList: Array,
+    nowMember: Array,
 });
 
 PostSchema.virtual('postId').get(function () {

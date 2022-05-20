@@ -83,14 +83,14 @@ module.exports = (server) => {
                 createdAt: moment().format('YYYY-MM-DD HH:mm:ss'),
             };
             io.sockets.in(data.roomId).emit('broadcast', msg);
-            let chatUser = Room.find({
-                roomId: data.roomId
-            })
-            let chatUser1 ='';
-            for(let i=0; i<chatUser.length; i++) {
-                chatUser1 = chatUser.nowMember[i][0]
-                io.sockets.in(chatUser1).emit('alert',msg)
-            }
+            // let chatUser = Room.find({
+            //     roomId: data.roomId
+            // })
+            // let chatUser1 ='';
+            // for(let i=0; i<chatUser.length; i++) {
+            //     chatUser1 = chatUser.nowMember[i][0]
+            //     io.sockets.in(chatUser1).emit('alert',msg)
+            // }
             //DB 채팅 내용 저장
             var chat = new Chat();
             chat.room = data.roomId;

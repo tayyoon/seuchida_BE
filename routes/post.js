@@ -1,11 +1,12 @@
 const express = require('express');
 const Post = require('../schemas/post');
 const User = require('../schemas/user');
+const Myex = require('../schemas/myexercise');
+const Review = require('../schemas/review');
+const Room = require('../schemas/room');
 const router = express.Router();
 const moment = require('moment');
 const authMiddleware = require('../middlewares/auth-middleware');
-const Review = require('../schemas/review');
-const Room = require('../schemas/room');
 const { v4 } = require('uuid');
 
 // 전체(메인)게시글 조회
@@ -218,10 +219,10 @@ router.get('/postPush/:roomId', authMiddleware, async (req, res) => {
         { roomId: roomId },
         { $push: { nowMember: [userId] } }
     )
-    await User.updateOne(
-        { userId },
-        { $push: { pushExercise: roomId } }
-    );
+    await Myex.create({
+        userId,
+        roomId
+    });
 
     res.status(200).send({ msg: '성공' });    
 });
@@ -239,10 +240,10 @@ router.get('/postPushCancle/:roomId', authMiddleware, async (req, res) => {
         { roomId },
         { $pullAll: { nowMember: [[ userId ]] } }
     )
-    await User.updateOne(
-        { userId },
-        { $pullAll: { pushExercise: [roomId] } }
-    );
+    await Myex.deleteOne({
+        userId,
+        roomId
+    })
     res.status(200).send({ msg: '취소완료!' });    
 });
 
@@ -336,10 +337,10 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
         postList['userGender'] = `${userInfo.userGender}`;
         postList['userImg'] = `${userInfo.userImg}`;
         postList['nowMember'].push(nowInfo);
-        await User.updateOne(
-            { userId: usersId },
-            { $push: { pushExercise: roomId } }
-        ); 
+        await Myex.create({
+            userId: usersId,
+            roomId
+        });
         res.status(200).json({ postList });
     } catch (error) {
         console.log(error);
@@ -355,7 +356,6 @@ router.delete('/postDelete/:roomId', authMiddleware, async (req, res) => {
     try {
         await Post.deleteOne({ roomId });
         await Room.deleteOne({ roomId });
-
         res.status(200).send({ result: 'success' });
     } catch (error) {
         console.error(error);

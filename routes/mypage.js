@@ -2,6 +2,7 @@ const express = require('express');
 const Post = require('../schemas/post');
 const User = require('../schemas/user');
 const Review = require('../schemas/review');
+const Myex = require('../schemas/myexercise');
 const router = express.Router();
 const upload = require('../S3/s3');
 const AWS = require('aws-sdk');
@@ -9,6 +10,7 @@ const s3 = new AWS.S3();
 //multer-s3 미들웨어 연결
 require('dotenv').config();
 const authMiddleware = require('../middlewares/auth-middleware');
+const myexercise = require('../schemas/myexercise');
 
 // 마이페이지
 router.get('/myPage', authMiddleware, async (req, res) => {
@@ -31,9 +33,9 @@ router.get('/myPage/myExercise', authMiddleware, async (req, res, next) => {
 
     let myEx = [];
     try {
-        const pushEx = await User.findOne({ userId }, { pushExercise: 1 });
-        for (let i = 0; i < pushEx.pushExercise.length; i++) {
-            let postEx = await Post.findOne({ roomId: pushEx.pushExercise[i] });
+        const pushEx = await Myex.find({userId})
+        for(let i=0; i< pushEx.length; i++) {
+            let postEx = await Post.findOne({ roomId: pushEx[i].roomId });
             const userInfo = await User.findOne({
                 userId: postEx.userId
             })

@@ -205,6 +205,16 @@ router.get('/postPush/:roomId', authMiddleware, async (req, res) => {
 // 참여 취소
 router.post('/postPushCancle', authMiddleware, async (req, res) => {});
 
+// 모집완료 
+router.get('/complete/:postId',authMiddleware, async (req, res) => {
+    const { postId } = req.params;
+    await Post.updateOne(
+        { postId },
+        { $set: {status: false} }
+    )
+    res.status(200).send({ msg: '모집완료!' });    
+});
+
 //게시글 작성
 router.post('/postWrite', authMiddleware, async (req, res) => {
     //작성한 정보 가져옴

@@ -83,8 +83,14 @@ module.exports = (server) => {
                 createdAt: moment().format('YYYY-MM-DD HH:mm:ss'),
             };
             io.sockets.in(data.roomId).emit('broadcast', msg);
-            
-            io.sockets.in(data.userId).emit('alert',msg)
+            let chatUser = await Room.find({
+                roomId: data.roomId
+            })
+            let chatUser1 ='';
+            for(let i=0; i<chatUser.length; i++) {
+                chatUser1 = chatUser.nowMember[i][0]
+                io.sockets.in(chatUser1).emit('alert',msg)
+            }
             //DB 채팅 내용 저장
             var chat = new Chat();
             chat.room = data.roomId;
@@ -107,7 +113,7 @@ module.exports = (server) => {
                 );
             });
         });
-
+        socket.on('back')
         socket.on('leave', function (data) {
             console.log(nickName + '님이 퇴장하셨습니다.');
             socket.leave(data.roomId);

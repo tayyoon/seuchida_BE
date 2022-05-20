@@ -42,8 +42,7 @@ const PostSchema = new mongoose.Schema({
         required: true,
     },
     nowMember: {
-        type: [],
-        required: true,
+        type: Array,
     },
     memberGender: {
         type: String,

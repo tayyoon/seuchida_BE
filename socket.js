@@ -83,7 +83,7 @@ module.exports = (server) => {
                 createdAt: moment().format('YYYY-MM-DD HH:mm:ss'),
             };
             io.sockets.in(data.roomId).emit('broadcast', msg);
-            let chatUser = await Room.find({
+            let chatUser = Room.find({
                 roomId: data.roomId
             })
             let chatUser1 ='';

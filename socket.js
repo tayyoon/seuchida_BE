@@ -177,9 +177,6 @@ module.exports = (server) => {
                     if (!output) {
                         return;
                     }
-                    Post.findOne({ roomId: data.roomId }, function (err, post) {
-                        io.sockets.in(data.roomId).emit('userlist', post.nowMember);
-                    });
                 }
             );
 

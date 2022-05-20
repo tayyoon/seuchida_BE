@@ -3,7 +3,6 @@ const moment = require('moment');
 const Chat = require('./schemas/chatting');
 const Room = require('./schemas/room');
 const Post = require('./schemas/post');
-const NowMember = require('./schemas/nowMember');
 const socketauthMiddleware = require('./middlewares/socket-auth-middleware');
 
 module.exports = (server) => {

@@ -1,7 +1,6 @@
 const express = require('express');
 const Post = require('../schemas/post');
 const User = require('../schemas/user');
-const NowMember = require('../schemas/nowMember');
 const router = express.Router();
 const moment = require('moment');
 const authMiddleware = require('../middlewares/auth-middleware');
@@ -203,7 +202,20 @@ router.get('/postPush/:roomId', authMiddleware, async (req, res) => {
 });
 
 // 참여 취소
-router.post('/postPushCancle', authMiddleware, async (req, res) => {});
+router.post('/postPushCancle/:roomId', authMiddleware, async (req, res) => {
+    const { roomId } = req.params;
+    const { user } = res.locals;
+    const { userId } = user;
+    await Post.updateOne(
+        { roomId },
+        { $pullAll: { nowMember: [ userId ] } }
+    )
+    await Room.updateOne(
+        { roomId },
+        { $pullAll: { nowMember: [ userId ] } }
+    )
+    res.status(200).send({ msg: '모집완료!' });    
+});
 
 // 모집완료 
 router.get('/complete/:postId', authMiddleware, async (req, res) => {

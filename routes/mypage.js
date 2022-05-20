@@ -40,7 +40,7 @@ router.get('/myPage/myExercise', authMiddleware, async (req, res, next) => {
         for (let i = 0; i < pushEx.pushExercise.length; i++) {
             let postEx = await Post.findOne({ roomId: pushEx.pushExercise[i] });
             const userInfo = await User.findOne({
-                userId
+                userId: postEx.userId
             })
             postEx['nickName'] = `${userInfo.nickName}`;
             postEx['userAge'] = `${userInfo.userAge}`;

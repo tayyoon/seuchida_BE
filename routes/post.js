@@ -138,7 +138,7 @@ router.get('/nearPostList', authMiddleware, async (req, res) => {
             let nowmemberId = [];
             let nowMember = '';
             for(let j=0; j<nearPosts[i].nowMember.length; j++){
-                nowmemberId.push(nearPosts.nowMember[j]) 
+                nowmemberId.push(nearPosts[i].nowMember[j]) 
             }
             nearPosts[i]['nowMember'] = [];
             for(let j=0; j<nowmemberId.length; j++) {

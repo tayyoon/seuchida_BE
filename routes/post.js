@@ -212,9 +212,9 @@ router.get('/postPushCancle/:roomId', authMiddleware, async (req, res) => {
     )
     await Room.updateOne(
         { roomId },
-        { $pullAll: { nowMember: [ userId ] } }
+        { $pullAll: { nowMember: [[ userId ]] } }
     )
-    res.status(200).send({ msg: '모집완료!' });    
+    res.status(200).send({ msg: '취소완료!' });    
 });
 
 // 모집완료 

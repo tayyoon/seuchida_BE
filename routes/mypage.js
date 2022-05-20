@@ -64,7 +64,6 @@ router.get('/myPage/myExercise', authMiddleware, async (req, res, next) => {
             }
             myEx.push(postEx);
         }
-        console.log(myEx)
         res.status(200).json({ myEx });
     } catch (err) {
         console.log('마이페이지 에이피아이2', err);
@@ -88,7 +87,6 @@ router.get('/myPage/post', authMiddleware, async (req, res) => {
             myPost[i]['userGender'] = `${userInfo.userGender}`;
             myPost[i]['userImg'] = `${userInfo.userImg}`;
         }
-        console.log(myPost)
         res.status(200).json({ myPost });
     } catch (err) {
         console.log('마이페이지 에이피아이3', err);

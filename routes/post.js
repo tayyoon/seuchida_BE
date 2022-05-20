@@ -330,7 +330,7 @@ router.delete('/postDelete/:roomId', authMiddleware, async (req, res) => {
         await Post.deleteOne({ roomId });
         await Room.deleteOne({ roomId });
 
-        res.send(200).send({ result: 'success' });
+        res.status(200).send({ result: 'success' });
     } catch (error) {
         console.error(error);
         res.status(400).send({ msg: '게시글이 삭제되지 않았습니다.' });

@@ -166,14 +166,21 @@ module.exports = (server) => {
             socket.leave(data.roomId);
 
             Post.updateOne(
-                {roomId: data.roomId},
-                { $set: { memberAge: '테스트'}}
-            )
-            Post.updateOne(
                 { roomId: data.roomId },
                 { $pullAll: { nowMember: [ [ userId ] ] },
                   $addToSet: { banUserList: [ userId ] }
                 },
+                function (err, output) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    if (!output) {
+                        return;
+                    }
+                    Post.findOne({ roomId: data.roomId }, function (err, post) {
+                        io.sockets.in(data.roomId).emit('userlist', post.nowMember);
+                    });
+                }
             );
 
             Room.updateOne(

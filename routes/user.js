@@ -139,6 +139,12 @@ router.delete('/signDown', authMiddleware, async (req, res) => {
     const { user } = res.locals;
     let userId = user.userId;
     const userInfo = await User.find({ userId: userId });
+    for(let i=0; i<userInfo[0].pushExercise.length; i++) {
+        await Post.updateOne(
+            { roomId: userInfo[0].pushExercise[i] },
+            { $pullAll: { nowMember: [ [ userId ] ] }}
+        )
+    }
     const deleteImgURL = userInfo[0].userImg;
     //db에 있는 userImgURL에서 s3버킷의 파일명으로 분리
     const deleteImg = deleteImgURL.split('/')[3];
@@ -153,8 +159,7 @@ router.delete('/signDown', authMiddleware, async (req, res) => {
                 throw err;
             }
         }
-    );
-
+    );    
     res.status(201).send({
         message: '탈퇴완료',
     });

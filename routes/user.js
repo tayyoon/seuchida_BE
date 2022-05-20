@@ -46,11 +46,6 @@ router.get(
     '/google/callback',
     passport.authenticate('google', { failureRedirect: '/' }), //? 그리고 passport 로그인 전략에 의해 googleStrategy로 가서 구글계정 정보와 DB를 비교해서 회원가입시키거나 로그인 처리하게 한다.
     (req, res) => {
-        const { accessToken } = req.body;
-
-const { data } = await axios.get(
-            `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${accessToken}`
-        );
         res.redirect('/');
     }
 );

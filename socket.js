@@ -165,6 +165,13 @@ module.exports = (server) => {
             console.log(nickName + '님이 강퇴당하셨습니다.');
             socket.leave(data.roomId);
 
+            Post.updateOne(
+                { roomId: data.roomId },
+                { $pullAll: { nowMember: [ [ userId ] ] },
+                  $addToSet: { banUserList: [ userId ] }
+                },
+            );
+
             Room.updateOne(
                 { roomId: data.roomId },
                 { $pullAll: { nowMember: [ [ userId ] ] },
@@ -181,12 +188,6 @@ module.exports = (server) => {
                         io.sockets.in(data.roomId).emit('userlist', room.nowMember);
                     });
                 }
-            );
-            Post.updateOne(
-                { roomId: data.roomId },
-                { $pullAll: { nowMember: [ [ userId ] ] },
-                  $addToSet: { banUserList: [ userId ] }
-                },
             );
             var msg = {
                 room: data.roomId,

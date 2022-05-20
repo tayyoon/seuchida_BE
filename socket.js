@@ -113,7 +113,7 @@ module.exports = (server) => {
                 );
             });
         });
-        socket.on('back')
+        // socket.on('back')
         socket.on('leave', function (data) {
             console.log(nickName + '님이 퇴장하셨습니다.');
             socket.leave(data.roomId);

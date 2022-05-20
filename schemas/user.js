@@ -40,6 +40,9 @@ const UserSchema = new mongoose.Schema({
     },
     userEvalue: {
         type: Number
+    },
+    provider: {
+        type: String
     }
 });
 module.exports = mongoose.model('User', UserSchema);

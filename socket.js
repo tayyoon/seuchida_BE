@@ -2,6 +2,8 @@ const SocketIO = require('socket.io');
 const moment = require('moment');
 const Chat = require('./schemas/chatting');
 const Room = require('./schemas/room');
+const Post = require('./schemas/post');
+const NowMember = require('./schemas/nowMember');
 const socketauthMiddleware = require('./middlewares/socket-auth-middleware');
 
 module.exports = (server) => {
@@ -16,14 +18,14 @@ module.exports = (server) => {
     moment.tz.setDefault('Asia/Seoul'); //소켓으로 다시 서버로 socket.emit 보내면 서버에서 socket.leave해주면 될듯
     io.use(socketauthMiddleware)
     io.on('connection', async function (socket) {
-        console.log(socket.id)
         const { userId, nickName, userImg } = socket.user;
+        socket.join(userId)
         socket.on('join', function (data) {
             console.log(nickName + '님이 입장하셨습니다.');
             socket.join(data.roomId);
             Room.updateOne(
                 { roomId: data.roomId },
-                { $addToSet: { userList: [ userId ] } },
+                { $addToSet: { nowMember: [ userId ] } },
                 function (err, output) {
                     if (err) {
                         console.log(err);
@@ -32,7 +34,7 @@ module.exports = (server) => {
                         return;
                     }
                     Room.findOne({ roomId: data.roomId }, function (err, room) {
-                        io.sockets.in(data.roomId).emit('userlist', room.userList); //자신포함 룸안의 전체유저한테 보내기
+                        io.sockets.in(data.roomId).emit('userlist', room.nowMember); //자신포함 룸안의 전체유저한테 보내기
                     });
                 }
             );
@@ -82,7 +84,8 @@ module.exports = (server) => {
                 createdAt: moment().format('YYYY-MM-DD HH:mm:ss'),
             };
             io.sockets.in(data.roomId).emit('broadcast', msg);
-
+            
+            io.sockets.in(data.userId).emit('alert',msg)
             //DB 채팅 내용 저장
             var chat = new Chat();
             chat.room = data.roomId;
@@ -112,17 +115,16 @@ module.exports = (server) => {
 
             Room.updateOne(
                 { roomId: data.roomId },
-                { $pullAll: { userList: [ [ userId ] ] } },
+                { $pullAll: { nowMember: [ [ userId ] ] } },
                 function (err, output) {
                     if (err) {
                         console.log(err);
                     }
-                    console.log(output);
                     if (!output) {
                         return;
                     }
                     Room.findOne({ roomId: data.roomId }, function (err, room) {
-                        io.sockets.in(data.roomId).emit('userlist', room.userList);
+                        io.sockets.in(data.roomId).emit('userlist', room.nowMember);
                     });
                 }
             );
@@ -150,30 +152,37 @@ module.exports = (server) => {
 
             io.sockets.in(data.roomId).emit('broadcast', msg);
         });
-        socket.on('banUser', (data) => { //어떻게 해야하지 io를 따로 빼서 해야하나?
-            socket.to(data.userId).emit('ban')
+        socket.on('banUser', (data) => { //방장이 서버로 이사람 강퇴해달라 신호보내는거
+            let msg = true;
+            io.sockets.in(data.userId).emit('ban', msg)// 서버에서 강퇴당할 사람에게 니가 서버로 다시 신호보내라고 하는거
         })
-        socket.on('banUserOut', (data) => { //어떻게 해야하지 io를 따로 빼서 해야하나?
-            console.log(nickName + '님이 퇴장하셨습니다.');
+        socket.on('banUserOut', (data) => { //강퇴당한 사람이 서버로 나 강퇴시켜달라 신호보내는거 
+            console.log(nickName + '님이 강퇴당하셨습니다.');
             socket.leave(data.roomId);
 
             Room.updateOne(
                 { roomId: data.roomId },
-                { $pullAll: { userList: [ [ userId ] ] },
+                { $pullAll: { nowMember: [ [ userId ] ] },
                   $addToSet: { banUserList: [ userId ] }
                 },
                 function (err, output) {
                     if (err) {
                         console.log(err);
                     }
-                    console.log(output);
                     if (!output) {
                         return;
                     }
                     Room.findOne({ roomId: data.roomId }, function (err, room) {
-                        io.sockets.in(data.roomId).emit('userlist', room.userList);
+                        io.sockets.in(data.roomId).emit('userlist', room.nowMember);
                     });
                 }
+            );
+            let memberId = userId;
+            Post.updateOne(
+                { roomId: data.roomId },
+                { $pull: { nowMember: { $in: [ memberId ] } },
+                  $addToSet: { banUserList: [ userId ] }
+                },
             );
             var msg = {
                 room: data.roomId,

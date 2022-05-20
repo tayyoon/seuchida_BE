@@ -81,6 +81,7 @@ const PostSchema = new mongoose.Schema({
     roomId: {
         type: String,
     },
+    banUserList: Array
 });
 
 PostSchema.virtual('postId').get(function () {

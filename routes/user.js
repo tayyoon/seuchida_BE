@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const Post = require('../schemas/post');
 const User = require('../schemas/user');
-// const Evalue = require('../schemas/evalue');
 const router = express.Router();
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
@@ -29,7 +28,6 @@ const kakaoCallback = (req, res, next) => {
                 token,
                 userInfo,
             };
-            console.log(result);
             res.send({ user: result });
         }
     )(req, res, next);
@@ -37,8 +35,7 @@ const kakaoCallback = (req, res, next) => {
 
 router.get('/callback/kakao', kakaoCallback);
 
-<<<<<<< Updated upstream
-=======
+
 //* 구글로 로그인하기 라우터 ***********************
 router.get(
     '/oauth/google',
@@ -54,7 +51,19 @@ router.get(
     }
 );
 
->>>>>>> Stashed changes
+
+
+//* 구글로 로그인하기 라우터 ***********************
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] })); // 프로파일과 이메일 정보를 받는다.
+    //? 위에서 구글 서버 로그인이 되면, 네이버 redirect url 설정에 따라 이쪽 라우터로 오게 된다. 인증 코드를 박게됨
+
+router.get('/callback/google', passport.authenticate('google', { failureRedirect: '/' }), //? 그리고 passport 로그인 전략에 의해 googleStrategy로 가서 구글계정 정보와 DB를 비교해서 회원가입시키거나 로그인 처리하게 한다.
+    (req, res) => {
+        res.redirect('/');
+    },
+);
+
+
 // const postUsersSchema = Joi.object({
 //     nickName: Joi.string()
 //         .required()
@@ -147,11 +156,10 @@ router.delete('/signDown', authMiddleware, async (req, res) => {
     const { user } = res.locals;
     let userId = user.userId;
     const userInfo = await User.find({ userId: userId });
-    const deleteImgURL = userInfo.userImg;
+    const deleteImgURL = userInfo[0].userImg;
     //db에 있는 userImgURL에서 s3버킷의 파일명으로 분리
     const deleteImg = deleteImgURL.split('/')[3];
     await User.deleteOne({ userId: userId });
-    await Evalue.deleteOne({ userId: userId });
     s3.deleteObject(
         {
             Bucket: process.env.BUCKET_NAME,

@@ -12,7 +12,36 @@ const authMiddleware = require('../middlewares/auth-middleware');
 router.get('/reviewPost/:postId', authMiddleware, async (req, res) => {
     try {
         const { postId } = req.params;
-        const post = await Post.findOne({ _id: postId });
+        let post = await Post.findOne({ _id: postId });
+        const userInfo = await User.findOne({
+            userId: post.userId
+        })
+        post['nickName'] = `${userInfo.nickName}`;
+        post['userAge'] = `${userInfo.userAge}`;
+        post['userGender'] = `${userInfo.userGender}`;
+        post['userImg'] = `${userInfo.userImg}`;
+    
+        let nowmemberId = [];
+        let nowMember = '';
+        for(let i=0; i<post.nowMember.length; i++){
+            nowmemberId.push(post.nowMember[i])
+        }
+        post['nowMember'] = [];
+        for(let i=0; i<nowmemberId.length; i++) {
+            nowMember = await User.findOne({
+                userId: nowmemberId[i]
+            })
+            nowInfo = {
+                memberId: nowMember.userId,
+                memberImg: nowMember.userImg,
+                memberNickname: nowMember.nickName,
+                memberAgee: nowMember.userAge,
+                memberGen: nowMember.userGender,
+                memberDesc: nowMember.userContent
+            }
+            post['nowMember'].push(nowInfo); 
+        }
+        
         res.status(200).json({ result: 'success', post });
     } catch (error) {
         console.log(error);

@@ -135,6 +135,28 @@ router.get('/nearPostList', authMiddleware, async (req, res) => {
             nearPosts[i]['userAge'] = `${userInfo.userAge}`;
             nearPosts[i]['userGender'] = `${userInfo.userGender}`;
             nearPosts[i]['userImg'] = `${userInfo.userImg}`;
+            let nowmemberId = [];
+            let nowMember = '';
+            for(let j=0; j<nearPosts[i].nowMember.length; j++){
+                nowmemberId.push(nearPosts.nowMember[j]) 
+            }
+            nearPosts[i]['nowMember'] = [];
+            for(let j=0; j<nowmemberId.length; j++) {
+                nowMember = await User.findOne({
+                    userId: nowmemberId[j]
+                })
+                nowInfo = {
+                    memberId: nowMember.userId,
+                    memberImg: nowMember.userImg,
+                    memberNickname: nowMember.nickName,
+                    memberAgee: nowMember.userAge,
+                    memberGen: nowMember.userGender,
+                    memberDesc: nowMember.userContent,
+                    memberLevel: nowMember.level,
+                    memberCategory: nowMember.userInterest
+                }
+                nearPosts[i]['nowMember'].push(nowInfo); 
+            }
         }
 
         res.status(200).json({ nearPosts });
@@ -172,7 +194,9 @@ router.get('/postDetail/:postId', authMiddleware, async (req, res) => {
             memberNickname: nowMember.nickName,
             memberAgee: nowMember.userAge,
             memberGen: nowMember.userGender,
-            memberDesc: nowMember.userContent
+            memberDesc: nowMember.userContent,
+            memberLevel: nowMember.level,
+            memberCategory: nowMember.userInterest
         }
         newPost['nowMember'].push(nowInfo); 
     }

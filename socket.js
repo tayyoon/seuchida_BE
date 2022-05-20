@@ -166,6 +166,10 @@ module.exports = (server) => {
             socket.leave(data.roomId);
 
             Post.updateOne(
+                {roomId: data.roomId},
+                { $set: { memberAge: '테스트'}}
+            )
+            Post.updateOne(
                 { roomId: data.roomId },
                 { $pullAll: { nowMember: [ [ userId ] ] },
                   $addToSet: { banUserList: [ userId ] }

@@ -49,13 +49,13 @@ router.get('/myPage/myExercise', authMiddleware, async (req, res, next) => {
 
             let nowmemberId = [];
             let nowMember = '';
-            for(let i=0; i<postEx.nowMember.length; i++){
-                nowmemberId.push(postEx.nowMember[i])
+            for(let j=0; j<postEx.nowMember.length; j++){
+                nowmemberId.push(postEx.nowMember[j])
             }
             postEx['nowMember'] = [];
-            for(let i=0; i<nowmemberId.length; i++) {
+            for(let j=0; j<nowmemberId.length; j++) {
                 nowMember = await User.findOne({
-                    userId: nowmemberId[i]
+                    userId: nowmemberId[j]
                 })
                 nowInfo = {
                     memberId: nowMember.userId,
@@ -69,7 +69,7 @@ router.get('/myPage/myExercise', authMiddleware, async (req, res, next) => {
             }
             myEx.push(postEx);
         }
-
+        console.log(myEx)
         res.status(200).json({ myEx });
     } catch (err) {
         console.log('마이페이지 에이피아이2', err);
@@ -83,9 +83,17 @@ router.get('/myPage/post', authMiddleware, async (req, res) => {
     const { userId } = user;
 
     try {
-        const myPost = await Post.find({ userId });
-
-
+        const userInfo = await User.findOne({
+            userId
+        })
+        var myPost = await Post.find({ userId });
+        for(let i =0; i<myPost.length; i++) {
+            myPost[i]['nickName'] = `${userInfo.nickName}`;
+            myPost[i]['userAge'] = `${userInfo.userAge}`;
+            myPost[i]['userGender'] = `${userInfo.userGender}`;
+            myPost[i]['userImg'] = `${userInfo.userImg}`;
+        }
+        console.log(myPost)
         res.status(200).json({ myPost });
     } catch (err) {
         console.log('마이페이지 에이피아이3', err);
@@ -96,10 +104,15 @@ router.get('/myPage/post', authMiddleware, async (req, res) => {
 // 내가 쓴 리뷰
 router.get('/myPage/myReview', authMiddleware, async (req, res) => {
     const { user } = res.locals;
-    const { userId } = user;
+    const { userId, nickName, userImg, userAge } = user;
 
     try {
-        const myPost = await Review.find({ userId });
+        var myPost = await Review.find({ userId });
+        for(let i =0; i<myPost.length; i++) {
+            myPost[i]['nickName'] = `${nickName}`;
+            myPost[i]['userAge'] = `${userAge}`;
+            myPost[i]['userImg'] = `${userImg}`;
+        }
         res.status(200).json({ myPost });
     } catch (err) {
         console.log('마이페이지 에이피아이4', err);
@@ -157,61 +170,6 @@ router.post(
                             throw err;
                         }
                     }
-                );
-
-                await Post.updateMany(
-                    { userId },
-                    {
-                        $set: {
-                            userImg: newUserImg,
-                        },
-                    }
-                );
-
-                const allPost = await Post.find({}, { nowMember: 1 });
-
-                // for (let i = 0; i < allPost.length; i++) {
-                //     const noo = allPost[i].nowMember[0][i].memberImg;
-                //     console.log('^^^^^^^^^^^', allPost[i].nowMember[i]);
-
-                //     await Post.updateMany(
-                //         { : { memberId: userId } },
-                //         { $set: { memberImg: newUserImg } }
-                //     );
-                // }
-
-                await Review.updateMany(
-                    { userId },
-                    {
-                        $set: {
-                            userImg: newUserImg,
-                        },
-                    }
-                );
-
-                await NowMember.updateMany(
-                    { memberId: userId },
-                    {
-                        $set: {
-                            memberImg: newUserImg,
-                        },
-                    }
-                );
-
-                await Post.updateMany({ userId }, { userImg: newUserImg });
-
-                await Room.updateMany(
-                    { owner: userId },
-                    {
-                        $set: {
-                            ownerImg: newUserImg,
-                        },
-                    }
-                );
-
-                await Chat.updateMany(
-                    { userId },
-                    { $set: { userImg: newUserImg } }
                 );
 
                 await User.updateOne(

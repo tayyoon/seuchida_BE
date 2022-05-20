@@ -8,7 +8,7 @@ const moment = require('moment');
 const upload = require('../S3/s3');
 const authMiddleware = require('../middlewares/auth-middleware');
 
-// 리뷰 포스트 정보 (이게 어디지)
+// 리뷰 포스트 정보 
 router.get('/reviewPost/:postId', authMiddleware, async (req, res) => {
     try {
         const { postId } = req.params;
@@ -138,21 +138,17 @@ router.post(
 // 전체리뷰 조회 (이건 어디지)
 router.get('/review', authMiddleware, async (req, res) => {
     try {
-        let allReviews = await Review.find(
-            {},
-            {
-                userImg: 1,
-                content: 1,
-                nickName: 1,
-                reviewImg: 1,
-                spot: 1,
-                postCategory: 1,
-                createdAt: 1,
-            }
-        ).sort({ $natural: -1 });
+        let allReviews = await Review.find({}).sort({ $natural: -1 });
         // 전체 리뷰를 조회하되 프론트에서 필요한 정보만을 주기위해 key:1(true) 를 설정해줌
         // sort()함수에 $natural:-1 을 시켜 저장된 반대로 , 최신순으로 정렬시킴
-
+        for(i=1; i<allReviews.length; i++) {
+            const userInfo = await User.findOne({
+                userId: allReviews[i].userId
+            })
+            allReviews[i]['nickName'] = `${userInfo.nickName}`;
+            allReviews[i]['userAge'] = `${userInfo.userAge}`;
+            allReviews[i]['userImg'] = `${userInfo.userImg}`;
+        }
         res.status(201).send(allReviews);
     } catch (error) {
         console.error(error);

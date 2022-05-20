@@ -206,11 +206,11 @@ router.get('/postPush/:roomId', authMiddleware, async (req, res) => {
 router.post('/postPushCancle', authMiddleware, async (req, res) => {});
 
 // 모집완료 
-router.get('/complete/:postId',authMiddleware, async (req, res) => {
+router.get('/complete/:postId', authMiddleware, async (req, res) => {
     const { postId } = req.params;
     await Post.updateOne(
-        { postId },
-        { $set: {status: false} }
+        { _id: postId },
+        { $set: { status: false } }
     )
     res.status(200).send({ msg: '모집완료!' });    
 });

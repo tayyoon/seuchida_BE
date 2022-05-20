@@ -12,9 +12,9 @@ module.exports = (server) => {
             origins: '*:*'
         }
     });
-    console.log('소켓IO 서버 오픈'); //로그인완료되자마자 소켓에 유저를 연결시켜서 유저 id를 받고 그걸로 강퇴기능을 구현하면 될거같다.
-    require('moment-timezone'); //socket.to(밴당할 userId).emit('ban') 이렇게 보내면 밴당한 유저소켓에서 socket.on으로 받고 밴당한유저 
-    moment.tz.setDefault('Asia/Seoul'); //소켓으로 다시 서버로 socket.emit 보내면 서버에서 socket.leave해주면 될듯
+    console.log('소켓IO 서버 오픈'); 
+    require('moment-timezone');  
+    moment.tz.setDefault('Asia/Seoul'); 
     io.use(socketauthMiddleware)
     io.on('connection', async function (socket) {
         const { userId, nickName, userImg } = socket.user;

@@ -287,7 +287,7 @@ router.post('/postWrite', authMiddleware, async (req, res) => {
             maxMember,
             owner: usersId,
             ownerImg: 'a',
-            nowMember: [usersId],
+            nowMember: [[usersId]],
             createdAt,
         });
         const userInfo = await User.findOne({

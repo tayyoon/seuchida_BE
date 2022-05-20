@@ -214,6 +214,10 @@ router.get('/postPushCancle/:roomId', authMiddleware, async (req, res) => {
         { roomId },
         { $pullAll: { nowMember: [[ userId ]] } }
     )
+    await User.updateOne(
+        { userId },
+        { $pullAll: { pushExercise: [roomId] } }
+    );
     res.status(200).send({ msg: '취소완료!' });    
 });
 

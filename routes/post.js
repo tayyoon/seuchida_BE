@@ -50,20 +50,15 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
 
         // 작성된 전체 리뷰 최신순으로 넘기기
         var filterReview = [];
-        var allReviews = await Review.find(
-            {},
-            {
-                userImg: 1,
-                content: 1,
-                nickName: 1,
-                reviewImg: 1,
-                spot: 1,
-                postCategory: 1,
-                createdAt: 1,
-            }
-        ).sort({ $natural: -1 });
+        var allReviews = await Review.find({}).sort({ $natural: -1 });
         for (let i = 0; i < allReviews.length; i++) {
             if (allReviews[i].reviewImg) {
+                const userInfo = await User.findOne({
+                    userId: allReviews[i].userId
+                })
+                allReviews[i]['nickName'] = `${userInfo.nickName}`;
+                allReviews[i]['userAge'] = `${userInfo.userAge}`;
+                allReviews[i]['userImg'] = `${userInfo.userImg}`;
                 filterReview.push(allReviews[i]);
             }
         }

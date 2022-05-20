@@ -202,7 +202,7 @@ router.get('/postPush/:roomId', authMiddleware, async (req, res) => {
 });
 
 // 참여 취소
-router.post('/postPushCancle/:roomId', authMiddleware, async (req, res) => {
+router.get('/postPushCancle/:roomId', authMiddleware, async (req, res) => {
     const { roomId } = req.params;
     const { user } = res.locals;
     const { userId } = user;

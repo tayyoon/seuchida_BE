@@ -40,8 +40,8 @@ router.get(
     '/google',
     passport.authenticate('google', {
         scope: ['profile', 'email'],
-        accessType: 'offline',
-        approvalPrompt: 'force',
+        access_Type: 'offline',
+        approval_Prompt: 'force',
     })
 ); // 프로파일과 이메일 정보를 받는다.
 //? 위에서 구글 서버 로그인이 되면, 네이버 redirect url 설정에 따라 이쪽 라우터로 오게 된다. 인증 코드를 박게됨

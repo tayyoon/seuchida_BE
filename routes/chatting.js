@@ -15,6 +15,12 @@ router.get('/chatting', authMiddleware, async (req, res) => {
         const chattingRoom = await Room.find({
             $or: [ {nowMember: [userId]}, {owner: userId} ] 
         });
+        for(let i=0; i<chattingRoom.length; i++) {
+            const userInfo = await User.findOne({
+                userId: chattingRoom[i].owner
+            })
+            chattingRoom[i]['ownerImg'] = `${userInfo.userImg}`;
+        }
         let chattingRoomId = [];
         let lastChatting = [];
         for(let i=0; i<chattingRoom.length; i++) {

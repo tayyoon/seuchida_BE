@@ -2,15 +2,10 @@ const express = require('express');
 const Post = require('../schemas/post');
 const User = require('../schemas/user');
 const Review = require('../schemas/review');
-const Chat = require('../schemas/chatting');
-const Room = require('../schemas/room');
-const NowMember = require('../schemas/nowMember');
 const router = express.Router();
 const upload = require('../S3/s3');
 const AWS = require('aws-sdk');
 const s3 = new AWS.S3();
-const jwt = require('jsonwebtoken');
-const moment = require('moment');
 //multer-s3 미들웨어 연결
 require('dotenv').config();
 const authMiddleware = require('../middlewares/auth-middleware');

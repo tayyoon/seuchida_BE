@@ -190,7 +190,10 @@ router.get('/postPush/:roomId', authMiddleware, async (req, res) => {
         { roomId: roomId },
         { $push: { nowMember: userId } }
     );
-
+    await Room.updateOne(
+        { roomId: roomId },
+        { $push: { nowMember: userId } }
+    )
     await User.updateOne(
         { userId },
         { $push: { pushExercise: roomId } }

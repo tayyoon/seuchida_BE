@@ -28,7 +28,6 @@ module.exports = () => {
                     } else {
                         // 가입되지 않는 유저면 회원가입 시키고 로그인을 시킨다
                         const newUser = await User.create({
-                            email: profile.emails.value,
                             nick: profile.displayName,
                             snsId: profile.id,
                             provider: 'google',

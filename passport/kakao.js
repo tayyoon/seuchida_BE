@@ -1,11 +1,10 @@
-require("dotenv").config();
+require('dotenv').config();
 const passport = require('passport');
 const KakaoStrategy = require('passport-kakao').Strategy;
 const User = require('../schemas/user');
 
 module.exports = () => {
     passport.use(
-
         new KakaoStrategy(
             {
                 clientID: process.env.KAKAO_CLIENT_ID, // 카카오 로그인에서 발급받은 REST API 키
@@ -17,7 +16,7 @@ module.exports = () => {
             // accessToken, refreshToken: 로그인 성공 후 카카오가 보내준 토큰
             // profile: 카카오가 보내준 유저 정보. profile의 정보를 바탕으로 회원가입
             async (accessToken, refreshToken, profile, done) => {
-                console.log(accessToken, profile);
+                console.log('카카오 엑세스, 파일', accessToken, profile);
                 try {
                     const exUser = await User.findOne({
                         // 카카오 플랫폼에서 로그인 했고 & snsId필드에 카카오 아이디가 일치할경우
@@ -38,7 +37,6 @@ module.exports = () => {
                     console.error(error);
                     done(error);
                 }
-
             }
         )
     );

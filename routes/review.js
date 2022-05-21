@@ -59,9 +59,9 @@ router.post(
         const post = await Post.findOne({ _id: postId });
         const { user } = res.locals;
         const { userId } = user;
-        const { spot, address, postCategory } = post;
+        const { spot, address, postCategory, roomId } = post;
         const { content, evalues, otherId } = req.body; 
-        const image = req.file?.location; 
+        let image = req.file?.location; 
 
         let checkUserId = '';
         let checkEvalue = 0;
@@ -75,30 +75,14 @@ router.post(
         moment.tz.setDefault('Asia/Seoul');
         const createdAt = String(moment().format('YYYY-MM-DD HH:mm:ss'));
         try {
-            var reviewList = await Review.create({
-                postId,
-                userId,
-                nickName: 'a',
-                userImg: 'a',
-                userAge: 'a',
-                reviewImg: image,
-                content,
-                createdAt,
-                address,
-                spot,
-                postCategory,
-            });
-            const userInfo = await User.findOne({
-                userId
-            })
-            reviewList['nickName'] = `${userInfo.nickName}`;
-            reviewList['userAge'] = `${userInfo.userAge}`;
-            reviewList['userImg'] = `${userInfo.userImg}`;
             //이미지첨부 후기글이면 5점 아니면 3점주기
             if(!image) {
                 upEvalue = Number(3);
             } else {
                 upEvalue = Number(5);
+            }
+            if(!image) {
+                image = process.env.DEFAULT_IMG
             }
             //첫 후기글일때 5점 주기
             const checkReview = await Review.find({
@@ -156,6 +140,31 @@ router.post(
                     }
                 );
             };
+            var reviewList = await Review.create({
+                postId,
+                userId,
+                nickName: 'a',
+                userImg: 'a',
+                userAge: 'a',
+                reviewImg: image,
+                content,
+                createdAt,
+                address,
+                spot,
+                postCategory,
+            });
+            const userInfo = await User.findOne({
+                userId
+            })
+            reviewList['nickName'] = `${userInfo.nickName}`;
+            reviewList['userAge'] = `${userInfo.userAge}`;
+            reviewList['userImg'] = `${userInfo.userImg}`;
+
+            await Myex.updateOne(
+                { roomId },
+                { $set: { writeReview: false } }
+            )
+
             res.status(200).json({ result: 'success', reviewList });
         } catch (error) {
             console.log(error);

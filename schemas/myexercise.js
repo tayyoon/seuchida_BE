@@ -6,7 +6,11 @@ const myExSchema = new mongoose.Schema({
     },
     userId:{
         type: String
-    }
+    },
+    writeReview: {
+        type: Boolean,
+        default: true,
+    },
 });
 
 module.exports = mongoose.model('myEx',myExSchema);

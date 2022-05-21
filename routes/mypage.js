@@ -33,7 +33,7 @@ router.get('/myPage/myExercise', authMiddleware, async (req, res, next) => {
 
     let myEx = [];
     try {
-        const pushEx = await Myex.find({userId})
+        const pushEx = await Myex.find({ userId, writeReview: true})
         for(let i=0; i< pushEx.length; i++) {
             let postEx = await Post.findOne({ roomId: pushEx[i].roomId });
             const userInfo = await User.findOne({

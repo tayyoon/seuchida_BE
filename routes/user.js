@@ -39,7 +39,7 @@ router.get('/callback/kakao', kakaoCallback);
 router.get(
     '/oauth/google',
     passport.authenticate('google', {
-        scope: ['profile', 'email'],
+        scope: ['profile'],
         // access_Type: 'offline',
         // approval_Prompt: 'force',
     })

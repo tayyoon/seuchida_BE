@@ -68,7 +68,7 @@ const googleCallback = (req, res, next) => {
     )(req, res, next);
 };
 
-router.get('/google/callback', googleCallback);
+router.get('/callback/google', googleCallback);
 // passport.authenticate('google', { failureRedirect: '/' }), //? 그리고 passport 로그인 전략에 의해 googleStrategy로 가서 구글계정 정보와 DB를 비교해서 회원가입시키거나 로그인 처리하게 한다.
 
 //회원가입

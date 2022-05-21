@@ -28,8 +28,8 @@ module.exports = () => {
                     } else {
                         // 가입되지 않는 유저면 회원가입 시키고 로그인을 시킨다
                         const newUser = await User.create({
-                            nick: profile.displayName,
-                            snsId: profile.id,
+                            // nick: profile.displayName,
+                            userId: profile.id,
                             provider: 'google',
                         });
                         done(null, newUser); // 회원가입하고 로그인 인증 완료

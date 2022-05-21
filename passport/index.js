@@ -1,4 +1,6 @@
 require('dotenv').config();
+
+const passport = require('passport');
 const google = require('./google');
 const kakao = require('./kakao');
 module.exports = () => {

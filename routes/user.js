@@ -29,6 +29,7 @@ const kakaoCallback = (req, res, next) => {
                 token,
                 userInfo,
             };
+            consokle.log('카카오 콜백 함수 결과', result);
             res.send({ user: result });
         }
     )(req, res, next);

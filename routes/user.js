@@ -62,6 +62,7 @@ const googleCallback = (req, res, next) => {
                 token,
                 userInfo,
             };
+            consokle.log('구글 콜백 함수 결과', result);
             res.send({ user: result });
         }
     )(req, res, next);

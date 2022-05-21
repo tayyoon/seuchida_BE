@@ -29,7 +29,7 @@ const kakaoCallback = (req, res, next) => {
                 token,
                 userInfo,
             };
-            consokle.log('카카오 콜백 함수 결과', result);
+            console.log('카카오 콜백 함수 결과', result);
             res.send({ user: result });
         }
     )(req, res, next);
@@ -63,7 +63,7 @@ const googleCallback = (req, res, next) => {
                 token,
                 userInfo,
             };
-            consokle.log('구글 콜백 함수 결과', result);
+            console.log('구글 콜백 함수 결과', result);
             res.send({ user: result });
         }
     )(req, res, next);

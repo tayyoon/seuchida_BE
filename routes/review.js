@@ -1,6 +1,7 @@
 const express = require('express');
 const Post = require('../schemas/post');
 const Review = require('../schemas/review');
+const Myex = require('../schemas/myexercise');
 const User = require('../schemas/user');
 const Report = require('../schemas/report');
 const router = express.Router();

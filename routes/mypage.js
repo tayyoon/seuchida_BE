@@ -150,7 +150,6 @@ router.post(
                         userAge,
                         userGender,
                         userContent,
-                        userImg: newUserImg,
                         userInterest,
                         address,
                     },

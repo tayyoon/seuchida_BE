@@ -29,6 +29,7 @@ const kakaoCallback = (req, res, next) => {
                 token,
                 userInfo,
             };
+            console.log('카카오 콜백 함수 결과', result);
             res.send({ user: result });
         }
     )(req, res, next);
@@ -36,30 +37,41 @@ const kakaoCallback = (req, res, next) => {
 
 router.get('/callback/kakao', kakaoCallback);
 
-
-
 //* 구글로 로그인하기 라우터 ***********************
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] })); // 프로파일과 이메일 정보를 받는다.
-    //? 위에서 구글 서버 로그인이 되면, 네이버 redirect url 설정에 따라 이쪽 라우터로 오게 된다. 인증 코드를 박게됨
+router.get(
+    '/google',
+    passport.authenticate('google', {
+        scope: ['profile'],
+        // access_Type: 'offline',
+        // approval_Prompt: 'force',
+    })
+); // 프로파일과 이메일 정보를 받는다.
+//? 위에서 구글 서버 로그인이 되면, 네이버 redirect url 설정에 따라 이쪽 라우터로 오게 된다. 인증 코드를 박게됨
 
-router.get('/callback/google', passport.authenticate('google', { failureRedirect: '/' }), //? 그리고 passport 로그인 전략에 의해 googleStrategy로 가서 구글계정 정보와 DB를 비교해서 회원가입시키거나 로그인 처리하게 한다.
-    (req, res) => {
-        res.redirect('/');
-    },
-);
+const googleCallback = (req, res, next) => {
+    passport.authenticate(
+        'google',
+        { failureRedirect: '/' },
+        (err, user, info) => {
+            if (err) return next(err);
+            console.log('콜백~~~');
+            const userInfo = user;
+            const { userId } = user;
+            const token = jwt.sign({ userId }, process.env.MY_KEY);
 
-// const postUsersSchema = Joi.object({
-//     nickName: Joi.string()
-//         .required()
-//         .min(2)
-//         .max(12)
-//         .pattern(new RegExp('^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]*$')),
-//     userAge: Joi.string().required(),
-//     userGender: Joi.string().required(),
-//     userInterest: Joi.string().required(),
-//     userContent: Joi.string().required(),
-//     address: Joi.string().required(),
-// });
+            result = {
+                token,
+                userInfo,
+            };
+            console.log('구글 콜백 함수 결과', result);
+            res.send({ user: result });
+        }
+    )(req, res, next);
+};
+
+router.get('/callback/google', googleCallback);
+// passport.authenticate('google', { failureRedirect: '/' }), //? 그리고 passport 로그인 전략에 의해 googleStrategy로 가서 구글계정 정보와 DB를 비교해서 회원가입시키거나 로그인 처리하게 한다.
+
 //회원가입
 router.post(
     '/signUp',
@@ -108,6 +120,7 @@ router.post(
             res.status(201).send({
                 message: '가입완료',
             });
+
         // } catch (err) {
         //     console.log(err);
         //     res.status(400).send({

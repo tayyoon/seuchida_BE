@@ -75,7 +75,7 @@ router.post(
         const createdAt = String(moment().format('YYYY-MM-DD HH:mm:ss'));
         try {
             //이미지첨부 후기글이면 5점 아니면 3점주기
-            if(!image) {
+            if(image===process.env.DEFAULT_IMG) {
                 upEvalue = Number(3);
             } else {
                 upEvalue = Number(5);
@@ -177,8 +177,11 @@ router.post(
     '/reviewImg',
     upload.single('image'),
     authMiddleware,
-    async (req, res) => {
+    async (req, res) => { 
         let image = req.file?.location; 
+        if(!image) {
+            image = process.env.DEFAULT_IMG
+        }
         res.status(200).json({ result: 'success', image });
     }
 );

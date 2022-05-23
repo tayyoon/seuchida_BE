@@ -130,7 +130,6 @@ router.post(
             address,
             userInterest,
             userContent,
-            newUserImg
         } = req.body;
 
         //특수문자 제한 정규식
@@ -198,6 +197,14 @@ router.post(
                         if (err) {
                             throw err;
                         }
+                    }
+                );
+                await User.updateOne(
+                    { userId },
+                    {
+                        $set: {
+                            userImg: newUserImg,
+                        },
                     }
                 );
                 res.status(200).send({

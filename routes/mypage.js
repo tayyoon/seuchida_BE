@@ -10,7 +10,6 @@ const s3 = new AWS.S3();
 //multer-s3 미들웨어 연결
 require('dotenv').config();
 const authMiddleware = require('../middlewares/auth-middleware');
-const myexercise = require('../schemas/myexercise');
 
 // 마이페이지
 router.get('/myPage', authMiddleware, async (req, res) => {
@@ -33,6 +32,7 @@ router.get('/myPage/myExercise', authMiddleware, async (req, res, next) => {
 
     let myEx = [];
     try {
+        //후기 작성이 안된 게시글만 불러오기
         const pushEx = await Myex.find({ userId, writeReview: true})
         for(let i=0; i< pushEx.length; i++) {
             let postEx = await Post.findOne({ roomId: pushEx[i].roomId });
@@ -119,11 +119,9 @@ router.get('/myPage/myReview', authMiddleware, async (req, res) => {
 router.post(
     '/myPage/update',
     authMiddleware,
-    upload.single('newUserImg'),
     async (req, res) => {
         const { user } = res.locals;
         const userId = user.userId;
-        let newUserImg = req.file?.location;
 
         const {
             nickName,
@@ -143,7 +141,42 @@ router.post(
         if (!regexr.test(userContent)) {
             return res.status(403).send('특수문자를 사용할 수 없습니다');
         }
-        // 기존 프로필 이미지와 새로운 프로필 이미지가 잘 들어가는지 확인
+        try {
+            await User.updateOne(
+                { userId },
+                {
+                    $set: {
+                        nickName,
+                        userAge,
+                        userGender,
+                        userContent,
+                        userImg: newUserImg,
+                        userInterest,
+                        address,
+                    },
+                }
+            );
+            res.status(200).send({
+                message: '수정 완료',
+            });
+        } catch (err) {
+            console.error(err);
+            res.status(400).send({
+                message: '수정 실패',
+            });
+        }
+    }
+);
+
+//프로필 수정api에서 이미지저장api  빼내기
+router.post(
+    '/myPage/updateImg',
+    authMiddleware,
+    upload.single('newUserImg'),
+    async (req, res) => {
+        const { user } = res.locals;
+        const userId = user.userId;
+        let newUserImg = req.file?.location;
 
         if (newUserImg) {
             try {
@@ -166,23 +199,16 @@ router.post(
                         }
                     }
                 );
-
                 await User.updateOne(
                     { userId },
                     {
                         $set: {
-                            nickName,
-                            userAge,
-                            userGender,
-                            userContent,
                             userImg: newUserImg,
-                            userInterest,
-                            address,
                         },
                     }
                 );
                 res.status(200).send({
-                    message: '수정 완료',
+                    newUserImg
                 });
             } catch (err) {
                 console.error(err);
@@ -193,20 +219,9 @@ router.post(
         } else {
             try {
                 newUserImg = user.userImg;
-                await User.updateOne(
-                    { userId },
-                    {
-                        $set: {
-                            nickName,
-                            userAge,
-                            userGender,
-                            userContent,
-                            userImg: newUserImg,
-                            userInterest,
-                            address,
-                        },
-                    }
-                );
+                res.status(200).send({
+                    newUserImg
+                });
             } catch (err) {
                 console.error(err);
                 res.status(400).send({

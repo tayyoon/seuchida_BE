@@ -75,69 +75,95 @@ router.get('/callback/google', googleCallback);
 //회원가입
 router.post(
     '/signUp',
+    authMiddleware,
+    async (req, res) => {
+        // try {
+            const {
+                nickName,
+                userAge,
+                userGender,
+                userContent,
+                userInterest,
+                address,
+            } = req.body
+            // await postUsersSchema.validateAsync(req.body);
+            // const regexr = /^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣\s]*$/;
+            // if (!regexr.test(userContent)) {
+            //     return res.status(403).send('특수문자를 사용할 수 없습니다');
+            // }
+            const { user } = res.locals;
+            let userId = user.userId;
+            let userEvalue = Number(10);
+            let level = Number(2);
+            //userId가 db에 존재하지않을 때 회원가입실패 메시지 송출
+            const existUsers = await User.find({
+                $or: [{ userId }],
+            });
+            if (!existUsers) {
+                res.status(401).send('회원가입실패');
+            }
+            await User.updateOne(
+                { userId: userId },
+                {
+                    $set: {
+                        userAge,
+                        nickName,
+                        userGender,
+                        userContent,
+                        userInterest,
+                        address,
+                        userEvalue,
+                        level
+                    },
+                }
+            );
+            res.status(201).send({
+                message: '가입완료',
+            });
+
+        // } catch (err) {
+        //     console.log(err);
+        //     res.status(400).send({
+        //         errorMessage: '요청한 데이터 형식이 올바르지 않습니다.',
+        //     });
+        // }
+    }
+);
+
+//회원가입 api에서 이미지 업로드부분 빼내기
+router.post(
+    '/signUpImg',
     upload.single('userImg'),
     authMiddleware,
     async (req, res) => {
         // try {
-        const {
-            nickName,
-            userAge,
-            userGender,
-            userContent,
-            userInterest,
-            address,
-        } = req.body;
-        // await postUsersSchema.validateAsync(req.body);
-        // const regexr = /^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣\s]*$/;
-        // if (!regexr.test(userContent)) {
-        //     return res.status(403).send('특수문자를 사용할 수 없습니다');
-        // }
-        const { user } = res.locals;
-        let userId = user.userId;
-        let userImg = req.file?.location;
-        //유저이미지를 안줫을때 디폴트 이미지를 넣어줌
-        if (!userImg) {
-            userImg = process.env.DEFAULT_IMG;
-        }
-        let userEvalue = Number(10);
-        let level = Number(2);
-        //userId가 db에 존재하지않을 때 회원가입실패 메시지 송출
-        const existUsers = await User.find({
-            $or: [{ userId }],
-        });
-        if (!existUsers) {
-            res.status(401).send('회원가입실패');
-        }
-        await User.updateOne(
-            { userId: userId },
-            {
-                $set: {
-                    userAge,
-                    nickName,
-                    userImg,
-                    userGender,
-                    userContent,
-                    userInterest,
-                    address,
-                    userEvalue,
-                    level,
-                },
+            const { user } = res.locals;
+            let userId = user.userId;
+            let userImg = req.file?.location;
+            //유저이미지를 안줫을때 디폴트 이미지를 넣어줌
+            if (!userImg) {
+                userImg = process.env.DEFAULT_IMG;
             }
-        );
-        // await Evalue.create({
-        //     userId,
-        //     userEvalue: [
-        //         { good1: 0 },
-        //         { good2: 0 },
-        //         { good3: 0 },
-        //         { bad1: 0 },
-        //         { bad2: 0 },
-        //         { bad3: 0 },
-        //     ],
-        // });
-        res.status(201).send({
-            message: '가입완료',
-        });
+            //userId가 db에 존재하지않을 때 회원가입실패 메시지 송출
+            const existUsers = await User.find({
+                $or: [{ userId }],
+            });
+            if (!existUsers) {
+                res.status(401).send('회원가입실패');
+            }
+
+            await User.updateOne(
+                { userId: userId },
+                {
+                    $set: {
+                        userImg,
+                    },
+                }
+            );
+
+            res.status(201).send({
+                userImg, message: '가입완료',
+            });
         // } catch (err) {
         //     console.log(err);
         //     res.status(400).send({

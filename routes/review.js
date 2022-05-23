@@ -176,9 +176,6 @@ router.post(
     authMiddleware,
     async (req, res) => { 
         let image = req.file?.location; 
-        if(!image) {
-            image = process.env.DEFAULT_IMG
-        }
         res.status(200).json({ result: 'success', image });
     }
 );

@@ -61,7 +61,8 @@ router.get('/chatUserList/:roomId', authMiddleware, async (req, res) => {
             roomId
         })
         const postId =checkPostId._id;
-        res.status(200).json({ nowMember, postId });
+        const owner = checkPostId.userId
+        res.status(200).json({ nowMember, postId, owner });
     } catch(err) {
         console.log(err);
         res.status(400).send({

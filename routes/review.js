@@ -75,7 +75,7 @@ router.post(
         const createdAt = String(moment().format('YYYY-MM-DD HH:mm:ss'));
         try {
             //이미지첨부 후기글이면 5점 아니면 3점주기
-            if(image===process.env.DEFAULT_IMG) {
+            if(!image) {
                 upEvalue = Number(3);
             } else {
                 upEvalue = Number(5);

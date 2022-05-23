@@ -223,8 +223,38 @@ router.get('/postPush/:roomId', authMiddleware, async (req, res) => {
         userId,
         roomId
     });
+    var postInfo = await Post.findOne({ roomId });
+    const userInfo = await User.findOne({
+        userId: postInfo.userId
+    })
+    postInfo['nickName'] = `${userInfo.nickName}`;
+    postInfo['userAge'] = `${userInfo.userAge}`;
+    postInfo['userGender'] = `${userInfo.userGender}`;
+    postInfo['userImg'] = `${userInfo.userImg}`;
 
-    res.status(200).send({ msg: '성공' });    
+    let nowmemberId = [];
+    let nowMember = '';
+    for(let i=0; i<postInfo.nowMember.length; i++){
+        nowmemberId.push(postInfo.nowMember[i])
+    }
+    postInfo['nowMember'] = [];
+    for(let i=0; i<nowmemberId.length; i++) {
+        nowMember = await User.findOne({
+            userId: nowmemberId[i]
+        })
+        nowInfo = {
+            memberId: nowMember.userId,
+            memberImg: nowMember.userImg,
+            memberNickname: nowMember.nickName,
+            memberAgee: nowMember.userAge,
+            memberGen: nowMember.userGender,
+            memberDesc: nowMember.userContent,
+            memberLevel: nowMember.level,
+            memberCategory: nowMember.userInterest
+        }
+        postInfo['nowMember'].push(nowInfo); 
+    }
+    res.status(200).send({ msg: '성공', postInfo });    
 });
 
 // 참여 취소
@@ -244,17 +274,48 @@ router.get('/postPushCancle/:roomId', authMiddleware, async (req, res) => {
         userId,
         roomId
     })
-    res.status(200).send({ msg: '취소완료!' });    
+    var postInfo = await Post.findOne({ roomId });
+    const userInfo = await User.findOne({
+        userId: postInfo.userId
+    })
+    postInfo['nickName'] = `${userInfo.nickName}`;
+    postInfo['userAge'] = `${userInfo.userAge}`;
+    postInfo['userGender'] = `${userInfo.userGender}`;
+    postInfo['userImg'] = `${userInfo.userImg}`;
+
+    let nowmemberId = [];
+    let nowMember = '';
+    for(let i=0; i<postInfo.nowMember.length; i++){
+        nowmemberId.push(postInfo.nowMember[i])
+    }
+    postInfo['nowMember'] = [];
+    for(let i=0; i<nowmemberId.length; i++) {
+        nowMember = await User.findOne({
+            userId: nowmemberId[i]
+        })
+        nowInfo = {
+            memberId: nowMember.userId,
+            memberImg: nowMember.userImg,
+            memberNickname: nowMember.nickName,
+            memberAgee: nowMember.userAge,
+            memberGen: nowMember.userGender,
+            memberDesc: nowMember.userContent,
+            memberLevel: nowMember.level,
+            memberCategory: nowMember.userInterest
+        }
+        postInfo['nowMember'].push(nowInfo); 
+    }
+    res.status(200).send({ msg: '취소완료!', postInfo });    
 });
 
 // 모집완료 
 router.get('/complete/:postId', authMiddleware, async (req, res) => {
     const { postId } = req.params;
-    await Post.updateOne(
+    const post = await Post.updateOne(
         { _id: postId },
         { $set: { status: false } }
     )
-    res.status(200).send({ msg: '모집완료!' });    
+    res.status(200).send({ msg: '모집완료!', post });    
 });
 
 //게시글 작성

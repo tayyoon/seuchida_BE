@@ -9,7 +9,6 @@ const authMiddleware = require('../middlewares/auth-middleware');
 const upload = require('../S3/s3');
 const Joi = require('joi');
 const AWS = require('aws-sdk');
-const myexercise = require('../schemas/myexercise');
 const s3 = new AWS.S3();
 
 router.get('/kakao', passport.authenticate('kakao'));

@@ -176,7 +176,6 @@ router.post(
         const { user } = res.locals;
         const userId = user.userId;
         let newUserImg = req.file?.location;
-
         if (newUserImg) {
             try {
                 const myInfo = await User.find({ userId });

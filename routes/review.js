@@ -53,7 +53,6 @@ router.get('/reviewPost/:postId', authMiddleware, async (req, res) => {
 // 리뷰 등록
 router.post(
     '/review/:postId',
-    upload.single('image'),
     authMiddleware,
     async (req, res) => {
         const postId = req.params.postId;
@@ -61,8 +60,7 @@ router.post(
         const { user } = res.locals;
         const { userId } = user;
         const { spot, address, postCategory, roomId } = post;
-        const { content, evalues, otherId } = req.body; 
-        let image = req.file?.location; 
+        const { content, evalues, otherId, image } = req.body; 
 
         let checkUserId = '';
         let checkEvalue = 0;
@@ -171,6 +169,17 @@ router.post(
             console.log(error);
             res.status(400).send({ msg: '리뷰가 작성되지 않았습니다.' });
         }
+    }
+);
+
+// 리뷰작성 api에서 이미지 업로드 api 빼내기
+router.post(
+    '/reviewImg',
+    upload.single('image'),
+    authMiddleware,
+    async (req, res) => {
+        let image = req.file?.location; 
+        res.status(200).json({ result: 'success', image });
     }
 );
 

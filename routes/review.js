@@ -80,9 +80,6 @@ router.post(
             } else {
                 upEvalue = Number(5);
             }
-            if(!image) {
-                image = process.env.DEFAULT_IMG
-            }
             //첫 후기글일때 5점 주기
             const checkReview = await Review.find({
                 userId

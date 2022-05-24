@@ -119,7 +119,8 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
 });
 let pageNumber =0
 // 근처 전체 리스트 
-router.get(`/nearPostList?page=${pageNumber}`, authMiddleware, async (req, res) => {
+router.get('/nearPostList/:pageNumber', authMiddleware, async (req, res) => {
+    const { pageNumber } = req.params;
     const { user } = res.locals;
     const { address } = user;
 

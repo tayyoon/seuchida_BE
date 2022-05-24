@@ -170,21 +170,26 @@ module.exports = (server) => {
 
         //채팅몇개왓는지 갯수 알려주는 socket
         socket.on('chatNum', async function (data) {
+            var msg =[];
             for(let i=0; i<data.roomId.length; i++) {
                 let lastchat = await Chat.find({ 
                     room: data.roomId[i], 
                     name: 'Systemback',
                     userId
                 });
-                let lastchattime = lastchat[lastchat.length-1].createdAt
+                if(lastchat){
+                    let lastchattime = lastchat[lastchat.length-1].createdAt
                     let chatNum = await Chat.find({ 
                         room: data.roomId[i], 
                         name: { $ne: 'Systemback'},
                         createdAt: { $gte: lastchattime }
                     });
-                    var msg =[];
                     msg.push(chatNum.length)
+                } else {
+                    msg.push('')
+                }
             }
+            console.log('msg',msg)
             io.sockets.in(userId).emit('returnChatNum', msg);
         });
 

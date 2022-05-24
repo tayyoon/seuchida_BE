@@ -118,18 +118,15 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
     }
 });
 
-// 근처 전체 리스트
-router.get('/nearPostList', authMiddleware, async (req, res) => {
+// 근처 전체 리스트 
+router.get(`/nearPostList?page=${pageNumber}&limit=${limit}`, authMiddleware, async (req, res) => {
     const { user } = res.locals;
     const { address } = user;
 
     try {
         var nearPosts = await Post.find({ 
             address,
-            take: 6,
-            // skip: skipFrom,
-            order: { createdAt: 'DESC' }},
-        ).sort({ $natural: -1 });
+        }).sort({ $natural: -1 }).skip((pageNumber-1)).limit(limit);
         let userInfo = '';
         for(let i=0; i<nearPosts.length; i++) {
             userInfo = await User.findOne({

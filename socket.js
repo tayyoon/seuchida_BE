@@ -136,7 +136,7 @@ module.exports = (server) => {
                 let lastchat = Chat.find({ 
                     room: data.roomId[i], 
                     name: 'Systemback',
-                    userId: data.userId
+                    userId
                 }, function (err, chats) {
                     if (err) {
                         console.log(err);

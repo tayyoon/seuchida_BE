@@ -5,7 +5,6 @@ const connect = () => {
         .connect('mongodb://localhost:27017/scd', {
             useNewUrlParser: true,
             useUnifiedTopology: true,
-            useCreateIndex: true,
         })
         .catch((err) => {
             console.error(err);

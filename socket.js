@@ -74,6 +74,7 @@ module.exports = (server) => {
             }).sort({ createdAt: 1 });
         });
 
+        //데이터 안에 채팅방 userId를 배열로 보내달라 요청
         socket.on('chat', function (data) {
             var msg = {
                 room: data.roomId,
@@ -83,14 +84,6 @@ module.exports = (server) => {
                 createdAt: moment().format('YYYY-MM-DD HH:mm:ss'),
             };
             io.sockets.in(data.roomId).emit('broadcast', msg);
-            // let chatUser = Room.find({
-            //     roomId: data.roomId
-            // })
-            // let chatUser1 ='';
-            // for(let i=0; i<chatUser.length; i++) {
-            //     chatUser1 = chatUser.nowMember[i][0]
-            //     io.sockets.in(chatUser1).emit('alert',msg)
-            // }
             //DB 채팅 내용 저장
             var chat = new Chat();
             chat.room = data.roomId;
@@ -113,7 +106,61 @@ module.exports = (server) => {
                 );
             });
         });
-        // socket.on('back')
+        //채팅방 뒤로가기 눌럿을때 data에 roomId 넣어주기
+        socket.on('back', function (data) {
+            console.log(nickName + '님이 잠시 퇴장하셨습니다.');
+            //DB 채팅 내용 저장
+            var chat = new Chat();
+            chat.room = data.roomId;
+            chat.name = 'Systemback';
+            chat.msg = nickName + '님이 잠시 퇴장하셨습니다.';
+            chat.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
+
+            chat.save(function (err) {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+            });
+        })
+
+        //채팅몇개왓는지 갯수 알려주는 socket
+        socket.on('chatNum', function (data) {
+            for(let i=0; i<data.roomId.length; i++) {
+                let lastchat = Chat.find({ 
+                    room: data.roomId[i], 
+                    name: 'Systemback'
+                }, function (err, chats) {
+                    if (err) {
+                        console.log(err);
+                        return;
+                    }
+                    if (!chats) {
+                        console.log('채팅 내용이 없습니다');
+                        return;
+                    }
+                    let lastchattime = lastchat[lastchat.length].createdAt
+                    let chatNum = Chat.find({ 
+                        room: data.roomId[i], 
+                        name: 'System',
+                        createdAt: { $gte: lastchattime }
+                    }, function (err, chats) {
+                        if (err) {
+                            console.log(err);
+                            return;
+                        }
+                        if (!chats) {
+                            console.log('채팅 내용이 없습니다');
+                            return;
+                        }
+                    })
+                    var msg =[];
+                    msg.push(chatNum.length)
+                    io.sockets.in(userId).emit('returnChatNum', msg);
+                });
+            }
+        });
+
         socket.on('leave', function (data) {
             console.log(nickName + '님이 퇴장하셨습니다.');
             socket.leave(data.roomId);

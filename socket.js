@@ -13,8 +13,8 @@ module.exports = (server) => {
         }
     });
     console.log('소켓IO 서버 오픈'); 
-    require('moment-timezone');  
-    moment.tz.setDefault('Asia/Seoul'); 
+    require('moment-timezone');
+    moment.tz.setDefault('Asia/Seoul');
     io.use(socketauthMiddleware)
     io.on('connection', async function (socket) {
         const { userId, nickName, userImg } = socket.user;
@@ -38,7 +38,10 @@ module.exports = (server) => {
                 }
             );
 
-            Chat.find({ room: data.roomId }, function (err, chats) {
+            Chat.find({ 
+                room: data.roomId,
+                name: { $ne: 'Systemback'}
+            }, function (err, chats) {
                 if (err) {
                     console.log(err);
                     return;
@@ -74,7 +77,6 @@ module.exports = (server) => {
             }).sort({ createdAt: 1 });
         });
 
-        //데이터 안에 채팅방 userId를 배열로 보내달라 요청
         socket.on('chat', function (data) {
             var msg = {
                 room: data.roomId,
@@ -106,13 +108,17 @@ module.exports = (server) => {
                 );
             });
         });
+
         //채팅방 뒤로가기 눌럿을때 data에 roomId 넣어주기
         socket.on('back', function (data) {
             console.log(nickName + '님이 잠시 퇴장하셨습니다.');
+            socket.leave(data.roomId);
+
             //DB 채팅 내용 저장
             var chat = new Chat();
             chat.room = data.roomId;
             chat.name = 'Systemback';
+            chat.userId = data.userId;
             chat.msg = nickName + '님이 잠시 퇴장하셨습니다.';
             chat.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
 
@@ -129,7 +135,8 @@ module.exports = (server) => {
             for(let i=0; i<data.roomId.length; i++) {
                 let lastchat = Chat.find({ 
                     room: data.roomId[i], 
-                    name: 'Systemback'
+                    name: 'Systemback',
+                    userId: data.userId
                 }, function (err, chats) {
                     if (err) {
                         console.log(err);
@@ -139,10 +146,11 @@ module.exports = (server) => {
                         console.log('채팅 내용이 없습니다');
                         return;
                     }
-                    let lastchattime = lastchat[lastchat.length].createdAt
+                });
+                let lastchattime = lastchat[lastchat.length].createdAt
                     let chatNum = Chat.find({ 
                         room: data.roomId[i], 
-                        name: 'System',
+                        name: { $ne: 'Systemback'},
                         createdAt: { $gte: lastchattime }
                     }, function (err, chats) {
                         if (err) {
@@ -156,9 +164,8 @@ module.exports = (server) => {
                     })
                     var msg =[];
                     msg.push(chatNum.length)
-                    io.sockets.in(userId).emit('returnChatNum', msg);
-                });
             }
+            io.sockets.in(userId).emit('returnChatNum', msg);
         });
 
         socket.on('leave', function (data) {

@@ -124,8 +124,11 @@ router.get('/nearPostList', authMiddleware, async (req, res) => {
     const { address } = user;
 
     try {
-        var nearPosts = await Post.find(
-            { address },
+        var nearPosts = await Post.find({ 
+            address,
+            take: 6,
+            // skip: skipFrom,
+            order: { createdAt: 'DESC' }},
         ).sort({ $natural: -1 });
         let userInfo = '';
         for(let i=0; i<nearPosts.length; i++) {

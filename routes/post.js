@@ -117,7 +117,8 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
         res.status(400).send(' 메인 뽑아서 넘기기 포스트 오류');
     }
 });
-
+let pageNumber =0
+let limit =0
 // 근처 전체 리스트 
 router.get(`/nearPostList?page=${pageNumber}&limit=${limit}`, authMiddleware, async (req, res) => {
     const { user } = res.locals;

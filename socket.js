@@ -130,38 +130,58 @@ module.exports = (server) => {
             });
         })
 
+        // //채팅몇개왓는지 갯수 알려주는 socket
+        // socket.on('chatNum', function (data) {
+        //     for(let i=0; i<data.roomId.length; i++) {
+        //         let lastchat = Chat.find({ 
+        //             room: data.roomId[i], 
+        //             name: 'Systemback',
+        //             userId
+        //         }, function (err, chats) {
+        //             if (err) {
+        //                 console.log(err);
+        //                 return;
+        //             }
+        //             if (!chats) {
+        //                 console.log('채팅 내용이 없습니다');
+        //                 return;
+        //             }
+        //         });
+        //         let lastchattime = lastchat[lastchat.length].createdAt
+        //             let chatNum = Chat.find({ 
+        //                 room: data.roomId[i], 
+        //                 name: { $ne: 'Systemback'},
+        //                 createdAt: { $gte: lastchattime }
+        //             }, function (err, chats) {
+        //                 if (err) {
+        //                     console.log(err);
+        //                     return;
+        //                 }
+        //                 if (!chats) {
+        //                     console.log('채팅 내용이 없습니다');
+        //                     return;
+        //                 }
+        //             })
+        //             var msg =[];
+        //             msg.push(chatNum.length)
+        //     }
+        //     io.sockets.in(userId).emit('returnChatNum', msg);
+        // });
+
         //채팅몇개왓는지 갯수 알려주는 socket
-        socket.on('chatNum', function (data) {
+        socket.on('chatNum', async function (data) {
             for(let i=0; i<data.roomId.length; i++) {
-                let lastchat = Chat.find({ 
+                let lastchat = await Chat.find({ 
                     room: data.roomId[i], 
                     name: 'Systemback',
                     userId
-                }, function (err, chats) {
-                    if (err) {
-                        console.log(err);
-                        return;
-                    }
-                    if (!chats) {
-                        console.log('채팅 내용이 없습니다');
-                        return;
-                    }
                 });
-                let lastchattime = lastchat[lastchat.length].createdAt
-                    let chatNum = Chat.find({ 
+                let lastchattime = lastchat[lastchat.length-1].createdAt
+                    let chatNum = await Chat.find({ 
                         room: data.roomId[i], 
                         name: { $ne: 'Systemback'},
                         createdAt: { $gte: lastchattime }
-                    }, function (err, chats) {
-                        if (err) {
-                            console.log(err);
-                            return;
-                        }
-                        if (!chats) {
-                            console.log('채팅 내용이 없습니다');
-                            return;
-                        }
-                    })
+                    });
                     var msg =[];
                     msg.push(chatNum.length)
             }

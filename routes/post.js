@@ -117,8 +117,59 @@ router.get('/postList', authMiddleware, async (req, res, next) => {
         res.status(400).send(' 메인 뽑아서 넘기기 포스트 오류');
     }
 });
-let pageNumber =0
-// 근처 전체 리스트 
+
+//근처 전체 리스트
+router.get('/nearPostList', authMiddleware, async (req, res) => {
+    const { user } = res.locals;
+    const { address } = user;
+
+    try {
+        var nearPosts = await Post.find({ 
+            address,
+        }).sort({ $natural: -1 });
+        let userInfo = '';
+        for(let i=0; i<nearPosts.length; i++) {
+            userInfo = await User.findOne({
+                userId: nearPosts[i].userId
+            })
+            nearPosts[i]['nickName'] = `${userInfo.nickName}`;
+            nearPosts[i]['userAge'] = `${userInfo.userAge}`;
+            nearPosts[i]['userGender'] = `${userInfo.userGender}`;
+            nearPosts[i]['userImg'] = `${userInfo.userImg}`;
+            nearPosts[i]['level'] =`${userInfo.level}`;
+            let nowmemberId = [];
+            let nowMember = '';
+            for(let j=0; j<nearPosts[i].nowMember.length; j++){
+                nowmemberId.push(nearPosts[i].nowMember[j]) 
+            }
+            nearPosts[i]['nowMember'] = [];
+            for(let j=0; j<nowmemberId.length; j++) {
+                nowMember = await User.findOne({
+                    userId: nowmemberId[j]
+                })
+                nowInfo = {
+                    memberId: nowMember.userId,
+                    memberImg: nowMember.userImg,
+                    memberNickname: nowMember.nickName,
+                    memberAgee: nowMember.userAge,
+                    memberGen: nowMember.userGender,
+                    memberDesc: nowMember.userContent,
+                    memberLevel: nowMember.level,
+                    memberCategory: nowMember.userInterest
+                }
+                nearPosts[i]['nowMember'].push(nowInfo); 
+            }
+        }
+
+        res.status(200).json({ nearPosts });
+    } catch (err) {
+        console.log(err);
+        res.status(400).send('본인위치 근처 전체 포스트 오류');
+    }
+});
+
+
+// 근처 전체 리스트 무한스크롤
 router.get('/nearPostList/:pageNumber', authMiddleware, async (req, res) => {
     const { pageNumber } = req.params;
     const { user } = res.locals;

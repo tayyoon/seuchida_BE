@@ -181,9 +181,10 @@ router.post(
 );
 
 // 전체리뷰 조회 
-router.get('/review', authMiddleware, async (req, res) => {
+router.get('/review/:pageNumber', authMiddleware, async (req, res) => {
+    const { pageNumber } = req.params;
     try {
-        let allReviews = await Review.find({}).sort({ $natural: -1 });
+        let allReviews = await Review.find({}).sort({ $natural: -1 }).skip((pageNumber-1)).limit(6);
         // 전체 리뷰를 조회하되 프론트에서 필요한 정보만을 주기위해 key:1(true) 를 설정해줌
         // sort()함수에 $natural:-1 을 시켜 저장된 반대로 , 최신순으로 정렬시킴
         for(i=0; i<allReviews.length; i++) {

@@ -18,10 +18,10 @@ module.exports = (server) => {
     io.use(socketauthMiddleware)
     io.on('connection', async function (socket) {
         const { userId, nickName, userImg } = socket.user;
-        socket.on('login', async function (data) {
+        socket.on('login', () => {
             console.log(nickName + '님이 접속하셨습니다.')
-            socket.join(userId)
-        })
+            socket.join(userId);
+        });
 
         socket.on('join', function (data) {
             console.log(nickName + '님이 입장하셨습니다.');
@@ -90,7 +90,12 @@ module.exports = (server) => {
                 createdAt: moment().format('YYYY-MM-DD HH:mm:ss'),
             };
             io.sockets.in(data.roomId).emit('broadcast', msg);
-            io.sockets.in(userId).emit('lastChat', msg);
+            if(data.userId) {
+                for(let i =0; i< data.userId.length; i++) {
+                    io.sockets.in(data.userId[i]).emit('alert', msg);
+                }
+            }
+            
             //DB 채팅 내용 저장
             var chat = new Chat();
             chat.room = data.roomId;
@@ -114,25 +119,6 @@ module.exports = (server) => {
             });
         });
 
-        //채팅방 리스트접속시 실행되는 socket
-        socket.on('lastChatlist', async function (data) {
-            const lastChatlist = '';
-            let lastChat =[];
-            let lastChat1 ='';
-            for(let i =0; i<data.roomId; i++ ) {
-                lastChatlist = await Chat.find({
-                    room: data.roomId[i]
-                })
-                if(lastChatlist) {
-                    lastChat1 = lastChatlist[lastChatlist.length-1]
-                    lastChat.push(lastChat1)
-                } else {
-                    lastChat.push('')
-                }
-            }
-            io.sockets.in(userId).emit('lastChatlist', lastChat);
-        })
-
         //채팅방 뒤로가기 눌럿을때 data에 roomId 넣어주기
         socket.on('back', function (data) {
             console.log(nickName + '님이 잠시 퇴장하셨습니다.');
@@ -153,31 +139,6 @@ module.exports = (server) => {
                 }
             });
         })
-
-        //채팅몇개왓는지 갯수 알려주는 socket
-        socket.on('chatNum', async function (data) {
-            var msg =[];
-            for(let i=0; i<data.roomId.length; i++) {
-                let lastchat = await Chat.find({ 
-                    room: data.roomId[i], 
-                    name: 'Systemback',
-                    userId
-                });
-                if(lastchat){
-                    let lastchattime = lastchat[lastchat.length-1].createdAt
-                    let chatNum = await Chat.find({ 
-                        room: data.roomId[i], 
-                        name: { $ne: 'Systemback'},
-                        createdAt: { $gte: lastchattime }
-                    });
-                    msg.push(chatNum)
-                } else {
-                    msg.push('')
-                }
-            }
-            console.log('msg', msg)
-            io.sockets.in(userId).emit('returnChatNum', msg);
-        });
 
         socket.on('leave', function (data) {
             console.log(nickName + '님이 퇴장하셨습니다.');

@@ -34,7 +34,7 @@ router.get('/chatting', authMiddleware, async (req, res) => {
             }).sort({ createdAt: -1 })
             lastChatting.push(lastChatting1)
         }
-        
+
         res.status(200).json({ chattingRoom, lastChatting });
     } catch (err) {
         console.log(err);
@@ -71,5 +71,48 @@ router.get('/chatUserList/:roomId', authMiddleware, async (req, res) => {
         });
     }
 });
+
+router.get('/unreadChat', authMiddleware, async (req, res) => {
+    const { user } = res.locals;
+    const { userId } = user;
+    //되는지 테스트해봐야함
+    const userRoomlist = await Room.find({
+        nowMember: userId
+    })
+    console.log(userRoomlist)
+    let room ='';
+    let unReadchattime ='';
+    let unreadChatlist =[];
+    if(!userRoomlist) {
+        res.status(200).json({ msg: '입장한 채팅방이 없습니다.' });
+    } else {
+        for(let i =0; i< userRoomlist.length; i++) {
+            let lastChat =[];
+            room = userRoomlist[i].roomId
+            const unReadchat = await Chat.find({
+                userId,
+                room,
+                name: 'Systemback'
+            })
+            if(unReadchat){
+                unReadchattime = unReadchat[unReadchat.length-1].createdAt
+                let a = await Chat.find({
+                    userId,
+                    room,
+                    createdAt: { $gte: lastChattime }
+                })
+                if(a) {
+                    lastChat.push(a)
+                } else {
+                    lastChat.push('')
+                }
+            } else {
+                lastChat.push('')
+            }
+            unreadChatlist.push(lastChat)
+        }
+        res.status(200).json({ unreadChatlist });
+    }
+})
 
 module.exports = router;

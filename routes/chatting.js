@@ -33,8 +33,41 @@ router.get('/chatting', authMiddleware, async (req, res) => {
             }).sort({ createdAt: -1 })
             lastChatting.push(lastChatting1)
         }
-
-        res.status(200).json({ chattingRoom, lastChatting });
+        /////////////////
+        const userRoomlist = await Room.find({
+            nowMember: [userId]
+        })
+        let room ='';
+        let unReadchattime ='';
+        let unreadChatlist =[];
+        if(!userRoomlist) {
+            res.status(200).json({ msg: '입장한 채팅방이 없습니다.' });
+        } else {
+            for(let i =0; i< userRoomlist.length; i++) {
+                room = userRoomlist[i].roomId
+                const unReadchat = await Chat.find({
+                    userId,
+                    room,
+                    name: 'Systemback'
+                })
+                if(!unReadchat[0]){
+                    unreadChatlist.push('')
+                } else {
+                    unReadchattime = unReadchat[unReadchat.length-1].check
+                    let lastChat = await Chat.find({
+                        room,
+                        name: { $ne: 'Systemback'},
+                        check: { $gte: Number(unReadchattime) }
+                    })
+                    if(lastChat) {
+                        unreadChatlist.push(lastChat)
+                    } else {
+                        unreadChatlist.push('')
+                    }
+                }
+            }
+            res.status(200).json({ chattingRoom, lastChatting, unreadChatlist });
+        }
     } catch (err) {
         console.log(err);
         res.status(400).send({
@@ -71,45 +104,45 @@ router.get('/chatUserList/:roomId', authMiddleware, async (req, res) => {
     }
 });
 
-router.get('/unreadChat', authMiddleware, async (req, res) => {
-    const { user } = res.locals;
-    const { userId } = user;
-    //되는지 테스트해봐야함
-    const userRoomlist = await Room.find({
-        nowMember: [userId]
-    })
-    let room ='';
-    let unReadchattime ='';
-    let unreadChatlist =[];
-    if(!userRoomlist) {
-        res.status(200).json({ msg: '입장한 채팅방이 없습니다.' });
-    } else {
-        for(let i =0; i< userRoomlist.length; i++) {
-            room = userRoomlist[i].roomId
-            const unReadchat = await Chat.find({
-                userId,
-                room,
-                name: 'Systemback'
-            })
-            if(!unReadchat[0]){
-                unreadChatlist.push('')
-            } else {
-                unReadchattime = unReadchat[unReadchat.length-1].check
-                let lastChat = await Chat.find({
-                    room,
-                    name: { $ne: 'Systemback'},
-                    check: { $gte: Number(unReadchattime) }
-                })
-                if(lastChat) {
-                    unreadChatlist.push(lastChat)
-                } else {
-                    unreadChatlist.push('')
-                }
-            }
+// router.get('/unreadChat', authMiddleware, async (req, res) => {
+//     const { user } = res.locals;
+//     const { userId } = user;
+//     //되는지 테스트해봐야함
+//     const userRoomlist = await Room.find({
+//         nowMember: [userId]
+//     })
+//     let room ='';
+//     let unReadchattime ='';
+//     let unreadChatlist =[];
+//     if(!userRoomlist) {
+//         res.status(200).json({ msg: '입장한 채팅방이 없습니다.' });
+//     } else {
+//         for(let i =0; i< userRoomlist.length; i++) {
+//             room = userRoomlist[i].roomId
+//             const unReadchat = await Chat.find({
+//                 userId,
+//                 room,
+//                 name: 'Systemback'
+//             })
+//             if(!unReadchat[0]){
+//                 unreadChatlist.push('')
+//             } else {
+//                 unReadchattime = unReadchat[unReadchat.length-1].check
+//                 let lastChat = await Chat.find({
+//                     room,
+//                     name: { $ne: 'Systemback'},
+//                     check: { $gte: Number(unReadchattime) }
+//                 })
+//                 if(lastChat) {
+//                     unreadChatlist.push(lastChat)
+//                 } else {
+//                     unreadChatlist.push('')
+//                 }
+//             }
             
-        }
-        res.status(200).json({ unreadChatlist });
-    }
-})
+//         }
+//         res.status(200).json({ unreadChatlist });
+//     }
+// })
 
 module.exports = router;

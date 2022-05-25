@@ -91,7 +91,6 @@ router.get('/unreadChat', authMiddleware, async (req, res) => {
                 room,
                 name: 'Systemback'
             })
-            console.log('unReadchat', unReadchat)
             if(!unReadchat[0]){
                 unreadChatlist.push('')
             } else {
@@ -101,7 +100,6 @@ router.get('/unreadChat', authMiddleware, async (req, res) => {
                     name: { $ne: 'Systemback'},
                     check: { $gte: Number(unReadchattime) }
                 })
-                console.log('lastChat', lastChat)
                 if(lastChat) {
                     unreadChatlist.push(lastChat)
                 } else {

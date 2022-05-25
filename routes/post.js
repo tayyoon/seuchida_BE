@@ -178,7 +178,7 @@ router.get('/nearPostList/:pageNumber', authMiddleware, async (req, res) => {
     try {
         var nearPosts = await Post.find({ 
             address,
-        }).sort({ $natural: -1 }).skip((pageNumber-1)).limit(6);
+        }).sort({ $natural: -1 }).skip((pageNumber-1)*6).limit(6);
         let userInfo = '';
         for(let i=0; i<nearPosts.length; i++) {
             userInfo = await User.findOne({

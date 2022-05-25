@@ -97,7 +97,6 @@ router.get('/unreadChat', authMiddleware, async (req, res) => {
             } else {
                 unReadchattime = unReadchat[unReadchat.length-1].check
                 let lastChat = await Chat.find({
-                    userId,
                     room,
                     name: { $ne: 'Systemback'},
                     check: { $gte: Number(unReadchattime) }

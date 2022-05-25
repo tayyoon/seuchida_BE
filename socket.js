@@ -281,6 +281,7 @@ module.exports = (server) => {
             io.sockets.in(data.roomId).emit('broadcast', msg);
         })
         socket.on('disconnet', () => {
+            console.log(nickName + '님이 접속을 해제하셨습니다.');
             clearInterval(socket.interval);
         });
     });

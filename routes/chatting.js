@@ -79,7 +79,6 @@ router.get('/unreadChat', authMiddleware, async (req, res) => {
     const userRoomlist = await Room.find({
         nowMember: [userId]
     })
-    console.log('userRoomlist', userRoomlist)
     let room ='';
     let unReadchattime ='';
     let unreadChatlist =[];
@@ -93,7 +92,10 @@ router.get('/unreadChat', authMiddleware, async (req, res) => {
                 room,
                 name: 'Systemback'
             })
-            if(unReadchat){
+            console.log('unReadchat', unReadchat)
+            if(unReadchat=[]){
+                unreadChatlist.push('')
+            } else {
                 unReadchattime = unReadchat[unReadchat.length-1].createdAt
                 let lastChat = await Chat.find({
                     userId,
@@ -101,13 +103,12 @@ router.get('/unreadChat', authMiddleware, async (req, res) => {
                     name: { $ne: 'Systemback'},
                     createdAt: { $gte: unReadchattime }
                 })
+                console.log('lastChat', lastChat)
                 if(lastChat) {
                     unreadChatlist.push(lastChat)
                 } else {
                     unreadChatlist.push('')
                 }
-            } else {
-                unreadChatlist.push('')
             }
             
         }

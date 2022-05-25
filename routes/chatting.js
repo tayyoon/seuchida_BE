@@ -77,9 +77,9 @@ router.get('/unreadChat', authMiddleware, async (req, res) => {
     const { userId } = user;
     //되는지 테스트해봐야함
     const userRoomlist = await Room.find({
-        nowMember: { $elemMatch: userId }
+        nowMember: [userId]
     })
-    console.log(userRoomlist)
+    console.log('userRoomlist', userRoomlist)
     let room ='';
     let unReadchattime ='';
     let unreadChatlist =[];
@@ -99,7 +99,7 @@ router.get('/unreadChat', authMiddleware, async (req, res) => {
                 let a = await Chat.find({
                     userId,
                     room,
-                    createdAt: { $gte: lastChattime }
+                    createdAt: { $gte: unReadchattime }
                 })
                 if(a) {
                     lastChat.push(a)

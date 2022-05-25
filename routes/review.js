@@ -123,6 +123,9 @@ router.post(
             for(let i=0; i<otherId.length; i++) {
                 checkUserId = otherId[i];
                 checkEvalue = evalues[i];
+                if(!checkEvalue) {
+                    checkEvalue = 0
+                }
                 userInfo1 = await User.findOne({
                     userId: checkUserId
                 });

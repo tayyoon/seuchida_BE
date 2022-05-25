@@ -100,7 +100,7 @@ router.get('/unreadChat', authMiddleware, async (req, res) => {
                     userId,
                     room,
                     name: { $ne: 'Systemback'},
-                    createdAt: { $gte: Number(unReadchattime) }
+                    check: { $gte: Number(unReadchattime) }
                 })
                 console.log('lastChat', lastChat)
                 if(lastChat) {

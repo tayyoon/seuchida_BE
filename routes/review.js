@@ -184,7 +184,7 @@ router.post(
 );
 
 // 전체리뷰 조회 
-router.get('/review/:pageNumber', authMiddleware, async (req, res) => {
+router.get('/reviewAll/:pageNumber', authMiddleware, async (req, res) => {
     const { pageNumber } = req.params;
     try {
         let allReviews = await Review.find({}).sort({ $natural: -1 }).skip((pageNumber-1)*6).limit(6);

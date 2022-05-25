@@ -69,7 +69,13 @@ module.exports = (server) => {
                 chat.name = 'System';
                 chat.msg = nickName + '님이 입장하셨습니다.';
                 chat.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
-
+                let a = chat.createdAt.split(' ')
+                let b = a[0].split('-');
+                let c = a[1].split(':');
+                let d = b.join('');
+                let e = c.join('');
+                let f = d + e;
+                chat.check = Number(f)
                 chat.save(function (err) {
                     if (err) {
                         console.error(err);
@@ -104,6 +110,13 @@ module.exports = (server) => {
             chat.userId = userId;
             chat.userImg = userImg;
             chat.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
+            let a = chat.createdAt.split(' ')
+            let b = a[0].split('-');
+            let c = a[1].split(':');
+            let d = b.join('');
+            let e = c.join('');
+            let f = d + e;
+            chat.check = Number(f)
 
             chat.save(function (err) {
                 if (err) {
@@ -131,6 +144,13 @@ module.exports = (server) => {
             chat.userId = data.userId;
             chat.msg = nickName + '님이 잠시 퇴장하셨습니다.';
             chat.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
+            let a = chat.createdAt.split(' ')
+            let b = a[0].split('-');
+            let c = a[1].split(':');
+            let d = b.join('');
+            let e = c.join('');
+            let f = d + e;
+            chat.check = Number(f)
 
             chat.save(function (err) {
                 if (err) {
@@ -173,6 +193,13 @@ module.exports = (server) => {
             chat.name = 'System';
             chat.msg = nickName + '님이 퇴장하셨습니다.';
             chat.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
+            let a = chat.createdAt.split(' ')
+            let b = a[0].split('-');
+            let c = a[1].split(':');
+            let d = b.join('');
+            let e = c.join('');
+            let f = d + e;
+            chat.check = Number(f)
 
             chat.save(function (err) {
                 if (err) {
@@ -236,6 +263,13 @@ module.exports = (server) => {
             chat.name = 'System';
             chat.msg = nickName + '님이 강퇴당하셨습니다.';
             chat.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
+            let a = chat.createdAt.split(' ')
+            let b = a[0].split('-');
+            let c = a[1].split(':');
+            let d = b.join('');
+            let e = c.join('');
+            let f = d + e;
+            chat.check = Number(f)
 
             chat.save(function (err) {
                 if (err) {

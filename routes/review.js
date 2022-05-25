@@ -160,7 +160,7 @@ router.post(
             reviewList['userImg'] = `${userInfo.userImg}`;
 
             await Myex.updateOne(
-                { roomId },
+                { roomId, userId },
                 { $set: { writeReview: false } }
             )
 

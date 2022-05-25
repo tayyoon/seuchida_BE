@@ -77,7 +77,7 @@ router.get('/unreadChat', authMiddleware, async (req, res) => {
     const { userId } = user;
     //되는지 테스트해봐야함
     const userRoomlist = await Room.find({
-        nowMember: userId
+        nowMember: { $elemMatch: userId }
     })
     console.log(userRoomlist)
     let room ='';

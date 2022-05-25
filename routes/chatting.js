@@ -87,7 +87,6 @@ router.get('/unreadChat', authMiddleware, async (req, res) => {
         res.status(200).json({ msg: '입장한 채팅방이 없습니다.' });
     } else {
         for(let i =0; i< userRoomlist.length; i++) {
-            let lastChat =[];
             room = userRoomlist[i].roomId
             const unReadchat = await Chat.find({
                 userId,
@@ -96,20 +95,21 @@ router.get('/unreadChat', authMiddleware, async (req, res) => {
             })
             if(unReadchat){
                 unReadchattime = unReadchat[unReadchat.length-1].createdAt
-                let a = await Chat.find({
+                let lastChat = await Chat.find({
                     userId,
                     room,
+                    name: { $ne: 'Systemback'},
                     createdAt: { $gte: unReadchattime }
                 })
-                if(a) {
-                    lastChat.push(a)
+                if(lastChat) {
+                    unreadChatlist.push(lastChat)
                 } else {
-                    lastChat.push('')
+                    unreadChatlist.push('')
                 }
             } else {
-                lastChat.push('')
+                unreadChatlist.push('')
             }
-            unreadChatlist.push(lastChat)
+            
         }
         res.status(200).json({ unreadChatlist });
     }

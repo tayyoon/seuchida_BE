@@ -92,7 +92,7 @@ router.get('/unreadChat', authMiddleware, async (req, res) => {
                 name: 'Systemback'
             })
             console.log('unReadchat', unReadchat)
-            if(unReadchat===[]){
+            if(!unReadchat[0]){
                 unreadChatlist.push('')
             } else {
                 unReadchattime = unReadchat[unReadchat.length-1].check

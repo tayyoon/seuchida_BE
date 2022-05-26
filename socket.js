@@ -18,10 +18,11 @@ module.exports = (server) => {
     io.use(socketauthMiddleware)
     io.on('connection', async function (socket) {
         const { userId, nickName, userImg } = socket.user;
-        socket.on('login', () => {
-            console.log(nickName + '님이 접속하셨습니다.')
-            socket.join(userId);
-        });
+        socket.join(userId);
+        // socket.on('login', () => {
+        //     console.log(nickName + '님이 접속하셨습니다.')
+        //     socket.join(userId);
+        // });
 
         socket.on('join', function (data) {
             console.log(nickName + '님이 입장하셨습니다.');

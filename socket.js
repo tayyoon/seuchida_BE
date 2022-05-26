@@ -141,7 +141,9 @@ module.exports = (server) => {
                 postId: data.postId
             };
             for(let i=0; i<data.userId.length; i++) {
-                io.sockets.in(data.userId[i]).emit('joinPartyAlert', msg);
+                if(userId!==data.userId[i]){
+                    io.sockets.in(data.userId[i]).emit('joinPartyAlert', msg);
+                }
             }
         });
 

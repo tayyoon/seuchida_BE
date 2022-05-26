@@ -140,6 +140,8 @@ module.exports = (server) => {
                 userImg: userImg,
                 postId: data.postId
             };
+            console.log('msg', msg)
+            console.log('userId', userId)
             for(let i=0; i<data.userId.length; i++) {
                 if(userId!==data.userId[i]){
                     io.sockets.in(data.userId[i]).emit('joinPartyAlert', msg);

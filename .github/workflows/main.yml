@@ -26,9 +26,8 @@ jobs:
           script: |
             cd /home/ubuntu/seuchida_BE
             # git config --global --add safe.directory /home/ubuntu/seuchida_BE
-            sudo -s
             sudo git pull
-            ctrl x
+            sudo ctrl x
             # sudo npm update
             sudo npm install
             sudo pm2 reload all

@@ -25,4 +25,9 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             cd /home/ubuntu/seuchida_BE
-            ls
+            # git config --global --add safe.directory /home/ubuntu/seuchida_BE
+            sudo git pull
+            sudo ctrl x
+            # sudo npm update
+            sudo npm install
+            sudo pm2 reload all

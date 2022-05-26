@@ -134,15 +134,17 @@ module.exports = (server) => {
         });
 
         socket.on('joinParty', async function (data) {
+            const postInfo = await Post.findOne({
+                _id: data.postId
+            });
             var msg = {
                 userId: userId,
                 nickName: nickName,
                 userImg: userImg,
-                postId: data.postId
+                postId: data.postId,
+                postTitle: postInfo.postTitle
             };
-            console.log('data', data)
             console.log('msg', msg)
-            console.log('userId', userId)
             for(let i=0; i<data.userId.length; i++) {
                 if(userId!==data.userId[i]){
                     io.sockets.in(data.userId[i]).emit('joinPartyAlert', msg);

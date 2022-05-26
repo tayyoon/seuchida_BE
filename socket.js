@@ -282,7 +282,7 @@ module.exports = (server) => {
         })
         socket.on('disconnect', () => {
             console.log(nickName + '님이 접속을 해제하셨습니다.');
-            clearInterval(socket.interval);
+            // clearInterval(socket.interval);
         });
     });
 };

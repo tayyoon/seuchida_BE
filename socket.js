@@ -133,6 +133,18 @@ module.exports = (server) => {
             });
         });
 
+        socket.on('joinParty', async function (data) {
+            var msg = {
+                userId: userId,
+                nickName: nickName,
+                userImg: userImg,
+                postId: data.postId
+            };
+            for(let i=0; i<data.userId.length; i++) {
+                io.sockets.in(data.userId[i]).emit('joinPartyAlert', msg);
+            }
+        });
+
         //채팅방 뒤로가기 눌럿을때 data에 roomId 넣어주기
         socket.on('back', function (data) {
             console.log(nickName + '님이 잠시 퇴장하셨습니다.');

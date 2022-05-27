@@ -77,7 +77,6 @@ router.post(
     authMiddleware,
     async (req, res) => {
         try {
-            console.log(req.body)
             const schema = Joi.object({ 
                 nickName: Joi.string().pattern(new RegExp('^[a-zA-Z0-9가-힣]{1,8}$')), //특수문자만안되고 글자수는 1~8글자
                 userAge: Joi.string().min(1).max(3).required(), //숫자만 되고 글자3수

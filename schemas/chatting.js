@@ -15,7 +15,8 @@ const chatSchema = new mongoose.Schema({
     userId: String,
     userImg: {
         type: String
-    }
+    },
+    check: Number
 });
 
 module.exports = mongoose.model('Chat',chatSchema);

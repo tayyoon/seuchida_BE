@@ -8,6 +8,7 @@ const post_validation = {
                 .pattern(
                     new RegExp('/^[^|!|~|.|ㄱ-ㅎ|가-힣|a-z|A-Z|0-9 ]{1,15}$')
                 )
+
                 .required(),
             postDesc: Joi.string()
                 .pattern(

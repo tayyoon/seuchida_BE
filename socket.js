@@ -3,8 +3,8 @@ const moment = require('moment');
 const Chat = require('./schemas/chatting');
 const Room = require('./schemas/room');
 const Post = require('./schemas/post');
-const NowMember = require('./schemas/nowMember');
 const socketauthMiddleware = require('./middlewares/socket-auth-middleware');
+const { v4 } = require('uuid');
 
 module.exports = (server) => {
     const io = SocketIO(server, {
@@ -13,13 +13,22 @@ module.exports = (server) => {
             origins: '*:*'
         }
     });
-    console.log('소켓IO 서버 오픈'); //로그인완료되자마자 소켓에 유저를 연결시켜서 유저 id를 받고 그걸로 강퇴기능을 구현하면 될거같다.
-    require('moment-timezone'); //socket.to(밴당할 userId).emit('ban') 이렇게 보내면 밴당한 유저소켓에서 socket.on으로 받고 밴당한유저 
-    moment.tz.setDefault('Asia/Seoul'); //소켓으로 다시 서버로 socket.emit 보내면 서버에서 socket.leave해주면 될듯
+    console.log('소켓IO 서버 오픈'); 
+    require('moment-timezone');
+    moment.tz.setDefault('Asia/Seoul');
     io.use(socketauthMiddleware)
     io.on('connection', async function (socket) {
         const { userId, nickName, userImg } = socket.user;
-        socket.join(userId)
+        socket.on('disconnect', () => {
+            console.log(nickName + '님이 접속을 해제하셨습니다.');
+            // clearInterval(socket.interval);
+        });
+        socket.join(userId);
+        // socket.on('login', () => {
+        console.log(nickName + '님이 접속하셨습니다.')
+        //     socket.join(userId);
+        // });
+
         socket.on('join', function (data) {
             console.log(nickName + '님이 입장하셨습니다.');
             socket.join(data.roomId);
@@ -39,7 +48,10 @@ module.exports = (server) => {
                 }
             );
 
-            Chat.find({ room: data.roomId }, function (err, chats) {
+            Chat.find({ 
+                room: data.roomId,
+                name: { $ne: 'Systemback'}
+            }, function (err, chats) {
                 if (err) {
                     console.log(err);
                     return;
@@ -63,7 +75,13 @@ module.exports = (server) => {
                 chat.name = 'System';
                 chat.msg = nickName + '님이 입장하셨습니다.';
                 chat.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
-
+                let a = chat.createdAt.split(' ')
+                let b = a[0].split('-');
+                let c = a[1].split(':');
+                let d = b.join('');
+                let e = c.join('');
+                let f = d + e;
+                chat.check = Number(f)
                 chat.save(function (err) {
                     if (err) {
                         console.error(err);
@@ -84,8 +102,12 @@ module.exports = (server) => {
                 createdAt: moment().format('YYYY-MM-DD HH:mm:ss'),
             };
             io.sockets.in(data.roomId).emit('broadcast', msg);
+            if(data.userId) {
+                for(let i =0; i< data.userId.length; i++) {
+                    io.sockets.in(data.userId[i]).emit('alert', msg);
+                }
+            }
             
-            io.sockets.in(data.userId).emit('alert',msg)
             //DB 채팅 내용 저장
             var chat = new Chat();
             chat.room = data.roomId;
@@ -94,6 +116,13 @@ module.exports = (server) => {
             chat.userId = userId;
             chat.userImg = userImg;
             chat.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
+            let a = chat.createdAt.split(' ')
+            let b = a[0].split('-');
+            let c = a[1].split(':');
+            let d = b.join('');
+            let e = c.join('');
+            let f = d + e;
+            chat.check = Number(f)
 
             chat.save(function (err) {
                 if (err) {
@@ -108,6 +137,59 @@ module.exports = (server) => {
                 );
             });
         });
+
+        socket.on('joinParty', async function (data) {
+            const uuid = () => {
+                const tokens = v4().split('-');
+                return tokens[2] + tokens[1] + tokens[0] + tokens[3] + tokens[4];
+            };
+            const msgId = uuid();
+            const postInfo = await Post.findOne({
+                _id: data.postId
+            });
+            var msg = {
+                userId: userId,
+                nickName: nickName,
+                userImg: userImg,
+                postId: data.postId,
+                postTitle: postInfo.postTitle,
+                msgId
+            };
+            console.log('msg', msg)
+            for(let i=0; i<data.userId.length; i++) {
+                if(userId!==data.userId[i]){
+                    io.sockets.in(data.userId[i]).emit('joinPartyAlert', msg);
+                }
+            }
+        });
+
+        //채팅방 뒤로가기 눌럿을때 data에 roomId 넣어주기
+        socket.on('back', function (data) {
+            console.log(nickName + '님이 잠시 퇴장하셨습니다.');
+            socket.leave(data.roomId);
+
+            //DB 채팅 내용 저장
+            var chat = new Chat();
+            chat.room = data.roomId;
+            chat.name = 'Systemback';
+            chat.userId = data.userId;
+            chat.msg = nickName + '님이 잠시 퇴장하셨습니다.';
+            chat.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
+            let a = chat.createdAt.split(' ')
+            let b = a[0].split('-');
+            let c = a[1].split(':');
+            let d = b.join('');
+            let e = c.join('');
+            let f = d + e;
+            chat.check = Number(f)
+
+            chat.save(function (err) {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+            });
+        })
 
         socket.on('leave', function (data) {
             console.log(nickName + '님이 퇴장하셨습니다.');
@@ -142,6 +224,13 @@ module.exports = (server) => {
             chat.name = 'System';
             chat.msg = nickName + '님이 퇴장하셨습니다.';
             chat.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
+            let a = chat.createdAt.split(' ')
+            let b = a[0].split('-');
+            let c = a[1].split(':');
+            let d = b.join('');
+            let e = c.join('');
+            let f = d + e;
+            chat.check = Number(f)
 
             chat.save(function (err) {
                 if (err) {
@@ -160,6 +249,21 @@ module.exports = (server) => {
             console.log(nickName + '님이 강퇴당하셨습니다.');
             socket.leave(data.roomId);
 
+            Post.updateOne(
+                { roomId: data.roomId },
+                { $pullAll: { nowMember: [ [ userId ] ] },
+                  $addToSet: { banUserList: [ userId ] }
+                },
+                function (err, output) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    if (!output) {
+                        return;
+                    }
+                }
+            );
+
             Room.updateOne(
                 { roomId: data.roomId },
                 { $pullAll: { nowMember: [ [ userId ] ] },
@@ -177,13 +281,6 @@ module.exports = (server) => {
                     });
                 }
             );
-            let memberId = userId;
-            Post.updateOne(
-                { roomId: data.roomId },
-                { $pull: { nowMember: { $in: [ memberId ] } },
-                  $addToSet: { banUserList: [ userId ] }
-                },
-            );
             var msg = {
                 room: data.roomId,
                 name: 'System',
@@ -197,6 +294,13 @@ module.exports = (server) => {
             chat.name = 'System';
             chat.msg = nickName + '님이 강퇴당하셨습니다.';
             chat.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
+            let a = chat.createdAt.split(' ')
+            let b = a[0].split('-');
+            let c = a[1].split(':');
+            let d = b.join('');
+            let e = c.join('');
+            let f = d + e;
+            chat.check = Number(f)
 
             chat.save(function (err) {
                 if (err) {
@@ -207,8 +311,5 @@ module.exports = (server) => {
 
             io.sockets.in(data.roomId).emit('broadcast', msg);
         })
-        socket.on('disconnet', () => {
-            clearInterval(socket.interval);
-        });
     });
 };

@@ -19,7 +19,6 @@ const post_validation = {
             latitude: Joi.number().required(),
             longitude: Joi.number().required(),
             memberAge: Joi.string().required(),
-            status: Joi.boolean().required(),
         })
 
         try {

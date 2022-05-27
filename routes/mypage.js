@@ -131,7 +131,7 @@ router.post(
             userInterest,
             userContent,
         } = req.body;
-        console.log(req.body)
+
         //특수문자 제한 정규식
         const regexr = /^[a-zA-Z0-9가-힣\s.~!,]{1,100}$/;
         const regexr1 = /^[a-zA-Z0-9가-힣]{1,8}$/;

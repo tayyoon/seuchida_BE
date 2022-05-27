@@ -6,11 +6,13 @@ const post_validation = {
         const schema = Joi.object().keys({
             postTitle: Joi.string()
                 .pattern(
-                    new RegExp('^[^|!|~|.|ㄱ-ㅎ|가-힣|a-z|A-Z|0-9 ]{1,30}$')
+                    new RegExp('/^[^|!|~|.|ㄱ-ㅎ|가-힣|a-z|A-Z|0-9 ]{1,15}$')
                 )
                 .required(),
             postDesc: Joi.string()
-                .pattern(new RegExp('^[ㄱ-ㅎ|가-힣|a-z|A-Z|0-9 ]{1,50}$'))
+                .pattern(
+                    new RegExp('/^[^|!|~|.|ㄱ-ㅎ|가-힣|a-z|A-Z|0-9 ]{1,200}$')
+                )
                 .required(),
             postCategory: Joi.string().min(1).required(),
             datemate: Joi.string().min(1).required(),

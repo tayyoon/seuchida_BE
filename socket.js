@@ -19,9 +19,13 @@ module.exports = (server) => {
     io.use(socketauthMiddleware)
     io.on('connection', async function (socket) {
         const { userId, nickName, userImg } = socket.user;
+        socket.on('disconnect', () => {
+            console.log(nickName + '님이 접속을 해제하셨습니다.');
+            // clearInterval(socket.interval);
+        });
         socket.join(userId);
         // socket.on('login', () => {
-        //     console.log(nickName + '님이 접속하셨습니다.')
+        console.log(nickName + '님이 접속하셨습니다.')
         //     socket.join(userId);
         // });
 
@@ -307,9 +311,5 @@ module.exports = (server) => {
 
             io.sockets.in(data.roomId).emit('broadcast', msg);
         })
-        socket.on('disconnect', () => {
-            console.log(nickName + '님이 접속을 해제하셨습니다.');
-            // clearInterval(socket.interval);
-        });
     });
 };

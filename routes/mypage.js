@@ -133,8 +133,8 @@ router.post(
         } = req.body;
 
         //특수문자 제한 정규식
-        const regexr = /^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣\s]*$/;
-        const regexr1 = /^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]*$/;
+        const regexr = /^[a-zA-Z0-9가-힣\s.~!,]{1,100}$/;
+        const regexr1 = /^[a-zA-Z0-9가-힣]{1,8}$/;
         if (!regexr1.test(nickName)) {
             return res.status(403).send('특수문자를 사용할 수 없습니다');
         }

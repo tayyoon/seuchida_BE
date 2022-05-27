@@ -7,9 +7,9 @@ const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const authMiddleware = require('../middlewares/auth-middleware');
 const upload = require('../S3/s3');
-const Joi = require('joi');
 const AWS = require('aws-sdk');
 const s3 = new AWS.S3();
+const Joi = require('joi');
 
 router.get('/kakao', passport.authenticate('kakao'));
 
@@ -85,6 +85,13 @@ router.post(
                 userInterest,
                 address,
             } = req.body
+            console.log(req.body)
+            const schema = Joi.object({ 
+                nickName: Joi.string().alphanum().min(1).max(8).required(), //특수문자만안되고 글자수는 1~8글자
+                userAge: Joi.number().min(1).max(3).required(), //숫자만 되고 글자3수
+                userContent: Joi.string().min(1).max(20).required() //특정문자(~,!,.)만 안되고 글자수는 1~ 100글자
+            }); 
+            await schema.validateAsync(req.body);
             // await postUsersSchema.validateAsync(req.body);
             // const regexr = /^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣\s]*$/;
             // if (!regexr.test(userContent)) {
@@ -116,10 +123,6 @@ router.post(
                     },
                 }
             );
-            res.status(201).send({
-                message: '가입완료',
-            });
-
         // } catch (err) {
         //     console.log(err);
         //     res.status(400).send({
@@ -135,14 +138,10 @@ router.post(
     upload.single('userImg'),
     authMiddleware,
     async (req, res) => {
-        // try {
+        try {
             const { user } = res.locals;
             let userId = user.userId;
             let userImg = req.file?.location;
-            //유저이미지를 안줫을때 디폴트 이미지를 넣어줌
-            if (!userImg) {
-                userImg = process.env.DEFAULT_IMG;
-            }
             //userId가 db에 존재하지않을 때 회원가입실패 메시지 송출
             const existUsers = await User.find({
                 $or: [{ userId }],
@@ -163,12 +162,12 @@ router.post(
             res.status(201).send({
                 userImg, message: '가입완료',
             });
-        // } catch (err) {
-        //     console.log(err);
-        //     res.status(400).send({
-        //         errorMessage: '요청한 데이터 형식이 올바르지 않습니다.',
-        //     });
-        // }
+        } catch (err) {
+            console.log(err);
+            res.status(400).send({
+                errorMessage: '요청한 데이터 형식이 올바르지 않습니다.',
+            });
+        }
     }
 );
 

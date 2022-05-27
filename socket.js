@@ -4,6 +4,7 @@ const Chat = require('./schemas/chatting');
 const Room = require('./schemas/room');
 const Post = require('./schemas/post');
 const socketauthMiddleware = require('./middlewares/socket-auth-middleware');
+const { v4 } = require('uuid');
 
 module.exports = (server) => {
     const io = SocketIO(server, {
@@ -134,6 +135,11 @@ module.exports = (server) => {
         });
 
         socket.on('joinParty', async function (data) {
+            const uuid = () => {
+                const tokens = v4().split('-');
+                return tokens[2] + tokens[1] + tokens[0] + tokens[3] + tokens[4];
+            };
+            const msgId = uuid();
             const postInfo = await Post.findOne({
                 _id: data.postId
             });
@@ -142,7 +148,8 @@ module.exports = (server) => {
                 nickName: nickName,
                 userImg: userImg,
                 postId: data.postId,
-                postTitle: postInfo.postTitle
+                postTitle: postInfo.postTitle,
+                msgId
             };
             console.log('msg', msg)
             for(let i=0; i<data.userId.length; i++) {

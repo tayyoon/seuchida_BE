@@ -1,15 +1,15 @@
 require('dotenv').config();
 const express = require('express');
-const Post = require('../schemas/post');
+const Myex = require('../schemas/myexercise');
 const User = require('../schemas/user');
 const router = express.Router();
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const authMiddleware = require('../middlewares/auth-middleware');
 const upload = require('../S3/s3');
-const Joi = require('joi');
 const AWS = require('aws-sdk');
 const s3 = new AWS.S3();
+const Joi = require('joi');
 
 router.get('/kakao', passport.authenticate('kakao'));
 
@@ -74,102 +74,107 @@ router.get('/callback/google', googleCallback);
 //회원가입
 router.post(
     '/signUp',
-    upload.single('userImg'),
     authMiddleware,
     async (req, res) => {
-        // try {
-        const {
-            nickName,
-            userAge,
-            userGender,
-            userContent,
-            userInterest,
-            address,
-        } = req.body;
-        // await postUsersSchema.validateAsync(req.body);
-        // const regexr = /^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣\s]*$/;
-        // if (!regexr.test(userContent)) {
-        //     return res.status(403).send('특수문자를 사용할 수 없습니다');
-        // }
-        const { user } = res.locals;
-        let userId = user.userId;
-        let userImg = req.file?.location;
-        //유저이미지를 안줫을때 디폴트 이미지를 넣어줌
-        if (!userImg) {
-            userImg = process.env.DEFAULT_IMG;
-        }
-        let userEvalue = Number(10);
-        let level = Number(2);
-        //userId가 db에 존재하지않을 때 회원가입실패 메시지 송출
-        const existUsers = await User.find({
-            $or: [{ userId }],
-        });
-        if (!existUsers) {
-            res.status(401).send('회원가입실패');
-        }
-        await User.updateOne(
-            { userId: userId },
-            {
-                $set: {
-                    userAge,
-                    nickName,
-                    userImg,
-                    userGender,
-                    userContent,
-                    userInterest,
-                    address,
-                    userEvalue,
-                    level,
-                },
+        try {
+            const schema = Joi.object({ 
+                nickName: Joi.string().pattern(new RegExp('^[a-zA-Z0-9가-힣]{1,8}$')), //특수문자만안되고 글자수는 1~8글자
+                userAge: Joi.string().min(1).max(3).required(), //숫자만 되고 글자3수
+                userGender: Joi.string(),
+                userInterest: Joi.array(),
+                address: Joi.string(),
+                userContent: Joi.string() //특정문자(~,!,.)만 안되고 글자수는 1~ 100글자
+            });
+            await schema.validateAsync(req.body);
+            const {
+                nickName,
+                userAge,
+                userGender,
+                userContent,
+                userInterest,
+                address,
+            } = req.body
+            const regex = /^[a-zA-Z0-9가-힣\s.~!,]{1,100}$/
+            if(!regex.test(userContent)){
+                res.status(401).send('회원가입실패');
+            } else {
+
+                const { user } = res.locals;
+                let userId = user.userId;
+                let userEvalue = Number(10);
+                let level = Number(2);
+                //userId가 db에 존재하지않을 때 회원가입실패 메시지 송출
+                const existUsers = await User.find({
+                    $or: [{ userId }],
+                });
+                if (!existUsers) {
+                    res.status(401).send('회원가입실패');
+                }
+                await User.updateOne(
+                    { userId: userId },
+                    {
+                        $set: {
+                            userAge,
+                            nickName,
+                            userGender,
+                            userContent,
+                            userInterest,
+                            address,
+                            userEvalue,
+                            level
+                        },
+                    }
+                );
+                res.status(201).send({
+                    message: '가입완료',
+                });
             }
-        );
-        // await Evalue.create({
-        //     userId,
-        //     userEvalue: [
-        //         { good1: 0 },
-        //         { good2: 0 },
-        //         { good3: 0 },
-        //         { bad1: 0 },
-        //         { bad2: 0 },
-        //         { bad3: 0 },
-        //     ],
-        // });
-        res.status(201).send({
-            message: '가입완료',
-        });
-        // } catch (err) {
-        //     console.log(err);
-        //     res.status(400).send({
-        //         errorMessage: '요청한 데이터 형식이 올바르지 않습니다.',
-        //     });
-        // }
+        } catch (err) {
+            console.log(err);
+            res.status(400).send({
+                errorMessage: '요청한 데이터 형식이 올바르지 않습니다.',
+            });
+        }
     }
 );
 
-//회원탈퇴
-router.delete('/signDown', authMiddleware, async (req, res) => {
-    const { user } = res.locals;
-    let userId = user.userId;
-    const userInfo = await User.find({ userId: userId });
-    const deleteImgURL = userInfo[0].userImg;
-    //db에 있는 userImgURL에서 s3버킷의 파일명으로 분리
-    const deleteImg = deleteImgURL.split('/')[3];
-    await User.deleteOne({ userId: userId });
-    s3.deleteObject(
-        {
-            Bucket: process.env.BUCKET_NAME,
-            Key: deleteImg,
-        },
-        (err, data) => {
-            if (err) {
-                throw err;
+//회원가입 api에서 이미지 업로드부분 빼내기
+router.post(
+    '/signUpImg',
+    upload.single('userImg'),
+    authMiddleware,
+    async (req, res) => {
+        try {
+            const { user } = res.locals;
+            let userId = user.userId;
+            let userImg = req.file?.location;
+            //userId가 db에 존재하지않을 때 회원가입실패 메시지 송출
+            const existUsers = await User.find({
+                $or: [{ userId }],
+            });
+            if (!existUsers) {
+                res.status(401).send('회원가입실패');
             }
-        }
-    );
 
-    res.status(201).send({
-        message: '탈퇴완료',
-    });
-});
+            await User.updateOne(
+                { userId: userId },
+                {
+                    $set: {
+                        userImg,
+                    },
+                }
+            );
+
+            res.status(201).send({
+                userImg, message: '가입완료',
+            });
+        } catch (err) {
+            console.log(err);
+            res.status(400).send({
+                errorMessage: '요청한 데이터 형식이 올바르지 않습니다.',
+            });
+        }
+    }
+);
 
 module.exports = router;

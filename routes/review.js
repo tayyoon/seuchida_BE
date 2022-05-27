@@ -1,6 +1,7 @@
 const express = require('express');
 const Post = require('../schemas/post');
 const Review = require('../schemas/review');
+const Myex = require('../schemas/myexercise');
 const User = require('../schemas/user');
 const Report = require('../schemas/report');
 const router = express.Router();
@@ -8,11 +9,40 @@ const moment = require('moment');
 const upload = require('../S3/s3');
 const authMiddleware = require('../middlewares/auth-middleware');
 
-// 리뷰 포스트 정보
+// 리뷰 포스트 정보 
 router.get('/reviewPost/:postId', authMiddleware, async (req, res) => {
     try {
         const { postId } = req.params;
-        const post = await Post.findOne({ _id: postId });
+        let post = await Post.findOne({ _id: postId });
+        const userInfo = await User.findOne({
+            userId: post.userId
+        })
+        post['nickName'] = `${userInfo.nickName}`;
+        post['userAge'] = `${userInfo.userAge}`;
+        post['userGender'] = `${userInfo.userGender}`;
+        post['userImg'] = `${userInfo.userImg}`;
+    
+        let nowmemberId = [];
+        let nowMember = '';
+        for(let i=0; i<post.nowMember.length; i++){
+            nowmemberId.push(post.nowMember[i])
+        }
+        post['nowMember'] = [];
+        for(let i=0; i<nowmemberId.length; i++) {
+            nowMember = await User.findOne({
+                userId: nowmemberId[i]
+            })
+            nowInfo = {
+                memberId: nowMember.userId,
+                memberImg: nowMember.userImg,
+                memberNickname: nowMember.nickName,
+                memberAgee: nowMember.userAge,
+                memberGen: nowMember.userGender,
+                memberDesc: nowMember.userContent
+            }
+            post['nowMember'].push(nowInfo); 
+        }
+        
         res.status(200).json({ result: 'success', post });
     } catch (error) {
         console.log(error);
@@ -23,19 +53,15 @@ router.get('/reviewPost/:postId', authMiddleware, async (req, res) => {
 // 리뷰 등록
 router.post(
     '/review/:postId',
-    upload.single('image'),
     authMiddleware,
     async (req, res) => {
         const postId = req.params.postId;
         const post = await Post.findOne({ _id: postId });
         const { user } = res.locals;
-        const { userId, nickName, userAge } = user;
-        const { userImg } = user;
-        const { spot, address, postCategory } = post;
-        const { content, evalues, otherId } = req.body; 
-        const image = req.file?.location; 
-        console.log(otherId)
-        console.log(evalues)
+        const { userId } = user;
+        const { spot, address, postCategory, roomId } = post;
+        const { content, evalues, otherId, image } = req.body; 
+
         let checkUserId = '';
         let checkEvalue = 0;
         let userInfo1 = '';
@@ -48,19 +74,6 @@ router.post(
         moment.tz.setDefault('Asia/Seoul');
         const createdAt = String(moment().format('YYYY-MM-DD HH:mm:ss'));
         try {
-            const reviewList = await Review.create({
-                postId: postId,
-                userId,
-                nickName,
-                userImg,
-                userAge,
-                reviewImg: image,
-                content,
-                createdAt,
-                address,
-                spot,
-                postCategory,
-            });
             //이미지첨부 후기글이면 5점 아니면 3점주기
             if(!image) {
                 upEvalue = Number(3);
@@ -110,6 +123,9 @@ router.post(
             for(let i=0; i<otherId.length; i++) {
                 checkUserId = otherId[i];
                 checkEvalue = evalues[i];
+                if(!checkEvalue) {
+                    checkEvalue = 0
+                }
                 userInfo1 = await User.findOne({
                     userId: checkUserId
                 });
@@ -123,6 +139,31 @@ router.post(
                     }
                 );
             };
+            var reviewList = await Review.create({
+                postId,
+                userId,
+                nickName: 'a',
+                userImg: 'a',
+                userAge: 'a',
+                reviewImg: image,
+                content,
+                createdAt,
+                address,
+                spot,
+                postCategory,
+            });
+            const userInfo = await User.findOne({
+                userId
+            })
+            reviewList['nickName'] = `${userInfo.nickName}`;
+            reviewList['userAge'] = `${userInfo.userAge}`;
+            reviewList['userImg'] = `${userInfo.userImg}`;
+
+            await Myex.updateOne(
+                { roomId, userId },
+                { $set: { writeReview: false } }
+            )
+
             res.status(200).json({ result: 'success', reviewList });
         } catch (error) {
             console.log(error);
@@ -131,24 +172,32 @@ router.post(
     }
 );
 
-// 전체리뷰 조회
-router.get('/review', authMiddleware, async (req, res) => {
+// 리뷰작성 api에서 이미지 업로드 api 빼내기
+router.post(
+    '/reviewImg',
+    upload.single('image'),
+    authMiddleware,
+    async (req, res) => { 
+        let image = req.file?.location; 
+        res.status(200).json({ result: 'success', image });
+    }
+);
+
+// 전체리뷰 조회 
+router.get('/reviewAll/:pageNumber', authMiddleware, async (req, res) => {
+    const { pageNumber } = req.params;
     try {
-        let allReviews = await Review.find(
-            {},
-            {
-                userImg: 1,
-                content: 1,
-                nickName: 1,
-                reviewImg: 1,
-                spot: 1,
-                postCategory: 1,
-                createdAt: 1,
-            }
-        ).sort({ $natural: -1 });
+        let allReviews = await Review.find({}).sort({ $natural: -1 }).skip((pageNumber-1)*6).limit(6);
         // 전체 리뷰를 조회하되 프론트에서 필요한 정보만을 주기위해 key:1(true) 를 설정해줌
         // sort()함수에 $natural:-1 을 시켜 저장된 반대로 , 최신순으로 정렬시킴
-
+        for(i=0; i<allReviews.length; i++) {
+            const userInfo = await User.findOne({
+                userId: allReviews[i].userId
+            })
+            allReviews[i]['nickName'] = `${userInfo.nickName}`;
+            allReviews[i]['userAge'] = `${userInfo.userAge}`;
+            allReviews[i]['userImg'] = `${userInfo.userImg}`;
+        }
         res.status(201).send(allReviews);
     } catch (error) {
         console.error(error);
@@ -160,18 +209,28 @@ router.get('/review', authMiddleware, async (req, res) => {
 router.get('/review/:reviewId', authMiddleware, async (req, res) => {
     const { reviewId } = req.params;
     try {
-        const reviews = await Review.find({ _id: reviewId });
+        var reviews = await Review.find({ _id: reviewId });
+        
+        for(let i =0; i<reviews.length; i++) {
+            const userInfo = await User.findOne({
+                userId: reviews[i].userId
+            })
+            reviews[i]['nickName'] = `${userInfo.nickName}`;
+            reviews[i]['userAge'] = `${userInfo.userAge}`;
+            reviews[i]['userImg'] = `${userInfo.userImg}`;
+        }
+        
         res.status(200).json({ reviews });
     } catch (error) {
         console.log(error);
-        res.status(400).send('댓글이 조회되지 않았습니다!');
+        res.status(400).send('review 조회 에러');
     }
 });
 
 // 리뷰 삭제
 router.delete('/review/:reviewId', authMiddleware, async (req, res) => {
     const { reviewId } = req.params;
-    const review = await Review.find({ _id: postId });
+    const review = await Review.find({ _id: reviewId });
 
     const url = review[0].reviewImg.split('/');
     const delFileName = url[url.length - 1];

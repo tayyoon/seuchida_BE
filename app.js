@@ -69,7 +69,7 @@ app.get(
     }
 )
 const server = https.createServer(credentials, app)
-socket(server)
+// socket(server)
 socket(app)
 
 app.listen(httpPort, () => {

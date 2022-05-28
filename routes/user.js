@@ -94,7 +94,7 @@ router.post(
                 userInterest,
                 address,
             } = req.body
-            const regex = /^[a-zA-Z0-9가-힣\s.~!,]{1,100}$/
+            const regex = /^[^/!/~/./,\sㄱ-ㅎ가-힣a-z0-9]{1,100}/gi
             if(!regex.test(userContent)){
                 res.status(401).send('회원가입실패');
             } else {

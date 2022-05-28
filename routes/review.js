@@ -55,25 +55,30 @@ router.post(
     '/review/:postId',
     authMiddleware,
     async (req, res) => {
-        const postId = req.params.postId;
-        const post = await Post.findOne({ _id: postId });
-        const { user } = res.locals;
-        const { userId } = user;
-        const { spot, address, postCategory, roomId } = post;
-        const { content, evalues, otherId, image } = req.body; 
-
-        let checkUserId = '';
-        let checkEvalue = 0;
-        let userInfo1 = '';
-        let userInfo2 = '';
-        let userInfo3 = '';
-        let evalue = 0;
-        let upEvalue = 0;
-        let eventEvalue = 0;
-        require('moment-timezone');
-        moment.tz.setDefault('Asia/Seoul');
-        const createdAt = String(moment().format('YYYY-MM-DD HH:mm:ss'));
         try {
+            const postId = req.params.postId;
+            const post = await Post.findOne({ _id: postId });
+            const { user } = res.locals;
+            const { userId } = user;
+            const { spot, address, postCategory, roomId } = post;
+            const { content, evalues, otherId, image } = req.body; 
+
+            const regexr = /^[a-zA-Z0-9가-힣\s.~!,]{1,100}$/;
+            if (!regexr.test(userContent)) {
+                return res.status(403).send('특수문자를 사용할 수 없습니다');
+            }
+            let checkUserId = '';
+            let checkEvalue = 0;
+            let userInfo1 = '';
+            let userInfo2 = '';
+            let userInfo3 = '';
+            let evalue = 0;
+            let upEvalue = 0;
+            let eventEvalue = 0;
+            require('moment-timezone');
+            moment.tz.setDefault('Asia/Seoul');
+            const createdAt = String(moment().format('YYYY-MM-DD HH:mm:ss'));
+        
             //이미지첨부 후기글이면 5점 아니면 3점주기
             if(!image) {
                 upEvalue = Number(3);

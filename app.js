@@ -68,10 +68,10 @@ app.get(
         )
     }
 )
-// const server = https.createServer(credentials, app)
-const server = https.createServer(app)
-socket(server)
-// socket(app)
+const server = https.createServer(credentials, app)
+// const server = https.createServer(app)
+// socket(server)
+socket(app)
 
 app.listen(httpPort, () => {
     console.log('local서버가 켜졌어요!')

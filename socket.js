@@ -13,9 +13,6 @@ module.exports = (server) => {
             origins: '*:*',
         },
     })
-    io.engine.on('connection_error', (err) => {
-        console.log(err)
-    })
     console.log('소켓IO 서버 오픈')
     require('moment-timezone')
     moment.tz.setDefault('Asia/Seoul')

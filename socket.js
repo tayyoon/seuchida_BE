@@ -10,7 +10,8 @@ module.exports = (server) => {
     const io = SocketIO(server, {
         path: '/socket.io',
         cors: { 
-            origins: '*:*'
+            origins: '*:*',
+            credentials: true
         }
     });
     console.log('소켓IO 서버 오픈'); 

@@ -8,10 +8,10 @@ const { v4 } = require('uuid')
 
 module.exports = (server) => {
     const io = SocketIO(server, {
-        path: '/socket.io',
+        // path: '/socket.io',
         cors: { 
             origins: '*:*',
-            credentials: true
+            // credentials: true
         }
     });
     console.log('소켓IO 서버 오픈'); 

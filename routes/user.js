@@ -82,10 +82,10 @@ router.post(
                 nickName: Joi.string()
                 .pattern(new RegExp('^[ㄱ-ㅎa-zA-Z0-9가-힣]{1,8}$'))
                 .required(), //특수문자만안되고 글자수는 1~8글자
-            userAge: Joi.string().min(1).max(3).required(), //숫자만 되고 글자3수
-            userGender: Joi.string().required(),
-            userInterest: Joi.array().required(),
-            address: Joi.string().required(),
+                userAge: Joi.string().min(1).max(3).required(), //숫자만 되고 글자3수
+                userGender: Joi.string().required(),
+             userInterest: Joi.array().required(),
+                address: Joi.string().required(),
             userContent: Joi.string().required(), //특정문자(~,!,.)만 안되고 글자수는 1~ 100글자
             });
             await schema.validateAsync(req.body);

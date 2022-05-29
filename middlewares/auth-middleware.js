@@ -10,7 +10,12 @@ module.exports = (req, res, next) => {
         });
         return;
     }
-    console.log(req.headers.authorization)
+    if( authorization==='null' ){
+        res.status(401).send({
+            errorMEssage: '로그인 후 사용하세요!!',
+        });
+        return;
+    }
     const [tokenType, tokenValue] = authorization.split(' ');
 
     if (tokenType !== 'Bearer') {

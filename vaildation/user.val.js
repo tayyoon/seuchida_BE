@@ -4,7 +4,7 @@ const user_validation = {
     user_signUp: async (req, res, next) => {
         console.log('req :', req.body)
         const body = req.body
-        const schema = Joi.object.keys({
+        const schema = Joi.object().keys({
             nickName: Joi.string()
                 .pattern(new RegExp('^[ㄱ-ㅎa-zA-Z0-9가-힣]{1,8}$'))
                 .required(), //특수문자만안되고 글자수는 1~8글자

@@ -9,13 +9,14 @@ const { v4 } = require('uuid')
 module.exports = (server) => {
     const io = SocketIO(server, {
         path: '/socket.io',
-        cors: {
+        cors: { 
             origins: '*:*',
-        },
-    })
-    console.log('소켓IO 서버 오픈')
-    require('moment-timezone')
-    moment.tz.setDefault('Asia/Seoul')
+            credentials: true
+        }
+    });
+    console.log('소켓IO 서버 오픈'); 
+    require('moment-timezone');
+    moment.tz.setDefault('Asia/Seoul');
     io.use(socketauthMiddleware)
     io.on('connection', async function (socket) {
         const { userId, nickName, userImg } = socket.user

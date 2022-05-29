@@ -107,7 +107,7 @@ router.post('/signUp', authMiddleware, async (req, res) => {
                 $or: [{ userId }],
             })
             if (!existUsers) {
-                res.status(401).send('회원가입실패')
+                res.status(401).send('회원가입실패2')
             }
             await User.updateOne(
                 { userId: userId },

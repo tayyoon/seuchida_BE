@@ -94,10 +94,10 @@ router.post('/signUp', authMiddleware, async (req, res) => {
             userInterest,
             address,
         } = req.body
-        const regex = /[^/!/~/./,\sㄱ-ㅎ가-힣a-z0-9]{1,100}/gi
-        if (!regex.test(userContent)) {
-            res.status(401).send('회원가입실패')
-        } else {
+        // const regex = /[^/!/~/./,\sㄱ-ㅎ가-힣a-z0-9]{1,100}/gi
+        // if (!regex.test(userContent)) {
+        //     res.status(401).send('회원가입실패')
+        // } else {
             const { user } = res.locals
             let userId = user.userId
             let userEvalue = Number(10)
@@ -127,7 +127,7 @@ router.post('/signUp', authMiddleware, async (req, res) => {
             res.status(201).send({
                 message: '가입완료',
             })
-        }
+        // }
     } catch (err) {
         console.log(err)
         res.status(400).send({

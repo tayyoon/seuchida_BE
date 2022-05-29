@@ -73,7 +73,6 @@ router.get('/callback/google', googleCallback)
 
 router.post('/signUp', authMiddleware, user_validation.user_signUp, async (req, res) => {
     try {
-        await schema.validateAsync(req.body)
         const {
             nickName,
             userAge,

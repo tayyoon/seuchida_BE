@@ -10,6 +10,7 @@ module.exports = (req, res, next) => {
         });
         return;
     }
+    console.log(req.headers.authorization)
     const [tokenType, tokenValue] = authorization.split(' ');
 
     if (tokenType !== 'Bearer') {

@@ -1,15 +1,13 @@
 require('dotenv').config()
 const express = require('express')
-const Myex = require('../schemas/myexercise')
 const User = require('../schemas/user')
 const router = express.Router()
 const passport = require('passport')
 const jwt = require('jsonwebtoken')
 const authMiddleware = require('../middlewares/auth-middleware')
 const upload = require('../S3/s3')
-const AWS = require('aws-sdk')
-const s3 = new AWS.S3()
 const Joi = require('joi')
+const user_validation = require('../vaildation/post.val')
 
 router.get('/kakao', passport.authenticate('kakao'))
 
@@ -73,18 +71,8 @@ router.get('/callback/google', googleCallback)
 
 //회원가입
 
-router.post('/signUp', authMiddleware, async (req, res) => {
+router.post('/signUp', authMiddleware, user_validation.user_signUp, async (req, res) => {
     try {
-        const schema = Joi.object({
-            nickName: Joi.string()
-                .pattern(new RegExp('^[ㄱ-ㅎa-zA-Z0-9가-힣]{1,8}$'))
-                .required(), //특수문자만안되고 글자수는 1~8글자
-                userAge: Joi.string().min(1).max(3).required(), //숫자만 되고 글자3수
-                userGender: Joi.string().required(),
-             userInterest: Joi.array().required(),
-                address: Joi.string().required(),
-            userContent: Joi.string().required(), //특정문자(~,!,.)만 안되고 글자수는 1~ 100글자
-        })
         await schema.validateAsync(req.body)
         const {
             nickName,
@@ -94,40 +82,36 @@ router.post('/signUp', authMiddleware, async (req, res) => {
             userInterest,
             address,
         } = req.body
-        // const regex = /[^/!/~/./,\sㄱ-ㅎ가-힣a-z0-9]{1,100}/gi
-        // if (!regex.test(userContent)) {
-        //     res.status(401).send('회원가입실패')
-        // } else {
-            const { user } = res.locals
-            let userId = user.userId
-            let userEvalue = Number(10)
-            let level = Number(2)
-            //userId가 db에 존재하지않을 때 회원가입실패 메시지 송출
-            const existUsers = await User.find({
-                $or: [{ userId }],
-            })
-            if (!existUsers) {
-                res.status(401).send('회원가입실패2')
+        
+        const { user } = res.locals
+        let userId = user.userId
+        let userEvalue = Number(10)
+        let level = Number(2)
+        //userId가 db에 존재하지않을 때 회원가입실패 메시지 송출
+        const existUsers = await User.find({
+            $or: [{ userId }],
+        })
+        if (!existUsers) {
+            res.status(401).send('회원가입실패2')
+        }
+        await User.updateOne(
+            { userId: userId },
+            {
+                $set: {
+                    userAge,
+                    nickName,
+                    userGender,
+                    userContent,
+                    userInterest,
+                    address,
+                    userEvalue,
+                    level,
+                },
             }
-            await User.updateOne(
-                { userId: userId },
-                {
-                    $set: {
-                        userAge,
-                        nickName,
-                        userGender,
-                        userContent,
-                        userInterest,
-                        address,
-                        userEvalue,
-                        level,
-                    },
-                }
-            )
-            res.status(201).send({
-                message: '가입완료',
-            })
-        // }
+        )
+        res.status(201).send({
+            message: '가입완료',
+        })
     } catch (err) {
         console.log(err)
         res.status(400).send({

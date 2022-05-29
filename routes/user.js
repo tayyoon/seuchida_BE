@@ -128,24 +128,6 @@ router.post('/signUp', authMiddleware, async (req, res) => {
                 message: '가입완료',
             })
         }
-        await User.updateOne(
-            { userId: userId },
-            {
-                $set: {
-                    userAge,
-                    nickName,
-                    userGender,
-                    userContent,
-                    userInterest,
-                    address,
-                    userEvalue,
-                    level,
-                },
-            }
-        )
-        res.status(201).send({
-            message: '가입완료',
-        })
     } catch (err) {
         console.log(err)
         res.status(400).send({

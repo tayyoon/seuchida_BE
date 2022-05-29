@@ -94,7 +94,7 @@ router.post('/signUp', authMiddleware, async (req, res) => {
             userInterest,
             address,
         } = req.body
-        const regex = /^[^/!/~/./,\sㄱ-ㅎ가-힣a-z0-9]{1,100}/gi
+        const regex = /[^/!/~/./,\sㄱ-ㅎ가-힣a-z0-9]{1,100}/gi
         if (!regex.test(userContent)) {
             res.status(401).send('회원가입실패')
         } else {

@@ -43,6 +43,92 @@
 
 ![서비스 아키텍처 (2)](https://practice2082.s3.ap-northeast-2.amazonaws.com/%EC%95%84%ED%82%A4%ED%83%9D%EC%B3%90+%EC%9D%B4%EB%AF%B8%EC%A7%80.PNG)
 
+## &#128187;기술스택/라이브러리
+### 기술스택
+<table width = "200" style="text-align:center;" >
+  <tr>
+    <th height = "40"> 종류</th>
+    <th height = "40">이름</th>
+
+  </tr>
+  <tr>
+    <td>서버 프레임워크</td>
+    <td>Express</td>
+  </tr>
+  <tr>
+    <td>Https</td>
+    <td>Route53</td>
+  </tr>
+  <tr>
+    <td >Database</td>
+    <td>MongoDB, AtlasDB</td>
+  </tr>
+  <tr>
+    <td >CI</td>
+    <td>GithubAction</td>
+  </tr>
+  <tr>
+    <td >CD</td>
+    <td>GithubAction</td>
+  </tr>
+  <tr>
+    <td >이미지파일 저장소</td>
+    <td>S3</td>
+  </tr>
+  <tr>
+    <td >로드밸런스</td>
+    <td>AWS ELB</td>
+  </tr>
+  <tr>
+    <td >실시간데이터통신</td>
+    <td>socket.io</td>
+  </tr>
+
+<table width = "200" style="text-align:center;" >
+  <tr>
+    <th height = "40">라이브러리</th>
+    <th height = "40">Appliance</th>
+
+  </tr>
+  <tr>
+    <td >dotenv</td>
+    <td>포트값외 중요한값 보안처리</td>
+  </tr>
+  <tr>
+    <td >Mongoose</td>
+    <td>MongoDB 데이터 모델링</td>
+  </tr>
+  <tr>
+    <td >Cors</td>
+    <td>Request Resource 제한</td>
+  </tr>
+   <tr>
+    <td>passport,passport-google-oauth20,passport-kakao</td>
+    <td> 소셜 로그인 </td>
+  </tr>
+  <tr>
+    <td >jsonwebtoken</td>
+    <td> 암호화 </td>
+  </tr>cryptojs
+  <tr>
+    <td>cryptojs</td>
+    <td> 암호화 </td>
+  </tr>
+   <tr>
+    <td>prettier</td>
+    <td> 클린코드 </td>
+  </tr>
+  <tr>
+    <td>multer-s3</td>
+    <td> s3이미지 업로드 </td>
+  </tr>
+  <tr>
+    <td>Joi
+</td>
+    <td> 유효성 검사 </td>
+  </tr>
+</table>
+
 ## 트러블 슈팅 & 기술적 도전 
 ### 1. 방화벽 관련 이슈
 <details> <summary>(1) 깃헙액션 : dial tcp 타임아웃 에러</summary> 깃헙액션 : dial tcp 타임아웃 에러가 있었습니다. 에러 관련 검색 후 가장 흔한 원인은 방화벽 문제로 파악이 되었으나, 방화벽 설정을 해두지 않았기 때문에 그 다음 해결방안으로 보안그룹 부분을 살펴보았습니다. 저희 팀은 작업 초기에 보안그룹 설정으로 인해 데이터베이스를 해킹된 적이 있어 팀원들의 IP로만 포트만 열어두었습니다. 하지만 이로 인해 i/o time out 에러가 발생하여, CD 과정에서 build가  실패하게 되었다는 것을 파악했습니다. 이를 해결하기 위해 IP를 확장해주었고, 성공적으로 CICD 파이프라인을 구축할 수 있었습니다. </details>

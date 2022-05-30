@@ -492,7 +492,7 @@ router.post(
 // 게시글 삭제
 router.delete('/postDelete/:roomId', authMiddleware, async (req, res) => {
     const { roomId } = req.params
-    const writer = await Post.findOne({ _id: roomId }, { userId: 1 })
+    const writer = await Post.findOne({ roomId }, { userId: 1 })
     const { user } = res.locals
     const usersId = user.userId
 

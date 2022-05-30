@@ -15,7 +15,7 @@ module.exports = (server) => {
             transports: ['websocket', 'polling'],
             credentials: true
         },
-        allowEIO3: true
+        allowEIO3: true 
     });
     console.log('소켓IO 서버 오픈'); 
     require('moment-timezone');

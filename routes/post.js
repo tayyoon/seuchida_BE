@@ -224,9 +224,7 @@ router.get('/nearPostList/:pageNumber', authMiddleware, async (req, res) => {
 
 // 전체 포스트 리스트
 router.get('/wholePostList', authMiddleware, async (req, res) => {
-    const { user } = res.locals;
-    const { address } = user;
-
+ 
     try {
         const wholePosts = await Post.find(
             {},
@@ -248,13 +246,98 @@ router.get('/wholePostList', authMiddleware, async (req, res) => {
                 memberGender: 1,
             }
         ).sort({ $natural: -1 });
+        let userInfo = ''
+        for (let i = 0; i < wholePosts.length; i++) {
+            userInfo = await User.findOne({
+                userId: wholePosts[i].userId,
+            })
+            wholePosts[i]['nickName'] = `${userInfo.nickName}`
+            wholePosts[i]['userAge'] = `${userInfo.userAge}`
+            wholePosts[i]['userGender'] = `${userInfo.userGender}`
+            wholePosts[i]['userImg'] = `${userInfo.userImg}`
+            wholePosts[i]['level'] = `${userInfo.level}`
+            let nowmemberId = []
+            let nowMember = ''
+            for (let j = 0; j < wholePosts[i].nowMember.length; j++) {
+                nowmemberId.push(wholePosts[i].nowMember[j])
+            }
+            wholePosts[i]['nowMember'] = []
+            for (let j = 0; j < nowmemberId.length; j++) {
+                nowMember = await User.findOne({
+                    userId: nowmemberId[j],
+                })
+                nowInfo = {
+                    memberId: nowMember.userId,
+                    memberImg: nowMember.userImg,
+                    memberNickname: nowMember.nickName,
+                    memberAgee: nowMember.userAge,
+                    memberGen: nowMember.userGender,
+                    memberDesc: nowMember.userContent,
+                    memberLevel: nowMember.level,
+                    memberCategory: nowMember.userInterest,
+                }
+                wholePosts[i]['nowMember'].push(nowInfo)
+            }
+        }
 
-        res.status(200).json({ wholePosts });
+        res.status(200).json({ wholePosts })
     } catch (err) {
-        console.log(err);
-        res.status(400).send('전체 포스트 오류');
+        console.log(err)
+        res.status(400).send('전체 포스트 오류')
     }
-});
+})
+
+// 전체 리스트 무한스크롤
+router.get('/wholePostList/:pageNumber', authMiddleware, async (req, res) => {
+    const { pageNumber } = req.params
+
+    try {
+        var wholePosts = await Post.find({}
+            )
+            .sort({ $natural: -1 })
+            .skip((pageNumber - 1) * 6)
+            .limit(6)
+
+        let userInfo = ''
+        for (let i = 0; i < wholePosts.length; i++) {
+            userInfo = await User.findOne({
+                userId: wholePosts[i].userId,
+            })
+            wholePosts[i]['nickName'] = `${userInfo.nickName}`
+            wholePosts[i]['userAge'] = `${userInfo.userAge}`
+            wholePosts[i]['userGender'] = `${userInfo.userGender}`
+            wholePosts[i]['userImg'] = `${userInfo.userImg}`
+            wholePosts[i]['level'] = `${userInfo.level}`
+            let nowmemberId = []
+            let nowMember = ''
+            for (let j = 0; j < wholePosts[i].nowMember.length; j++) {
+                nowmemberId.push(wholePosts[i].nowMember[j])
+            }
+            wholePosts[i]['nowMember'] = []
+            for (let j = 0; j < nowmemberId.length; j++) {
+                nowMember = await User.findOne({
+                    userId: nowmemberId[j],
+                })
+                nowInfo = {
+                    memberId: nowMember.userId,
+                    memberImg: nowMember.userImg,
+                    memberNickname: nowMember.nickName,
+                    memberAgee: nowMember.userAge,
+                    memberGen: nowMember.userGender,
+                    memberDesc: nowMember.userContent,
+                    memberLevel: nowMember.level,
+                    memberCategory: nowMember.userInterest,
+                }
+                wholePosts[i]['nowMember'].push(nowInfo)
+            }
+        }
+
+        res.status(200).json({ wholePosts })
+    } catch (err) {
+        console.log(err)
+        res.status(400).send('전체 포스트 오류')
+    }
+})
 
 
 // 상세페이지 조회

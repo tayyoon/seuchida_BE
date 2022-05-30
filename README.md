@@ -43,122 +43,24 @@
 
 ![서비스 아키텍처 (2)](https://practice2082.s3.ap-northeast-2.amazonaws.com/%EC%95%84%ED%82%A4%ED%83%9D%EC%B3%90+%EC%9D%B4%EB%AF%B8%EC%A7%80.PNG)
 
-## &#128187;기술스택/라이브러리
-### 기술스택
-<table width = "200" style="text-align:center;" >
-  <tr>
-    <th height = "40"> 종류</th>
-    <th height = "40">이름</th>
+## 트러블 슈팅 & 기술적 도전 
+1. 방화벽 관련 이슈
+(1) 깃헙액션 : dial tcp 타임아웃 에러가 있었습니다. 에러 관련 검색 후 가장 흔한 원인은 방화벽 문제로 파악이 되었으나, 방화벽 설정을 해두지 않았기 때문에 그 다음 해결방안으로 보안그룹 부분을 살펴보았습니다. 저희 팀은 작업 초기에 보안그룹 설정으로 인해 데이터베이스를 해킹된 적이 있어 팀원들의 IP로만 포트만 열어두었습니다. 하지만 이로 인해 i/o time out 에러가 발생하여, CD 과정에서 build가  실패하게 되었다는 것을 파악했습니다. 이를 해결하기 위해 IP를 확장해주었고, 성공적으로 CICD 파이프라인을 구축할 수 있었습니다.
 
-  </tr>
-  <tr>
-    <td>서버 프레임워크</td>
-    <td>Express</td>
-  </tr>
-  <tr>
-    <td >Database</td>
-    <td>MongoDB, AtlasDB</td>
-  </tr>
-  <tr>
-    <td >CI</td>
-    <td>travis CI</td>
-  </tr>
-  <tr>
-    <td >CD</td>
-    <td>CodeDeploy</td>
-  </tr>
-  <tr>
-    <td >이미지파일 저장소</td>
-    <td>S3</td>
-  </tr>
-  <tr>
-    <td >로드밸런스</td>
-    <td>AWS ELB</td>
-  </tr>
-  
-<table width = "200" style="text-align:center;" >
-  <tr>
-    <th height = "40">라이브러리</th>
-    <th height = "40">Appliance</th>
+(2) 로드밸런서(타겟그룹 health check & 보안그룹) : 로드밸런서를 사용하기위해서는 먼저 타켓그룹(어떤 ec2에서 사용을 할것인지)를 지정해줘야하는데, 그때 헬시체크가 진행됩니다. 클라이언트로부터 데이터가 넘어오면서 로드밸런서를 통해 서버로 넘어오는데 이때 통과를 해서 health check 엔드포인트로 접속이 가능해야 health check가 됩니다. 이 부분에서도 역시나 보안그룹의 포트 설정이 필요했는데 이때 로드벨런서의 보안그룹과 타겟그룹의 보안그룹이 달라야했으며, 타겟그룹내의 각  ec2의 보안그룹은 동일해야 했습니다. 이또한 데이터베이스의 해킹경험으로 인해 모든 사람들이 접근하지 못하게 막음으로 인해서 생겼던 이슈였습니다. 443포트와 80포트 22포트를 상황에 맞게 열어줌으로써 문제를 해결했습니다.
 
-  </tr>
-  <tr>
-    <td >dotenv</td>
-    <td>포트값외 중요한값 보안처리</td>
-  </tr>
-  <tr>
-    <td >Mongoose</td>
-    <td>MongoDB 데이터 모델링</td>
-  </tr>
-  <tr>
-    <td >Cors</td>
-    <td>Request Resource 제한</td>
-  </tr>
-   <tr>
-    <td>passport,passport-google-oauth20,passport-kakao</td>
-    <td> 소셜 로그인 </td>
-  </tr>
-  <tr>
-    <td >jsonwebtoken</td>
-    <td> 암호화 </td>
-  </tr>
-   <tr>
-    <td>prettier</td>
-    <td> 클린코드 </td>
-  </tr>
-  <tr>
-    <td>Joi
-</td>
-    <td> 유효성 검사 </td>
-  </tr>
-</table>
-  
-## 트러블 슈팅 & 기술적 도전
+2. 데이터베이스 해킹 이슈
+초반 작업에서 서버 내부에 몽고디비를 설치하고 사용자 계정을 생성하여 robo3T를 사용하여 데이터를 관리하던 중, 전체 데이터 손실과 경고 메시지를 확인했습니다. 확인 결과, 이는 EC2서버의 보안그룹 설정 미흡으로 인해 해커가 서버 접속을 통해 아이디 및 비밀번호를 알아내어 발생한 결과로 나타났습니다. 추가 데이터 손해를 방지하기 위해 보안그룹 포트, IP를 작업자(팀원)들로 하여 기존 보안 수준을 강화했습니다.
 
 ## 📌 팀원소개
 ### 프론트엔드
-  
-<table width = "200" style="text-align:center;" >
-  <tr>
-    <th height = "40">이태훈</th>
-    <th height = "40"></th>
-  </tr>
-  <tr>
-    <th height = "40">최정원</th>
-    <th height = "40"></th>
-  </tr>
-  <tr>
-    <th height = "40">강형원</th>
-    <th height = "40"></th>
-  </tr>
-</table>
-  
+- 이태훈 : 
+- 강형원 : 
+- 최정원 : 
 ### 백엔드
-  
-<table width = "200" style="text-align:center;" >
-  <tr>
-    <th height = "40">신상렬</th>
-    <th height = "40"></th>
-  </tr>
-  <tr>
-    <th height = "40">윤영수</th>
-    <th height = "40"></th>
-  </tr>
-  <tr>
-    <th height = "40">김연유</th>
-    <th height = "40"></th>
-  </tr>
-</table>
-  
+- 신상렬 : 
+- 윤영수 : 
+- 김연유 :
 ### 디자이너
-  
-<table width = "200" style="text-align:center;" >
-  <tr>
-    <th height = "40">라이브러리</th>
-    <th height = "40">Appliance</th>
-  </tr>
-  <tr>
-    <th height = "40">라이브러리</th>
-    <th height = "40">Appliance</th>
-  </tr>
-</table>
+- 장유진
+- 이수림 

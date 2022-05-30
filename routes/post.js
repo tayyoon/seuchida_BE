@@ -494,11 +494,11 @@ router.delete('/postDelete/:roomId', authMiddleware, async (req, res) => {
     const { roomId } = req.params
     const writer = Post.findOne({ _id: roomId }, { userId: 1 })
     const { user } = res.locals
-    const userID = user.userId
+    const usersId = user.userId
 
     console.log('작성자를 뽑아봅시다 룰루', writer)
 
-    if (userId != writer.userId) {
+    if (usersId != writer.userId) {
         res.status(400).send({ msg: '작성자와 유가 일치하지 않습니다.' })
     }
 

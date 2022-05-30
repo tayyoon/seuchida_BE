@@ -43,17 +43,122 @@
 
 ![서비스 아키텍처 (2)](https://practice2082.s3.ap-northeast-2.amazonaws.com/%EC%95%84%ED%82%A4%ED%83%9D%EC%B3%90+%EC%9D%B4%EB%AF%B8%EC%A7%80.PNG)
 
+## &#128187;기술스택/라이브러리
+### 기술스택
+<table width = "200" style="text-align:center;" >
+  <tr>
+    <th height = "40"> 종류</th>
+    <th height = "40">이름</th>
+
+  </tr>
+  <tr>
+    <td>서버 프레임워크</td>
+    <td>Express</td>
+  </tr>
+  <tr>
+    <td >Database</td>
+    <td>MongoDB, AtlasDB</td>
+  </tr>
+  <tr>
+    <td >CI</td>
+    <td>travis CI</td>
+  </tr>
+  <tr>
+    <td >CD</td>
+    <td>CodeDeploy</td>
+  </tr>
+  <tr>
+    <td >이미지파일 저장소</td>
+    <td>S3</td>
+  </tr>
+  <tr>
+    <td >로드밸런스</td>
+    <td>AWS ELB</td>
+  </tr>
+  
+<table width = "200" style="text-align:center;" >
+  <tr>
+    <th height = "40">라이브러리</th>
+    <th height = "40">Appliance</th>
+
+  </tr>
+  <tr>
+    <td >dotenv</td>
+    <td>포트값외 중요한값 보안처리</td>
+  </tr>
+  <tr>
+    <td >Mongoose</td>
+    <td>MongoDB 데이터 모델링</td>
+  </tr>
+  <tr>
+    <td >Cors</td>
+    <td>Request Resource 제한</td>
+  </tr>
+   <tr>
+    <td>passport,passport-google-oauth20,passport-kakao</td>
+    <td> 소셜 로그인 </td>
+  </tr>
+  <tr>
+    <td >jsonwebtoken</td>
+    <td> 암호화 </td>
+  </tr>
+   <tr>
+    <td>prettier</td>
+    <td> 클린코드 </td>
+  </tr>
+  <tr>
+    <td>Joi
+</td>
+    <td> 유효성 검사 </td>
+  </tr>
+</table>
+  
 ## 트러블 슈팅 & 기술적 도전
 
 ## 📌 팀원소개
 ### 프론트엔드
-- 이태훈 : 
-- 강형원 : 
-- 최정원 : 
+  
+<table width = "200" style="text-align:center;" >
+  <tr>
+    <th height = "40">이태훈</th>
+    <th height = "40"></th>
+  </tr>
+  <tr>
+    <th height = "40">최정원</th>
+    <th height = "40"></th>
+  </tr>
+  <tr>
+    <th height = "40">강형원</th>
+    <th height = "40"></th>
+  </tr>
+</table>
+  
 ### 백엔드
-- 신상렬 : 
-- 윤영수 : 
-- 김연유 :
+  
+<table width = "200" style="text-align:center;" >
+  <tr>
+    <th height = "40">신상렬</th>
+    <th height = "40"></th>
+  </tr>
+  <tr>
+    <th height = "40">윤영수</th>
+    <th height = "40"></th>
+  </tr>
+  <tr>
+    <th height = "40">김연유</th>
+    <th height = "40"></th>
+  </tr>
+</table>
+  
 ### 디자이너
-- 장유진
-- 이수림 
+  
+<table width = "200" style="text-align:center;" >
+  <tr>
+    <th height = "40">라이브러리</th>
+    <th height = "40">Appliance</th>
+  </tr>
+  <tr>
+    <th height = "40">라이브러리</th>
+    <th height = "40">Appliance</th>
+  </tr>
+</table>

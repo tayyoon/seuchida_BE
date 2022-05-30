@@ -37,7 +37,7 @@
 <details> <summary>운동 종목과 운동할 장소, 시간을 정해서 같이 운동할 사람을 모집할 수 있습니다.</summary> <img width='25%' src='https://practice2082.s3.ap-northeast-2.amazonaws.com/%EB%A6%AC%EB%93%9C%EB%AF%B8+%EC%9D%B4%EB%AF%B8%EC%A7%802.png'> </details>
 
 ## ERD
-
+![서비스 ERD](https://practice2082.s3.ap-northeast-2.amazonaws.com/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7+2022-05-30+%EC%98%A4%ED%9B%84+4.37.48.png)
 
 ## 서비스 아키텍처   
 

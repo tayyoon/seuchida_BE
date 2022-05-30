@@ -498,8 +498,12 @@ router.delete('/postDelete/:roomId', authMiddleware, async (req, res) => {
 
     console.log('작성자를 뽑아봅시다 룰루', writer)
 
-    if (usersId != writer.userId) {
-        res.status(400).send({ msg: '작성자와 유가 일치하지 않습니다.' })
+    if (usersId === writer.userId) {
+        next()
+    } else {
+        return res.status(400).send({
+            msg: '작성자와 유저가 일치하지 않아 삭제되지 않았습니다.',
+        })
     }
 
     try {

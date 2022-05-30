@@ -3,31 +3,31 @@ const express = require('express')
 const connect = require('./schemas')
 const cors = require('cors')
 const passportConfig = require('./passport')
-const fs = require('fs')
-const https = require('https')
+// const fs = require('fs')
+// const https = require('https')
 const socket = require('./socket')
-
-const privateKey = fs.readFileSync(__dirname + '/private.key', 'utf8')
-const certificate = fs.readFileSync(__dirname + '/certificate.crt', 'utf8')
-const ca = fs.readFileSync(__dirname + '/ca_bundle.crt', 'utf8')
-const credentials = {
-    key: privateKey,
-    cert: certificate,
-    ca: ca,
-}
-const app_low = express()
+const http = require('http')
+// const privateKey = fs.readFileSync(__dirname + '/private.key', 'utf8')
+// const certificate = fs.readFileSync(__dirname + '/certificate.crt', 'utf8')
+// const ca = fs.readFileSync(__dirname + '/ca_bundle.crt', 'utf8')
+// const credentials = {
+//     key: privateKey,
+//     cert: certificate,
+//     ca: ca,
+// }
+// const app_low = express()
 const app = express()
 const httpPort = process.env.HTTP_PORT
-const httpsPort = process.env.HTTPS_PORT
+// const httpsPort = process.env.HTTPS_PORT
 
-app_low.use((req, res, next) => {
-    if (req.secure) {
-        next()
-    } else {
-        const to = `https://${req.hostname}:${httpsPort}${req.url}`
-        res.redirect(to)
-    }
-})
+// app_low.use((req, res, next) => {
+//     if (req.secure) {
+//         next()
+//     } else {
+//         const to = `https://${req.hostname}:${httpsPort}${req.url}`
+//         res.redirect(to)
+//     }
+// })
 
 connect()
 passportConfig()
@@ -39,7 +39,7 @@ const usersRouter = require('./routes/user')
 const reviewsRouter = require('./routes/review')
 const mypageRouter = require('./routes/mypage')
 const chatsRouter = require('./routes/chatting')
-// const evlaueRouter = require('./routes/evalue');
+
 
 const requestMiddleware = (req, res, next) => {
     console.log('Request URL:', req.originalUrl, ' - ', new Date())
@@ -55,7 +55,7 @@ app.use('/oauth', express.urlencoded({ extended: false }), usersRouter)
 app.use('/api', express.urlencoded({ extended: false }), reviewsRouter)
 app.use('/api', express.urlencoded({ extended: false }), mypageRouter)
 app.use('/api', express.urlencoded({ extended: false }), chatsRouter)
-// app.use('/api', express.urlencoded({ extended: false }), evlaueRouter);
+
 app.get('/', (req, res) => {
     res.send('hello')
 })
@@ -68,13 +68,14 @@ app.get(
         )
     }
 )
-const server = https.createServer(credentials, app)
+const server = http.createServer(app)
+// const server = https.createServer(credentials, app)
 socket(server)
 
-app.listen(httpPort, () => {
+server.listen(httpPort, () => {
     console.log('local서버가 켜졌어요!')
 })
 
-server.listen(httpsPort, () => {
-    console.log('https서버가 켜졌어요!')
-})
+// server.listen(httpsPort, () => {
+//     console.log('https서버가 켜졌어요!')
+// })

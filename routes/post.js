@@ -222,6 +222,41 @@ router.get('/nearPostList/:pageNumber', authMiddleware, async (req, res) => {
     }
 })
 
+// 전체 포스트 리스트
+router.get('/wholePostList', authMiddleware, async (req, res) => {
+    const { user } = res.locals;
+    const { address } = user;
+
+    try {
+        const wholePosts = await Post.find(
+            {},
+            {
+                postId: 1,
+                postTitle: 1,
+                postDesc: 1,
+                datemate: 1,
+                nickName: 1,
+                userImg: 1,
+                status: 1,
+                maxMember: 1,
+                longitude: 1,
+                latitude: 1,
+                createdAt: 1,
+                spot: 1,
+                postCategory: 1,
+                memberAge: 1,
+                memberGender: 1,
+            }
+        ).sort({ $natural: -1 });
+
+        res.status(200).json({ wholePosts });
+    } catch (err) {
+        console.log(err);
+        res.status(400).send('전체 포스트 오류');
+    }
+});
+
+
 // 상세페이지 조회
 router.get('/postDetail/:postId', authMiddleware, async (req, res) => {
     const { postId } = req.params

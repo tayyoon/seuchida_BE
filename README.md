@@ -171,15 +171,15 @@
   </tr>
   <tr>
     <td> 이태훈 </td>
-    <td> https://github.com/gitmackenzie </td>
+    <td> https://github.com/hoontail </td>
   </tr>
   <tr>
     <td> 최정원 </td>
-    <td> https://github.com/gitmackenzie </td>
+    <td> https://github.com/carrot31 </td>
   </tr>
   <tr>
     <td> 강형원 </td>
-    <td> https://github.com/gitmackenzie </td>
+    <td> https://github.com/hyoungwonkang </td>
   </tr>
 </table>
 
@@ -195,6 +195,6 @@
   </tr>
   <tr>
     <td>장유진</td>
-    <td> https://github.com/gitmackenzie </td>
+    <td> https://www.notion.so/Eugene-e1d9ac3124fe426ab29ce979daa88907 </td>
   </tr>
 </table>

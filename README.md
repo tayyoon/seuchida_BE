@@ -139,14 +139,53 @@
  </details>
 
 ## 📌 팀원소개
-### 프론트엔드
-- 이태훈 : 
-- 강형원 : 
-- 최정원 : 
 ### 백엔드
-- 신상렬 : 
-- 윤영수 : 
-- 김연유 :
+<table width = "200" style="text-align:center;" >
+  <tr>
+    <th height = "40"> Name</th>
+    <th height = "40"> Github</th>
+  </tr>
+  <tr>
+    <td> 신상렬 </td>
+    <td>  </td>
+  </tr>
+  <tr>
+    <td> 윤영수 </td>
+    <td>  </td>
+  </tr>
+  <tr>
+    <td> 김연유 </td>
+    <td>  </td>
+  </tr>
+  
+### 프론트엔드
+<tr>
+    <th height = "40"> Name</th>
+    <th height = "40">Github</th>
+  </tr>
+  <tr>
+    <td> 이태훈 </td>
+    <td>  </td>
+  </tr>
+  <tr>
+    <td> 최정원 </td>
+    <td>  </td>
+  </tr>
+  <tr>
+    <td> 강형원 </td>
+    <td>  </td>
+  </tr>
+  
 ### 디자이너
-- 장유진
-- 이수림 
+<tr>
+    <th height = "40"> Name</th>
+    <th height = "40">Blog</th>
+  </tr>
+  <tr>
+    <td> 이수림 </td>
+    <td>  </td>
+  </tr>
+  <tr>
+    <td>장유진</td>
+    <td>  </td>
+  </tr>

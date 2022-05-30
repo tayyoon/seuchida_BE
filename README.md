@@ -157,9 +157,11 @@
     <td> 김연유 </td>
     <td>  </td>
   </tr>
+</table>
   
 ### 프론트엔드
-<tr>
+<table width = "200" style="text-align:center;" >
+  <tr>
     <th height = "40"> Name</th>
     <th height = "40">Github</th>
   </tr>
@@ -175,9 +177,11 @@
     <td> 강형원 </td>
     <td>  </td>
   </tr>
-  
+</table>
+
 ### 디자이너
-<tr>
+<table width = "200" style="text-align:center;" >
+  <tr>
     <th height = "40"> Name</th>
     <th height = "40">Blog</th>
   </tr>
@@ -189,3 +193,4 @@
     <td>장유진</td>
     <td>  </td>
   </tr>
+</table>

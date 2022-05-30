@@ -109,7 +109,7 @@
   <tr>
     <td >jsonwebtoken</td>
     <td> 암호화 </td>
-  </tr>cryptojs
+  </tr>
   <tr>
     <td>cryptojs</td>
     <td> 암호화 </td>

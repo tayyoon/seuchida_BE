@@ -12,10 +12,10 @@ module.exports = (server) => {
         cors: { 
             origins: '*:*',
             methods: ["GET", "POST"],
-            transports: ['websocket', 'polling'],
+            transports: ['websocket'],
             credentials: true
         },
-        allowEIO3: true 
+        allowEIO3: true
     });
     console.log('소켓IO 서버 오픈'); 
     require('moment-timezone');

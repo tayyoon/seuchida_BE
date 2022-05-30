@@ -151,15 +151,15 @@
   </tr>
   <tr>
     <td> 신상렬 </td>
-    <td>  </td>
+    <td> https://github.com/gofl26 </td>
   </tr>
   <tr>
     <td> 윤영수 </td>
-    <td>  </td>
+    <td> https://github.com/tayyoon </td>
   </tr>
   <tr>
     <td> 김연유 </td>
-    <td>  </td>
+    <td> https://github.com/gitmackenzie </td>
   </tr>
 </table>
   
@@ -171,15 +171,15 @@
   </tr>
   <tr>
     <td> 이태훈 </td>
-    <td>  </td>
+    <td> https://github.com/gitmackenzie </td>
   </tr>
   <tr>
     <td> 최정원 </td>
-    <td>  </td>
+    <td> https://github.com/gitmackenzie </td>
   </tr>
   <tr>
     <td> 강형원 </td>
-    <td>  </td>
+    <td> https://github.com/gitmackenzie </td>
   </tr>
 </table>
 
@@ -195,6 +195,6 @@
   </tr>
   <tr>
     <td>장유진</td>
-    <td>  </td>
+    <td> https://github.com/gitmackenzie </td>
   </tr>
 </table>

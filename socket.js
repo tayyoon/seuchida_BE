@@ -16,8 +16,8 @@ module.exports = (server) => {
             credentials: true
         },
         allowEIO3: true,
-        pingInterval: 9000,
-        pingTimeout: 15000,
+        // pingInterval: 9000,
+        // pingTimeout: 15000,
     });
     console.log('소켓IO 서버 오픈'); 
     require('moment-timezone');

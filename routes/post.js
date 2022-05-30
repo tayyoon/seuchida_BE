@@ -224,8 +224,7 @@ router.get('/nearPostList/:pageNumber', authMiddleware, async (req, res) => {
 
 // 전체 포스트 리스트
 router.get('/wholePostList', authMiddleware, async (req, res) => {
-    const { user } = res.locals
-
+ 
     try {
         const wholePosts = await Post.find(
             {},
@@ -248,21 +247,21 @@ router.get('/wholePostList', authMiddleware, async (req, res) => {
             }
         ).sort({ $natural: -1 });
         let userInfo = ''
-        for (let i = 0; i < nearPosts.length; i++) {
+        for (let i = 0; i < wholePosts.length; i++) {
             userInfo = await User.findOne({
-                userId: nearPosts[i].userId,
+                userId: wholePosts[i].userId,
             })
-            nearPosts[i]['nickName'] = `${userInfo.nickName}`
-            nearPosts[i]['userAge'] = `${userInfo.userAge}`
-            nearPosts[i]['userGender'] = `${userInfo.userGender}`
-            nearPosts[i]['userImg'] = `${userInfo.userImg}`
-            nearPosts[i]['level'] = `${userInfo.level}`
+            wholePosts[i]['nickName'] = `${userInfo.nickName}`
+            wholePosts[i]['userAge'] = `${userInfo.userAge}`
+            wholePosts[i]['userGender'] = `${userInfo.userGender}`
+            wholePosts[i]['userImg'] = `${userInfo.userImg}`
+            wholePosts[i]['level'] = `${userInfo.level}`
             let nowmemberId = []
             let nowMember = ''
-            for (let j = 0; j < nearPosts[i].nowMember.length; j++) {
-                nowmemberId.push(nearPosts[i].nowMember[j])
+            for (let j = 0; j < wholePosts[i].nowMember.length; j++) {
+                nowmemberId.push(wholePosts[i].nowMember[j])
             }
-            nearPosts[i]['nowMember'] = []
+            wholePosts[i]['nowMember'] = []
             for (let j = 0; j < nowmemberId.length; j++) {
                 nowMember = await User.findOne({
                     userId: nowmemberId[j],
@@ -277,7 +276,7 @@ router.get('/wholePostList', authMiddleware, async (req, res) => {
                     memberLevel: nowMember.level,
                     memberCategory: nowMember.userInterest,
                 }
-                nearPosts[i]['nowMember'].push(nowInfo)
+                wholePosts[i]['nowMember'].push(nowInfo)
             }
         }
 

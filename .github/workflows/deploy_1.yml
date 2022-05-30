@@ -22,7 +22,7 @@ jobs:
                   key: ${{ secrets.REMOTE_SSH_KEY }}
                   port: ${{ secrets.REMOTE_SSH_PORT }}
                   script: |
-                      cd /home/ubuntu/seuchida_BE
+                      cd /home/ubuntu/seuchida_BE_test
                       # git config --global --add safe.directory /home/ubuntu/seuchida_BE
                       sudo git pull origin main
                       # sudo npm update

@@ -11,8 +11,11 @@ module.exports = (server) => {
         path: '/socket.io',
         cors: { 
             origins: '*:*',
+            methods: ["GET", "POST"],
+            transports: ['websocket', 'polling'],
             credentials: true
-        }
+        },
+        allowEIO3: true
     });
     console.log('소켓IO 서버 오픈'); 
     require('moment-timezone');

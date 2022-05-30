@@ -1,5 +1,5 @@
 # 스치다!
-  ![스치다 로고 1](https://practice2082.s3.ap-northeast-2.amazonaws.com/%EC%8A%A4%EC%B9%98%EB%8B%A4%EC%9D%B4%EB%AF%B8%EC%A7%80.png)
+  ![스치다 로고 1](https://practice2082.s3.ap-northeast-2.amazonaws.com/Slide+16_9+-+1+(4).png)
 
 
 

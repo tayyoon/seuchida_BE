@@ -224,30 +224,13 @@ router.get('/nearPostList/:pageNumber', authMiddleware, async (req, res) => {
 
 // 전체 포스트 리스트
 router.get('/wholePostList', authMiddleware, async (req, res) => {
- 
+
     try {
-        const wholePosts = await Post.find(
-            {},
-            {
-                postId: 1,
-                postTitle: 1,
-                postDesc: 1,
-                datemate: 1,
-                nickName: 1,
-                userImg: 1,
-                status: 1,
-                maxMember: 1,
-                longitude: 1,
-                latitude: 1,
-                createdAt: 1,
-                spot: 1,
-                postCategory: 1,
-                memberAge: 1,
-                memberGender: 1,
-            }
+        let wholePosts = await Post.find(
+            {}
         ).sort({ $natural: -1 });
         let userInfo = ''
-        for (let i = 0; i < wholePosts.length; i++) {
+        for (let i = 0; i < wholePosts.length; i++){
             userInfo = await User.findOne({
                 userId: wholePosts[i].userId,
             })

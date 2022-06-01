@@ -61,7 +61,8 @@ router.post(
             const { user } = res.locals;
             const { userId } = user;
             const { spot, address, postCategory, roomId } = post;
-            const { content, evalues, otherId, image } = req.body; 
+            const { content, evalues, otherId, image, userContent } = req.body; 
+            // userContent req.body에 추가 - ReferenceError 
 
             const regexr = /^[a-zA-Z0-9가-힣\s.~!,]{1,100}$/;
             if (!regexr.test(userContent)) {

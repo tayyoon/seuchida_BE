@@ -17,7 +17,7 @@
   Deploy
   </br></br>
   <img src="https://img.shields.io/badge/Git hub-000000?logo=Github&logoColor=white" />
-  
+  <img src="https://img.shields.io/badge/GitHub Actions-blue?logo=GitHubActions&logoColor=black">
 </p>
 
 ## 바로가기

@@ -262,6 +262,7 @@ router.delete('/review/:reviewId', authMiddleware, async (req, res) => {
 //신고하기
 router.post('/report', authMiddleware, async (req, res) => {
     const { userId, content }= req.body;
+    console.log(req.body)
     await Report.create({
         userId,
         content

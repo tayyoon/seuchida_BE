@@ -145,7 +145,7 @@
 ### 3. Socket.io 이슈
 <details> <summary>Polling error 발생</summary> 양방향 소통을 위해 소켓을 사용하였으나, 로드밸런서를 적용하여 2개 이상의 서버로 배포하자  polling error가 발생했습니다. 원인은 http long pooling 전송이 socket.io 세션의 수명동안 여러 요청을 보내는 것에서 비롯된 것으로 파악됐습니다. 따라서 2개 이상의 서버를 운영하기 위해 
 이 
-<details> <summary>Polling error 발생</summary> 양방향 소통을 위해 소켓을 사용하였으나, 로드밸런서를 적용하여 2개 이상의 서버로 배포하자  polling error가 발생했습니다. 원인은 http long pooling 전송이 socket.io 세션의 수명동안 여러 요청을 보내는 것에서 비롯된 것으로 파악됐습니다. 따라서 2개 이상의 서버를 운영하기 위해 websocket  pooling 전송이 socket.io 세션의 수명동안 여러 요청을 보내는 것에서 비롯된 것으로 파악됐습니다. 따라서 2개 이상의 서버를 운영하기 위
+<details> <summary>Polling error 발생</summary> 양방향 소통을 위해 소켓을 사용하였으나, 로드밸런서를 적용하여 2개 이상의 서버로 배포하자  polling error가 발생했습니다. 원인은 http long pooling 전송이 socket.io 세션의 수명동안 여러 요청을 보내는 것에서 비롯된 것으로 파악됐습니다. 따라서 2개 이상의 서버를 운영하기 위해 websocket  pooling 전송이 socket.io 세션의 수명동안 여러 요청을 보내는 것에서 비롯된 것으로 파악됐습니다. 따라서 2개 이상의 서버를 운영하기 위해 websocket 통신을 사용하여 http long polling을 비활성하였습니다.
  </details>
   
 

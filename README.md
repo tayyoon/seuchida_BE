@@ -56,10 +56,6 @@
     <td>Express</td>
   </tr>
   <tr>
-    <td>Https</td>
-    <td>Route53</td>
-  </tr>
-  <tr>
     <td >Database</td>
     <td>MongoDB, AtlasDB</td>
   </tr>
@@ -127,6 +123,11 @@
 </td>
     <td> 유효성 검사 </td>
   </tr>
+  <tr>
+    <td>artillery</td>
+    <td> 부하테스트 </td>
+  </tr>
+  
 </table>
 
 ## 트러블 슈팅 & 기술적 도전 

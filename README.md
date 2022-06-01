@@ -7,11 +7,11 @@
 <p align='center'>
   <img src='https://img.shields.io/badge/Javascript-ES6-yellow?logo=javascript'/>
   <img src='https://img.shields.io/badge/Node.js-v16.14.2-green?logo=Node.js'/>
-  <img src='https://img.shields.io/badge/Express-v4.17.3-black?logo=Express'/>
+  <img src='https://img.shields.io/badge/Express-v4.18.0-black?logo=Express'/>
   <img src='https://img.shields.io/badge/MongoDB-v4.2.19-green?logo=mongodb'/>
-  <img src='https://img.shields.io/badge/prettier-v2.5.1-pink?logo=prettier'/>
+  <img src='https://img.shields.io/badge/prettier-v2.6.2-pink?logo=prettier'/>
   <img src='https://img.shields.io/badge/Passport-v0.5.2-green?logo=passport'/>
-  <img src='https://img.shields.io/badge/socket.io-v4.4.1-white?logo=Socket.io'/>
+  <img src='https://img.shields.io/badge/socket.io-v4.5.0-white?logo=Socket.io'/>
   <img src="https://img.shields.io/badge/Json Web Token-v8.5.1-8a8a8a?logo=JSON Web Tokens&logoColor=white" />
   </br></br>
   Deploy

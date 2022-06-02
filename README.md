@@ -107,10 +107,6 @@
     <td >jsonwebtoken</td>
     <td> 암호화 </td>
   </tr>
-  <tr>
-    <td>cryptojs</td>
-    <td> 암호화 </td>
-  </tr>
    <tr>
     <td>prettier</td>
     <td> 클린코드 </td>

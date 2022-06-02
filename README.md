@@ -41,7 +41,8 @@
 
 ## 서비스 아키텍처   
 
-![서비스 아키텍처 (2)](https://practice2082.s3.ap-northeast-2.amazonaws.com/%EC%95%84%ED%82%A4%ED%85%8D%EC%B3%90+final.png)
+![image](https://user-images.githubusercontent.com/100466594/171614695-39a052f0-a300-4f38-a605-e7b1450be99c.png)
+
 
 ## &#128187;기술스택/라이브러리
 ### 기술스택

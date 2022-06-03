@@ -103,6 +103,10 @@
     <td>passport,passport-google-oauth20,passport-kakao</td>
     <td> 소셜 로그인 </td>
   </tr>
+   <tr>
+    <td>socket.io</td>
+    <td> 실시간  </td>
+  </tr>
   <tr>
     <td >jsonwebtoken</td>
     <td> 암호화 </td>

@@ -105,7 +105,7 @@
   </tr>
    <tr>
     <td>socket.io</td>
-    <td> 실시간  </td>
+    <td> 실시간 통신 </td>
   </tr>
   <tr>
     <td >jsonwebtoken</td>

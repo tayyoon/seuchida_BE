@@ -131,73 +131,41 @@
   
 </table>
 
-## 트러블 슈팅 
+## 트러블 슈팅 및 유저피드백 보완
 ### 1. 게시글 삭제 API 보안이슈
-<details> <summary>(1) 게시글 삭제 관련 보안문제</summary> 다른 사람 게시글 주소창의 url을 이용해서 postman 혹은 ARC를 통해 작성자 본인이 아닌 다른사람의 토큰으로도 삭제할 수 는 문제가 있었습니다. 그래서 백앤드 코드에서도 게시글 삭제api에  게시글 작성자와 삭제하려는 사람의 아이디가 같은지 검증절차를 추가해서 문제를 해결했습니다.
+<details> <summary>(1) 게시글 삭제 관련 보안문제</summary> 다른 사람 게시글 주소창의 url을 이용해서 postman 혹은 ARC를 통해 작성자 본인이 아닌 다른사람의 토큰으로도 삭제할 수 는 문제가 있었습니다. 
+  -> 백앤드 코드에서= 게시글 삭제api에  게시글 작성자와 삭제하려는 사람의 아이디가 같은지 검증절차를 추가해서 문제를 해결했습니다.
+  <img src="https://i.ibb.co/ys8RKtv/2022-06-07-12-02-48.png" alt="2022-06-07-12-02-48" border="0">
   </details>
 
 ### 2. 데이터베이스 해킹 이슈
-<details> <summary>EC2 데이터베이스 해킹</summary> 서버 ec2에 데이터베이스를 설치해서 사용하는 중 데이터베이스를 해킹당하는 일이 있었습니다. 원인을 데이터베이스 계정 비밀번호가 간단해서 발생한 문제로 파악하여 비밀번호를 어렵게 변경해봤지만 같은일이 발생하였고 이 부분을 해결하기 위해 몽고db에서 관리해주는 아틀라스를 사용하고 아틀라스 자체의 화이트리스트를 작성했습니다. 화이트리스트에 지정된 ip만 접근할수있게 함으로써 보안을 강화했습니다.
+<details> <summary>EC2 데이터베이스 해킹</summary> 서버 ec2에 데이터베이스를 설치해서 사용하는 중 데이터베이스를 해킹당하는 일이 있었습니다. 원인을 데이터베이스 계정 비밀번호가 간단해서 발생한 문제로 파악하여 비밀번호를 어렵게 변경해봤지만 같은일이 발생하였고 
+  -> 이 부분을 해결하기 위해 몽고db에서 관리해주는 아틀라스를 사용하고 아틀라스 자체의 화이트리스트를 작성했습니다. 화이트리스트에 지정된 ip만 접근할수있게 함으로써 보안을 강화했습니다.
+  <img src="https://i.ibb.co/ZB4dSsH/2022-06-07-12-03-00.png" alt="2022-06-07-12-03-00" border="0">
  </details>
   
 ### 3. socket.io&로드밸런서 이슈
-<details> <summary>socket.io&로드밸런서</summary> 로드밸런서를 적용하기전에는 소켓 기능이 잘 작동했지만 로드밸런서로 서버를 여러개 연결하는 순간부터 socket polling error가 발생했습니다. 원인은 http long polling 통신이 socket.io 세션의 수명동안 여러번http 요청을 보내서 생긴 문제였습니다. 구글링 해본결과 여러 서버를 운영 하려면 sticky session을 활성화 하거나 http long polling을 비활성화 하기위해 websocket 통신을 사용하면 에러가 해결된다는 걸 알아냈습니다. 저희는 두번째 방법인 websocket 통신을 이용해서 에러를 해결했습니다.
+<details> <summary>socket.io&로드밸런서</summary> 로드밸런서를 적용하기전에는 소켓 기능이 잘 작동했지만 로드밸런서로 서버를 여러개 연결하는 순간부터 socket polling error가 발생했습니다. 원인은 http long polling 통신이 socket.io 세션의 수명동안 여러번http 요청을 보내서 생긴 문제였습니다. 
+  -> 구글링 해본결과 여러 서버를 운영 하려면 sticky session을 활성화 하거나 http long polling을 비활성화 하기위해 websocket 통신을 사용하면 에러가 해결된다는 걸 알아냈습니다. 저희는 두번째 방법인 websocket 통신을 이용해서 에러를 해결했습니다.
+  <img src="https://i.ibb.co/Y3zyfTR/2022-06-07-12-03-18.png" alt="2022-06-07-12-03-18" border="0">
+ </details>
+  
+  ### 4. socket.io&로드밸런서 이슈 2
+<details> <summary>socket.io&로드밸런서</summary> 위와같은 문제를 해결했지만, sticky session 활성화로 인해 기록되어있던 서버로 연결이되면서 로드밸런서 적용되는 물리적 서버 분할로인해 두개의 서버가 socket통신을 주고받지 못하는 상황이 발생하였습니다.
+  -> socket소통을 위한 EC2를 생성하여 물리적으로 분산시킨 두개의 로드밸런서 서버에 구애받지않고 socket 통신이 이루어질 수 있도록 독립적으로 구현하였습니다.
+ </details>
+  
+    ### 5. 회원가입 오류 발생 
+<details> <summary> 천지인 키보드를 쓰는 유저의 경우 회원가입, 글작성 시 가운데점을 쓰면 입력이 안되는 현상이 발생하였습니다.
+  -> 기존의 정규식에 천지인 아래아 조건을 추가해주었습니다.
+  <img src="https://i.ibb.co/XJWx9x0/2022-06-07-12-03-53.png" alt="2022-06-07-12-03-53" border="0">
+  <img src="https://i.ibb.co/X48ZvhD/2022-06-07-12-06-39.png" alt="2022-06-07-12-06-39" border="0">
+  
  </details>
   
 
-## 📌 팀원소개
-### 백엔드
-<table width = "200" style="text-align:center;" >
-  <tr>
-    <th height = "40"> Name</th>
-    <th height = "40"> Github</th>
-  </tr>
-  <tr>
-    <td> 신상렬 </td>
-    <td> https://github.com/gofl26 </td>
-  </tr>
-  <tr>
-    <td> 윤영수 </td>
-    <td> https://github.com/tayyoon </td>
-  </tr>
-  <tr>
-    <td> 김연유 </td>
-    <td> https://github.com/gitmackenzie </td>
-  </tr>
-</table>
-  
-### 프론트엔드
-<table width = "200" style="text-align:center;" >
-  <tr>
-    <th height = "40"> Name</th>
-    <th height = "40">Github</th>
-  </tr>
-  <tr>
-    <td> 이태훈 </td>
-    <td> https://github.com/hoontail </td>
-  </tr>
-  <tr>
-    <td> 최정원 </td>
-    <td> https://github.com/carrot31 </td>
-  </tr>
-  <tr>
-    <td> 강형원 </td>
-    <td> https://github.com/hyoungwonkang </td>
-  </tr>
-</table>
 
-### 디자이너
-<table width = "200" style="text-align:center;" >
-  <tr>
-    <th height = "40"> Name</th>
-    <th height = "40">Blog</th>
-  </tr>
-  <tr>
-    <td> 이수림 </td>
-    <td>  </td>
-  </tr>
-  <tr>
-    <td>장유진</td>
-    <td> https://www.notion.so/Eugene-e1d9ac3124fe426ab29ce979daa88907 </td>
-  </tr>
-</table>
+  
+
+
+
